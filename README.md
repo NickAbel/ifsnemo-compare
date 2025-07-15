@@ -54,9 +54,47 @@ ifsnemo-build, located at https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsne
       #psubmit:
       #  queue_name: "standard-g"
       #  account: project_465000454
-      ...
-    ```
+      ```
 
   d. Download and unpack the needed files (requires internet access!) with
   `./dnb.sh :du`
+
+   Then, `tar` the `ifsnemo-build` directory for `scp` transfer with 
+   `tar czf ../ifsnemo-build.tar.gz *`
+   Use `scp` to copy the `ifsnemo-build.tar.gz` tarball onto MN5 with
+   `scp ~/ifsnemo-build.tar.gz bsc<XXXXXX>@glogin4.bsc.es:/gpfs/projects/bsc32/bsc<XXXXXX>/`
+
+   e. ON MARENOSTRUM 5 GPP
+   Navigate to the `ifsnemo-build` directory `cd /gpfs/projects/bsc32/bsc<XXXXXX>/ifsnemo-build/`
+   Request an interactive debug with `salloc` for building
+   `salloc --qos=gp_debug --partition=standard -A ehpc01 -c 112 --nodes=1 -t 02:00:00 --exclusive`
+
+   From the GPP compute node, Run the build command `./dnb.sh :b`
+
+   Relinquish the compute node with Ctrl+D
+
+   Run the install command `./dnb.sh :i` on a GPP login node
+
+   When completed, 
+   from `glogin4`, download and add the `psubmit` and `yq` utilities
+   ```
+   cd
+   mkdir bin
+   cd bin
+   wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ./yq
+   git clone https://github.com/a-v-medvedev/psubmit.git
+   mv psubmit/* .
+   ```
+   append to PATH as needed by adding the line
+   ```
+   PATH="$HOME/bin:$PATH"
+   ```
+   and `source ~/.bashrc` to take the changes in as needed
    
+   go to the `ifsnemo-build/ifsnemo` "testbed" directory and run an example with psubmit
+
+   ```
+   psubmit.sh -n 1 -u ifsMASTER.SP.CPU.GPP
+   ```
+If this works, introduce the `ifsnemo-compare` system by cloning from within `ifsnemo-build/ifsnemo`
+
