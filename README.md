@@ -6,10 +6,8 @@ A lightweight tool to compare IFS-NEMO binary outputs across different builds an
 
 ## Prerequisites
 
-1. **ifsnemo-build** repository. Full setup instructions: [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg).
-2. **YAML processor:** `yq`
-3. **PSUBMIT** helper script (for job submission on HPC systems).
-4. **Network access** to pull down source archives and submodules.
+1. **ifsnemo-build** access. Full setup instructions: [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg).
+2. **MN5 and ECMWF Bitbucket**  access.
 
 ---
 
