@@ -74,12 +74,12 @@ def run_and_tee(cmd, env=None):
 
 #Section 3: Task Loops
 
-def create_refs(subdirs, resolutions, nsteps, ntasks):
-    for subdir, res, nsteps, ntasks in itertools.product(
+def create_refs(subdirs, resolutions, nsteps, nnodes):
+    for subdir, res, nsteps, nnodes in itertools.product(
         subdirs,
         resolutions,
         nsteps,
-        ntasks
+        nnodes
     ):
 
         run_ref_dir = os.path.join(
@@ -87,9 +87,9 @@ def create_refs(subdirs, resolutions, nsteps, ntasks):
                 os.path.basename(subdir.rstrip(os.sep)),
                 str(res),
                 "nsteps"+str(nsteps),
-                "ntasks"+str(ntasks))
+                "nnodes"+str(nnodes))
 
-        ref_log = f"ref.res={res}_nst={nsteps}_nt={ntasks}.log"
+        ref_log = f"ref.res={res}_nst={nsteps}_nt={nnodes}.log"
 
         ref_logpath = os.path.join(
             run_ref_dir,
@@ -103,8 +103,8 @@ def create_refs(subdirs, resolutions, nsteps, ntasks):
         ensure_dir(run_ref_dir)
 
         ## (A) Run the reference job
-        print(f"Running reference {subdir}:  res={res} nsteps={nsteps} ntasks={ntasks}\n")
-        ref_cmd = ["psubmit.sh", "-n", str(ntasks), "-u", subdir]
+        print(f"Running reference {subdir}:  res={res} nsteps={nsteps} nnodes={nnodes}\n")
+        ref_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", subdir]
         ref_jobid, ref_out = run_and_tee(ref_cmd,
                                          env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
         
@@ -117,7 +117,7 @@ def create_refs(subdirs, resolutions, nsteps, ntasks):
         ## Copy psubmit results to the compare_norms ref folder
         copy_results(ref_jobid, run_ref_dir)
 
-def compare(ref_subdir, test_subdirs, resolutions, nsteps, ntasks):
+def compare(ref_subdir, test_subdirs, resolutions, nsteps, nnodes):
     """
     Iterating over the parameters:
     - Run the reference branch test
@@ -125,12 +125,12 @@ def compare(ref_subdir, test_subdirs, resolutions, nsteps, ntasks):
     - Compare norms with the reference results in `<REF_DIR_ROOT>/<ref_subdir>/...`
     """
     for test in test_subdirs:
-        for res, nsteps, ntasks in itertools.product(resolutions, nsteps, ntasks):
+        for res, nsteps, nnodes in itertools.product(resolutions, nsteps, nnodes):
             base_ref = os.path.join(REF_DIR_ROOT,
                                     ref_subdir,
                                     f"{res}", 
                                     f"nsteps{nsteps}", 
-                                    f"ntasks{ntasks}",
+                                    f"nnodes{nnodes}",
                                     "results")
 
             print(f"Expecting reference dir at {base_ref}")
@@ -138,12 +138,12 @@ def compare(ref_subdir, test_subdirs, resolutions, nsteps, ntasks):
                 print(f"[WARN] missing reference dir {base_ref}: skipping")
                 continue
             # Run the test run and capture its jobid
-            print(f"Running test resolution {res} nsteps {nsteps} ntasks {ntasks}")
-            test_cmd = ["psubmit.sh", "-n", str(ntasks), "-u", test]
+            print(f"Running test resolution {res} nsteps {nsteps} nnodes {nnodes}")
+            test_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", test]
             test_jobid, _ = run_and_tee(test_cmd,
                                         env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
 
-            print(f"[COMPLETED] jobid {test_jobid}: test resolution {res} nsteps {nsteps} ntasks {ntasks}")
+            print(f"[COMPLETED] jobid {test_jobid}: test resolution {res} nsteps {nsteps} nnodes {nnodes}")
 
             base_test = "results." + str(test_jobid)
             cmp_cmd = ["./cmp.sh", base_ref, base_test]
@@ -175,10 +175,10 @@ def parse_args():
                     help="RESolution names")
     p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[100],
                     help="Number of steps")
-    p1.add_argument("-n", "--ntasks", nargs="+", type=int, default=[1],
-                    help="Number of tasks")
+    p1.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
+                    help="Number of nodes")
     p1.set_defaults(func=lambda args: create_refs(
-        args.ref_subdirs, args.resolutions, args.nsteps, args.ntasks
+        args.ref_subdirs, args.resolutions, args.nsteps, args.nnodes
     ))
 
     # compare
@@ -189,10 +189,10 @@ def parse_args():
                     help="One or more test subdirectories")
     p2.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
     p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[100])
-    p2.add_argument("-n", "--ntasks", nargs="+", type=int, default=[1])
+    p2.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
     p2.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
-        args.resolutions, args.nsteps, args.ntasks
+        args.resolutions, args.nsteps, args.nnodes
     ))
 
     return p.parse_args()
