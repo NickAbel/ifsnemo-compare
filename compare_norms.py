@@ -6,7 +6,8 @@ import argparse
 import itertools
 import subprocess
 
-REF_DIR_ROOT = "compare_norms_refs"
+REF_DIR_ROOT  = "compare_norms_refs_out"
+TEST_DIR_ROOT = "compare_norms_tests_out"
 
 #Section 1: File+Dir Utilities
 
@@ -74,7 +75,24 @@ def run_and_tee(cmd, env=None):
 
 #Section 3: Task Loops
 
-def create_refs(subdirs, resolutions, nsteps, nnodes):
+def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
+    """
+    For each combination of subdir, res, nsteps, nnodes:
+      1) submits the job via run_and_tee()
+      2) moves results.<jobid> into the right spot under REF_DIR_ROOT or TEST_DIR_ROOT
+
+    :param subdirs:      list of test names (e.g. ["drive1", "drive2"])
+    :param resolutions:  list of resolution strings (e.g. ["128x128", "256x256"])
+    :param nsteps_list:  list of ints
+    :param nnodes_list:  list of ints
+    :param runtype:      "ref" or "test"
+    """
+    if runtype not in ("ref", "test"):
+        raise ValueError("runtype must be 'ref' or 'test'")
+    
+    root = REF_DIR_ROOT if runtype == "ref" else TEST_DIR_ROOT
+    #os.makedirs(root, exist_ok=True)
+    
     for subdir, res, nsteps, nnodes in itertools.product(
         subdirs,
         resolutions,
@@ -82,40 +100,40 @@ def create_refs(subdirs, resolutions, nsteps, nnodes):
         nnodes
     ):
 
-        run_ref_dir = os.path.join(
-                REF_DIR_ROOT,
+        run_logdir = os.path.join(
+                root,
                 os.path.basename(subdir.rstrip(os.sep)),
                 str(res),
                 "nsteps"+str(nsteps),
                 "nnodes"+str(nnodes))
 
-        ref_log = f"ref.res={res}_nst={nsteps}_nt={nnodes}.log"
+        run_logfile = f"{runtype}.res={res}_nst={nsteps}_nt={nnodes}.log"
 
-        ref_logpath = os.path.join(
-            run_ref_dir,
-            ref_log
+        run_logfilepath = os.path.join(
+            run_logdir,
+            run_logfile
         )
-        if os.path.isfile(ref_logpath):
-            print(f"[SKIP] {run_ref_dir} already contains a run log")
+        if os.path.isfile(run_logfilepath):
+            print(f"[SKIP] {run_logdir} already contains a run log")
             continue
 
-        print(f"Creating {run_ref_dir}")
-        ensure_dir(run_ref_dir)
+        print(f"Creating {run_logdir}")
+        ensure_dir(run_logdir)
 
         ## (A) Run the reference job
         print(f"Running reference {subdir}:  res={res} nsteps={nsteps} nnodes={nnodes}\n")
-        ref_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", subdir]
-        ref_jobid, ref_out = run_and_tee(ref_cmd,
+        psubmit_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", subdir]
+        run_jobid, ref_out = run_and_tee(psubmit_cmd,
                                          env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
         
         ## Log ref output
-        print(f"Creating {ref_logpath}")
-        with open(ref_logpath, "w") as f:
+        print(f"Creating {run_logfilepath}")
+        with open(run_logfilepath, "w") as f:
             f.write(ref_out)
-        print(f"Reference run output at: {ref_logpath}")
+        print(f"output of {runtype} run {run_jobid} in {run_logfilepath}")
 
-        ## Copy psubmit results to the compare_norms ref folder
-        copy_results(ref_jobid, run_ref_dir)
+        ## Copy psubmit results to the run_logdir folder
+        copy_results(run_jobid, run_logdir)
 
 def compare(ref_subdir, test_subdirs, resolutions, nsteps, nnodes):
     """
@@ -173,24 +191,35 @@ def parse_args():
                     help="One or more ref subdirectories")
     p1.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"],
                     help="RESolution names")
-    p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[100],
+    p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
                     help="Number of steps")
     p1.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
                     help="Number of nodes")
-    p1.set_defaults(func=lambda args: create_refs(
-        args.ref_subdirs, args.resolutions, args.nsteps, args.nnodes
+    p1.set_defaults(func=lambda args: create_runs(
+        args.ref_subdirs, args.resolutions, args.nsteps, args.nnodes, runtype="ref"
     ))
 
-    # compare
-    p2 = subs.add_parser("compare", help="Diff refs vs. tests")
-    p2.add_argument("-g", "--ref-subdir", required=True,
-                    help="Which ref subdir to compare against")
+    # run tests
+    p2 = subs.add_parser("run-tests", help="Run the tests")
     p2.add_argument("-t", "--test-subdirs", nargs="+", required=True,
                     help="One or more test subdirectories")
     p2.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
-    p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[100])
+    p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1])
     p2.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
-    p2.set_defaults(func=lambda args: compare(
+    p2.set_defaults(func=lambda args: create_runs(
+        args.test_subdirs, args.resolutions, args.nsteps, args.nnodes, runtype="test"
+    ))
+
+    # compare
+    p3 = subs.add_parser("compare", help="Diff refs vs. tests")
+    p3.add_argument("-g", "--ref-subdir", required=True,
+                    help="Which ref subdir to compare against")
+    p3.add_argument("-t", "--test-subdirs", nargs="+", required=True,
+                    help="One or more test subdirectories")
+    p3.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
+    p3.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1])
+    p3.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
+    p3.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
         args.resolutions, args.nsteps, args.nnodes
     ))
