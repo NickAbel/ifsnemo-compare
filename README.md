@@ -156,7 +156,7 @@ python3 compare_norms.py create-refs \
 This submits a gold-standard run and stores outputs under:
 
 ```
-compare_norms_refs/ifsMASTER.SP.CPU.GPP/tco79-eORCA1/nsteps1/ntasks1/
+compare_norms_refs/ifsMASTER.SP.CPU.GPP/tco79-eORCA1/nsteps1/nnodes1/
 ```
 
 ### 4.2 Compare Against a "Lite" Binary
