@@ -72,15 +72,15 @@ Create these two files in `ifsnemo-build/`:
 ./dnb.sh :du
 
 # Create a compressed tarball for MN5 transfer
-tar czf ../ifsnemo-build.tar.gz *
+tar czf ../ifsnemo-build.tar.gz .
 
-# Copy to your projects dir on Marenostrum5 login node (adjust XXXXXX)
+# Copy to your projects dir on MN5 login node (adjust XXXXXX)
 scp ../ifsnemo-build.tar.gz bscXXXXXX@glogin4.bsc.es:/gpfs/projects/bsc32/bscXXXXXX/
 ```
 
 ---
 
-## 2. Build on Marenostrum5 GPP
+## 2. Build on MN5 GPP
 
 ### 2.1 Request an Interactive Node
 
@@ -90,10 +90,14 @@ salloc --qos=gp_debug --partition=standard -A ehpc01 \
        -c 112 --nodes=1 -t 02:00:00 --exclusive
 ```
 
-### 2.2 Build and Install
+### 2.2 Untar, Build and Install
 
 ```bash
-cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build
+cd /gpfs/projects/bsc32/bscXXXXXX/
+tar zxf ifsnemo-build.tar.gz
+cd ifsnemo-build
+# Set machine file to MN5-GPP
+ln -sf dnb-mn5-gpp.yaml machine.yaml
 # Build on the compute node
 ./dnb.sh :b
 # Exit allocation!! (Ctrl+D)
