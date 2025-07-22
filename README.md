@@ -72,11 +72,13 @@ Create these two files in `ifsnemo-build/`:
 ./dnb.sh :du
 
 # Create a compressed tarball for MN5 transfer
-tar czf ../ifsnemo-build.tar.gz .
+tar czvf ../ifsnemo-build.tar.gz .
 
 # Copy to your projects dir on MN5 login node (adjust XXXXXX)
 scp ../ifsnemo-build.tar.gz bscXXXXXX@glogin4.bsc.es:/gpfs/projects/bsc32/bscXXXXXX/
 ```
+
+> **Beware:** The `tar czvf` command may take a few minutes.
 
 ---
 
@@ -94,7 +96,7 @@ salloc --qos=gp_debug --partition=standard -A ehpc01 \
 
 ```bash
 cd /gpfs/projects/bsc32/bscXXXXXX/
-tar zxf ifsnemo-build.tar.gz
+tar xzvf ifsnemo-build.tar.gz
 cd ifsnemo-build
 # Set machine file to MN5-GPP
 ln -sf dnb-mn5-gpp.yaml machine.yaml
@@ -104,6 +106,9 @@ ln -sf dnb-mn5-gpp.yaml machine.yaml
 # Install - on a login node!!
 ./dnb.sh :i
 ```
+
+> **Beware:** The `tar xzvf` command may take a few minutes.
+
 
 ### 2.3 Prepare Utilities on Login Node
 
