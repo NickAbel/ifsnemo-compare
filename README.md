@@ -19,4 +19,4 @@ A lightweight tool to compare IFS-NEMO binary outputs across different builds an
 ## 1. Quick Start Guides
 
 - [Standard Quick Start Guide](./quickstart.md)
-- [Quick Start Testing Guide](./quickstart‑testing.md)
+- [Quick Start Testing Guide](./quickstart-testing.md)
