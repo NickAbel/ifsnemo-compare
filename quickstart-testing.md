@@ -155,7 +155,7 @@ ln -sf dnb-mn5-gpp.yaml machine.yaml
 From your `ifsnemo-build/ifsnemo` testbed directory:
 
 ```bash
-psubmit -n 1 -u ifsMASTER.SP.CPU.GPP
+psubmit.sh -n 1 -u ifsMASTER.SP.CPU.GPP
 ```
 
 Which should complete without complaint.
