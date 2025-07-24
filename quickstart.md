@@ -19,16 +19,6 @@ Starting at the browse page of your newly created fork (https://git.ecmwf.int/us
 4. Click the **Create branch** button.
 <img width="585" height="386" alt="Screenshot_20250724_133502" src="https://github.com/user-attachments/assets/7adcbd68-4746-4ed7-9b01-db7798f257c1" />
 
----
-
-aliases:
-
-* “ifsnemo‑build branch testing”
-  tags:
-* ifsnemo
-* tutorial
-* overrides
-
 ## How to instruct **ifsnemo‑build** to test your branch
 
 Having made the modifications in your branch, on your local machine create an `overrides.yaml` file with the following contents:
