@@ -45,4 +45,4 @@ environment:
 * Replace `ecme####` with your own username.
 * Choose `DNB_SANDBOX_SUBDIR` as you see fit.
 
-From this point, repeat the steps in [[quickstart-testing.md]] starting after **Step 1.3: Configure and Clone ifsnemo‑build**.
+From this point, repeat the steps in the [testing quickstart guide](./quickstart-testing.md) starting after **Step 1.3: Configure and Clone ifsnemo‑build**.
