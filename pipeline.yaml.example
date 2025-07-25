@@ -1,0 +1,23 @@
+user:
+  ecmwf_username: ecmeXXXX
+  remote_username: bscXXXXXX
+
+paths:
+  local_bin_dir: ~/bin
+  local_build_dir: ~/projects/ifsnemo-build
+
+  remote_bin_dir: ~/bin
+  remote_project_dir: /gpfs/projects/bsc32/bscXXXXXX
+
+overrides:
+  DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"
+
+psubmit:
+  queue_name: ""
+  account: bsc32
+  node_type: gp_debug
+
+ifsnemo_compare:
+  resolution: tco79-eORCA1
+  steps: 1
+  nodes: 1
