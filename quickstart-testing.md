@@ -112,8 +112,8 @@ wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 
 
 # psubmit helper
 git clone https://github.com/a-v-medvedev/psubmit.git tmp-ps
-mv tmp-ps/psubmit . && rm -rf tmp-ps
-chmod +x psubmit
+chmod +x tmp-ps/
+mv tmp-ps/*.sh . && rm -fr tmp-ps
 
 # Ensure bin is in PATH
 echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
