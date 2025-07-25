@@ -95,7 +95,7 @@ tar czvf ../ifsnemo-build.tar.gz .
 scp ../ifsnemo-build.tar.gz bscXXXXXX@glogin4.bsc.es:/gpfs/projects/bsc32/bscXXXXXX/
 ```
 
-> **Beware:** The `tar czvf` command may take a few minutes.
+> **Beware:** The `tar czvf` command may take a few minutes. So will the `scp` command, but it will show you a progress bar.
 
 ---
 
