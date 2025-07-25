@@ -173,8 +173,8 @@ Which should complete without complaint.
 ## 4. Install and Use `ifsnemo-compare`
 
 ```bash
-# Clone into your build tree
-cd ifsnemo-build/ifsnemo
+# Clone into your ifsnemo testbed directory
+cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build/ifsnemo
 git clone https://github.com/NickAbel/ifsnemo-compare.git compare-tmp
 mv compare-tmp/* .
 rm -rf compare-tmp
@@ -192,7 +192,7 @@ python3 compare_norms.py create-refs \
 This submits a gold-standard run and stores outputs under:
 
 ```
-compare_norms_refs/ifsMASTER.SP.CPU.GPP/tco79-eORCA1/nsteps1/nnodes1/
+compare_norms_refs_out/ifsMASTER.SP.CPU.GPP/tco79-eORCA1/nsteps1/nnodes1/
 ```
 
 ### 4.2 Compare Against a "Lite" Binary
