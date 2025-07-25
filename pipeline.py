@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 from fabric import Connection
 
-with open("pipeline.cfg", "r") as f:
+with open("pipeline.yaml", "r") as f:
     cfg = yaml.safe_load(f)
 
 username = cfg["user"]["username"]
