@@ -64,6 +64,8 @@ ln -s dnb-generic.yaml machine.yaml
 
 Create these two files in `ifsnemo-build/`:
 
+> **Notice:** For instructions on testing other branches and forks of IFS, NEMO, IFS-Bundle, and RAPS, populate your `overrides.yaml` according to [this guide](./quickstart.md) instead.  
+
 - `overrides.yaml`
 
   ```yaml
