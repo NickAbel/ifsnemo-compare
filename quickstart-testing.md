@@ -157,11 +157,12 @@ cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build
 
 ---
 
-## 3. Run a Quick Example
+## 3. Run a Quick psubmit Test
 
-From your `ifsnemo-build/ifsnemo` testbed directory:
+From your `ifsnemo-build/ifsnemo` testbed directory, verify that `psubmit` works:
 
 ```bash
+cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build/ifsnemo
 psubmit.sh -n 1 -u ifsMASTER.SP.CPU.GPP
 ```
 
