@@ -146,7 +146,8 @@ module load cmake/3.30.5
 # Build on the compute node
 ./dnb.sh :b
 
-# Exit allocation at this point!! (by pressing Ctrl+D)
+# Exit allocation at this point!! (by pressing Ctrl+D) and ensure you are in the ifsnemo-build dir
+cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build
 
 # Install - on the glogin4 node!!
 ./dnb.sh :i
