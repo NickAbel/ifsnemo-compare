@@ -140,11 +140,15 @@ cd ifsnemo-build
 # Set machine file to MN5-GPP
 ln -sf dnb-mn5-gpp.yaml machine.yaml
 
+# Ensure cmake is loaded
+module load cmake/3.30.5
+
 # Build on the compute node
 ./dnb.sh :b
 
-# Exit allocation!! (Ctrl+D)
-# Install - on a login node!!
+# Exit allocation at this point!! (by pressing Ctrl+D)
+
+# Install - on the glogin4 node!!
 ./dnb.sh :i
 ```
 
