@@ -4,6 +4,42 @@ from pathlib import Path
 from fabric import Connection
 import shutil
 
+verbose = True
+
+def run_command(cmd, cwd=None, verbose=False):
+    if verbose:
+        print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
+    # Use subprocess with output shown live
+    process = subprocess.Popen(
+        cmd,
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    for line in process.stdout:
+        print(line, end='')  # print output live
+    process.wait()
+    if process.returncode != 0:
+        raise subprocess.CalledProcessError(process.returncode, cmd)
+
+def upload_file(conn, local_path, remote_path, verbose=False):
+    local_str = str(local_path)
+    remote_str = str(remote_path)
+    remote_dir = remote_path.parent
+
+    print(f"Ensuring remote directory {remote_dir} exists...")
+
+    # Ensure the remote directory exists
+    conn.run(f"mkdir -p '{remote_dir}'")
+
+    if verbose:
+        print(f"Uploading {local_path} → {remote_path} ...")
+    result = conn.put(local=local_str, remote=remote_str)
+    if verbose:
+        print(f"Upload complete: {result.remote}")
+
 
 ############################################
 # 1.1 Ensure yq installed on local machine
@@ -65,17 +101,14 @@ psubmit:
 # 1.4 Fetch and Package Build Artifacts
 ############################################
 
-# Run './dnb.sh :du' from within local_path
-result = subprocess.run(['./dnb.sh', ':du'], cwd=local_path, capture_output=True, text=True)
+## Run './dnb.sh :du' from within local_path
+#run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
+#
+## Create tarball
+#run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
-# Print the output
-print(result.stdout)
-if result.stderr:
-    print("Error output:", result.stderr)
-
-# Create tarball
-subprocess.run(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path)
-
-## Upload the tarball
+# Upload the tarball
 conn = Connection(f"{remote_username}@{remote_machine}")
-conn.put(f"{local_path}/../ifsnemo-build.tar.gz", remote=remote_path + "/ifsnemo-build.tar.gz")
+local_path = Path(local_path)
+remote_path = Path(remote_path)
+upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
