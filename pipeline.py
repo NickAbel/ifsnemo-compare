@@ -3,8 +3,40 @@ import subprocess
 from pathlib import Path
 from fabric import Connection
 import shutil
+import time
 
 verbose = True
+
+def wait_for_job(conn, job_id, poll_interval=30):
+    while True:
+        result = conn.run(f"squeue -j {job_id}", hide=True, warn=True)
+        if job_id not in result.stdout:
+            break
+        print(f"Waiting for SLURM job {job_id} to complete...")
+        time.sleep(poll_interval)
+
+    print(f"SLURM job {job_id} completed.")
+
+def check_remote_requirements(conn, verbose=False):
+    # Check for yq and psubmit.sh in remote PATH
+    missing = []
+    for cmd in ['yq', 'psubmit.sh']:
+        result = conn.run(f'command -v {cmd}', hide=True, warn=True)
+        if result.exited != 0:
+            missing.append(cmd)
+    if missing:
+        warning = f"""
+#######################################################
+#WARNING: The following required commands are missing:#
+#    {', '.join(missing)}                                          
+#Please ensure they are in your PATH on the remote!   #
+#######################################################
+"""
+        print(warning)
+        # Optionally: raise an exception or exit
+        # raise RuntimeError("Missing remote requirements: " + ', '.join(missing))
+    elif verbose:
+        print("All remote requirements are present.")
 
 def run_command(cmd, cwd=None, verbose=False):
     if verbose:
@@ -96,19 +128,62 @@ psubmit:
   node_type:   {cfg['psubmit']['node_type']}
 """)
 
+# Link to generic machine config
+run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
 
 ############################################
 # 1.4 Fetch and Package Build Artifacts
 ############################################
 
-## Run './dnb.sh :du' from within local_path
-#run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
-#
-## Create tarball
-#run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+# Run './dnb.sh :du' from within local_path
+run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
+
+# Create tarball
+run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+
+############################################
+# 2.1-2.3 Build and Install on remote
+############################################
+
+# Establish connection to remote
+conn = Connection(f"{remote_username}@{remote_machine}")
+check_remote_requirements(conn, verbose=True)
 
 # Upload the tarball
-conn = Connection(f"{remote_username}@{remote_machine}")
 local_path = Path(local_path)
 remote_path = Path(remote_path)
 upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+
+# Build on a compute node
+sbatch_script = f"""#!/bin/bash
+#SBATCH -A ehpc01
+#SBATCH --qos=gp_debug
+#SBATCH --job-name=dnb_sh_build
+#SBATCH --output=dnb_sh_build_%j.out
+#SBATCH --error=dnb_sh_build_%j.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=112
+#SBATCH --cpus-per-task=1
+#SBATCH --time=02:00:00
+#SBATCH --exclusive
+
+module load cmake/3.30.5
+
+cd {remote_path}
+tar xzvf ifsnemo-build.tar.gz --one-top-level
+cd ifsnemo-build
+./dnb.sh :b
+"""
+
+Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+
+# Run ./dnb.sh :b on compute node with sbatch job
+job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
+
+# Wait until completion
+job_id = job_output.stdout.strip().split()[-1]
+wait_for_job(conn, job_id)
+
+# Run ./dnb.sh :i on login node
+conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
