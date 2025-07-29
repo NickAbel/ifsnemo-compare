@@ -75,7 +75,7 @@ def run_and_tee(cmd, env=None):
 
 #Section 3: Task Loops
 
-def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
+def create_runs(subdirs, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
     """
     For each combination of subdir, res, nsteps, nnodes:
       1) submits the job via run_and_tee()
@@ -83,8 +83,10 @@ def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
 
     :param subdirs:      list of test names (e.g. ["drive1", "drive2"])
     :param resolutions:  list of resolution strings (e.g. ["128x128", "256x256"])
-    :param nsteps_list:  list of ints
-    :param nnodes_list:  list of ints
+    :param nthreads:     list of ints
+    :param ppn:          list of ints
+    :param nnodes:       list of ints
+    :param nsteps:       list of ints
     :param runtype:      "ref" or "test"
     """
     if runtype not in ("ref", "test"):
@@ -93,21 +95,25 @@ def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
     root = REF_DIR_ROOT if runtype == "ref" else TEST_DIR_ROOT
     #os.makedirs(root, exist_ok=True)
     
-    for subdir, res, nsteps, nnodes in itertools.product(
+    for subdir, res, nthreads, ppn, nnodes, nsteps in itertools.product(
         subdirs,
         resolutions,
-        nsteps,
-        nnodes
+        nthreads,
+        ppn,
+        nnodes, 
+        nsteps
     ):
 
         run_logdir = os.path.join(
                 root,
                 os.path.basename(subdir.rstrip(os.sep)),
                 str(res),
-                "nsteps"+str(nsteps),
-                "nnodes"+str(nnodes))
+                "nthreads"+str(nthreads),
+                "ppn"+str(ppn),
+                "nnodes"+str(nnodes),
+                "nsteps"+str(nsteps))
 
-        run_logfile = f"{runtype}.res={res}_nst={nsteps}_nt={nnodes}.log"
+        run_logfile = f"{runtype}.res={res}_nt={nthreads}_ppn={ppn}_nn={nnodes}_nst={nsteps}.log"
 
         run_logfilepath = os.path.join(
             run_logdir,
@@ -121,8 +127,8 @@ def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
         ensure_dir(run_logdir)
 
         ## (A) Run the reference job
-        print(f"Running reference {subdir}:  res={res} nsteps={nsteps} nnodes={nnodes}\n")
-        psubmit_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", subdir]
+        print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} nsteps={nsteps}\n")
+        psubmit_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", subdir]
         run_jobid, ref_out = run_and_tee(psubmit_cmd,
                                          env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
         
@@ -135,7 +141,7 @@ def create_runs(subdirs, resolutions, nsteps, nnodes, runtype):
         ## Copy psubmit results to the run_logdir folder
         copy_results(run_jobid, run_logdir)
 
-def compare(ref_subdir, test_subdirs, resolutions, nsteps, nnodes):
+def compare(ref_subdir, test_subdirs, resolutions, nthreads, ppn, nnodes, nsteps):
     """
     Iterating over the parameters:
     - Run the reference branch test
@@ -143,12 +149,14 @@ def compare(ref_subdir, test_subdirs, resolutions, nsteps, nnodes):
     - Compare norms with the reference results in `<REF_DIR_ROOT>/<ref_subdir>/...`
     """
     for test in test_subdirs:
-        for res, nsteps, nnodes in itertools.product(resolutions, nsteps, nnodes):
+        for res, nthreads, ppn, nnodes, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, nsteps):
             base_ref = os.path.join(REF_DIR_ROOT,
                                     ref_subdir,
                                     f"{res}", 
-                                    f"nsteps{nsteps}", 
+                                    f"nthreads{nthreads}",
+                                    f"ppn{ppn}",
                                     f"nnodes{nnodes}",
+                                    f"nsteps{nsteps}", 
                                     "results")
 
             print(f"Expecting reference dir at {base_ref}")
@@ -156,12 +164,13 @@ def compare(ref_subdir, test_subdirs, resolutions, nsteps, nnodes):
                 print(f"[WARN] missing reference dir {base_ref}: skipping")
                 continue
             # Run the test run and capture its jobid
-            print(f"Running test resolution {res} nsteps {nsteps} nnodes {nnodes}")
-            test_cmd = ["psubmit.sh", "-n", str(nnodes), "-u", test]
+            print(f"Running test resolution {res} nthreads {nthreads} ppn {ppn} nnodes {nnodes} nsteps {nsteps}")
+            test_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", test]
             test_jobid, _ = run_and_tee(test_cmd,
                                         env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
 
-            print(f"[COMPLETED] jobid {test_jobid}: test resolution {res} nsteps {nsteps} nnodes {nnodes}")
+            print(f"[COMPLETED] jobid {test_jobid}: test resolution {res} nthreads {nthreads} ppn {ppn} nnodes {nnodes} nsteps {nsteps}")
+
 
             base_test = "results." + str(test_jobid)
             cmp_cmd = ["./cmp.sh", base_ref, base_test]
@@ -191,12 +200,16 @@ def parse_args():
                     help="One or more ref subdirectories")
     p1.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"],
                     help="RESolution names")
-    p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
-                    help="Number of steps")
+    p1.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
+                    help="Number of threads")
+    p1.add_argument("-p", "--ppn", nargs="+", type=int, default=[1],
+                    help="Number of processes per node")
     p1.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
                     help="Number of nodes")
+    p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
+                    help="Number of steps")
     p1.set_defaults(func=lambda args: create_runs(
-        args.ref_subdirs, args.resolutions, args.nsteps, args.nnodes, runtype="ref"
+        args.ref_subdirs, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="ref"
     ))
 
     # run tests
@@ -204,10 +217,17 @@ def parse_args():
     p2.add_argument("-t", "--test-subdirs", nargs="+", required=True,
                     help="One or more test subdirectories")
     p2.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
-    p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1])
-    p2.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
+    p2.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
+                    help="Number of threads")
+    p2.add_argument("-p", "--ppn", nargs="+", type=int, default=[1],
+                    help="Number of processes per node")
+    p2.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
+                    help="Number of nodes")
+    p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
+                    help="Number of steps")
+
     p2.set_defaults(func=lambda args: create_runs(
-        args.test_subdirs, args.resolutions, args.nsteps, args.nnodes, runtype="test"
+        args.test_subdirs, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="test"
     ))
 
     # compare
@@ -217,11 +237,17 @@ def parse_args():
     p3.add_argument("-t", "--test-subdirs", nargs="+", required=True,
                     help="One or more test subdirectories")
     p3.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
-    p3.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1])
-    p3.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
+    p3.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
+                    help="Number of threads")
+    p3.add_argument("-p", "--ppn", nargs="+", type=int, default=[1],
+                    help="Number of processes per node")
+    p3.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
+                    help="Number of nodes")
+    p3.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
+                    help="Number of steps")
     p3.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
-        args.resolutions, args.nsteps, args.nnodes
+        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps
     ))
 
     return p.parse_args()
