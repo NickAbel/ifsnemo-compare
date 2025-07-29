@@ -138,6 +138,9 @@ run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, v
 # Run './dnb.sh :du' from within local_path
 run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
+# Download ifsnemo-compare into the local_path
+subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+
 # Create tarball
 run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
@@ -187,3 +190,6 @@ wait_for_job(conn, job_id)
 
 # Run ./dnb.sh :i on login node
 conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
+#conn.run(f"mv {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+
+
