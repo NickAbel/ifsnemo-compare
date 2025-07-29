@@ -110,39 +110,39 @@ ov = cfg["overrides"]
 
 ifs_source_git_url = ov["IFS_BUNDLE_IFS_SOURCE_GIT"].format(**ov)
 
-## Generate overrides.yaml
-#(local_path / "overrides.yaml").write_text(f"""---
-#environment:
-#  - export DNB_SANDBOX_SUBDIR="{ov['DNB_SANDBOX_SUBDIR']}"
-#  - export DNB_IFSNEMO_URL="{ov['DNB_IFSNEMO_URL']}"
-#  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov['IFS_BUNDLE_IFS_SOURCE_VERSION']}"
-#  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"
-#""")
-#
-## Generate accounts.yaml
-#(local_path / "accounts.yaml").write_text(f"""---
-#psubmit:
-#  queue_name: "{cfg['psubmit']['queue_name']}"
-#  account:     {cfg['psubmit']['account']}
-#  node_type:   {cfg['psubmit']['node_type']}
-#""")
-#
-## Link to generic machine config
-#run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
-#
-#############################################
-## 1.4 Fetch and Package Build Artifacts
-#############################################
-#
-## Run './dnb.sh :du' from within local_path
-#run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
-#
-## Download ifsnemo-compare into the local_path
-#subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-#subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
-#
-## Create tarball
-#run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+# Generate overrides.yaml
+(local_path / "overrides.yaml").write_text(f"""---
+environment:
+  - export DNB_SANDBOX_SUBDIR="{ov['DNB_SANDBOX_SUBDIR']}"
+  - export DNB_IFSNEMO_URL="{ov['DNB_IFSNEMO_URL']}"
+  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov['IFS_BUNDLE_IFS_SOURCE_VERSION']}"
+  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"
+""")
+
+# Generate accounts.yaml
+(local_path / "accounts.yaml").write_text(f"""---
+psubmit:
+  queue_name: "{cfg['psubmit']['queue_name']}"
+  account:     {cfg['psubmit']['account']}
+  node_type:   {cfg['psubmit']['node_type']}
+""")
+
+# Link to generic machine config
+run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
+
+############################################
+# 1.4 Fetch and Package Build Artifacts
+############################################
+
+# Run './dnb.sh :du' from within local_path
+run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
+
+# Download ifsnemo-compare into the local_path
+subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
+subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+
+# Create tarball
+run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
 ############################################
 # 2.1-2.3 Build and Install on remote
@@ -152,45 +152,45 @@ ifs_source_git_url = ov["IFS_BUNDLE_IFS_SOURCE_GIT"].format(**ov)
 conn = Connection(f"{remote_username}@{remote_machine}")
 check_remote_requirements(conn, verbose=True)
 
-## Upload the tarball
-#local_path = Path(local_path)
-#remote_path = Path(remote_path)
-#upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
-#
-## Build on a compute node
-#sbatch_script = f"""#!/bin/bash
-##SBATCH -A ehpc01
-##SBATCH --qos=gp_debug
-##SBATCH --job-name=dnb_sh_build
-##SBATCH --output=dnb_sh_build_%j.out
-##SBATCH --error=dnb_sh_build_%j.err
-##SBATCH --nodes=1
-##SBATCH --ntasks-per-node=112
-##SBATCH --cpus-per-task=1
-##SBATCH --time=02:00:00
-##SBATCH --exclusive
-#
-#module load cmake/3.30.5
-#
-#cd {remote_path}
-#tar xzvf ifsnemo-build.tar.gz --one-top-level
-#cd ifsnemo-build
-#ln -sf {machine_file} machine.yaml
-#./dnb.sh :b
-#"""
-#
-#Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-#conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
-#
-## Run ./dnb.sh :b on compute node with sbatch job
-#job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
-#
-## Wait until completion
-#job_id = job_output.stdout.strip().split()[-1]
-#wait_for_job(conn, job_id)
-#
-## Run ./dnb.sh :i on login node
-#conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
+# Upload the tarball
+local_path = Path(local_path)
+remote_path = Path(remote_path)
+upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+
+# Build on a compute node
+sbatch_script = f"""#!/bin/bash
+#SBATCH -A ehpc01
+#SBATCH --qos=gp_debug
+#SBATCH --job-name=dnb_sh_build
+#SBATCH --output=dnb_sh_build_%j.out
+#SBATCH --error=dnb_sh_build_%j.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=112
+#SBATCH --cpus-per-task=1
+#SBATCH --time=02:00:00
+#SBATCH --exclusive
+
+module load cmake/3.30.5
+
+cd {remote_path}
+tar xzvf ifsnemo-build.tar.gz --one-top-level
+cd ifsnemo-build
+ln -sf {machine_file} machine.yaml
+./dnb.sh :b
+"""
+
+Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+
+# Run ./dnb.sh :b on compute node with sbatch job
+job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
+
+# Wait until completion
+job_id = job_output.stdout.strip().split()[-1]
+wait_for_job(conn, job_id)
+
+# Run ./dnb.sh :i on login node
+conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
 conn.run(f"mv {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
