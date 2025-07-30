@@ -6,9 +6,6 @@ import argparse
 import itertools
 import subprocess
 
-REF_DIR_ROOT  = "compare_norms_refs_out"
-TEST_DIR_ROOT = "compare_norms_tests_out"
-
 #Section 1: File+Dir Utilities
 
 def ensure_dir(path):
@@ -75,14 +72,14 @@ def run_and_tee(cmd, env=None):
 
 #Section 3: Task Loops
 
-def create_runs(subdirs, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
+def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
     """
     For each combination of subdir, res, nsteps, nnodes:
       1) submits the job via run_and_tee()
-      2) moves results.<jobid> into the right spot under REF_DIR_ROOT or TEST_DIR_ROOT
+      2) moves results.<jobid> into the right spot under 'root'
 
-    :param subdirs:      list of test names (e.g. ["drive1", "drive2"])
-    :param resolutions:  list of resolution strings (e.g. ["128x128", "256x256"])
+    :param subdirs:      list of test names 
+    :param resolutions:  list of resolution strings
     :param nthreads:     list of ints
     :param ppn:          list of ints
     :param nnodes:       list of ints
@@ -91,9 +88,6 @@ def create_runs(subdirs, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
     """
     if runtype not in ("ref", "test"):
         raise ValueError("runtype must be 'ref' or 'test'")
-    
-    root = REF_DIR_ROOT if runtype == "ref" else TEST_DIR_ROOT
-    #os.makedirs(root, exist_ok=True)
     
     for subdir, res, nthreads, ppn, nnodes, nsteps in itertools.product(
         subdirs,
@@ -105,7 +99,7 @@ def create_runs(subdirs, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
     ):
 
         run_logdir = os.path.join(
-                root,
+                root[0],
                 os.path.basename(subdir.rstrip(os.sep)),
                 str(res),
                 "nthreads"+str(nthreads),
@@ -141,16 +135,16 @@ def create_runs(subdirs, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
         ## Copy psubmit results to the run_logdir folder
         copy_results(run_jobid, run_logdir)
 
-def compare(ref_subdir, test_subdirs, resolutions, nthreads, ppn, nnodes, nsteps):
+def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps):
     """
     Iterating over the parameters:
     - Run the reference branch test
     - Capture the <test_jobid>; the test results are in results.<test_jobid>
-    - Compare norms with the reference results in `<REF_DIR_ROOT>/<ref_subdir>/...`
+    - Compare norms with the reference results in `<root>/<ref_subdir>/...`
     """
     for test in test_subdirs:
         for res, nthreads, ppn, nnodes, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, nsteps):
-            base_ref = os.path.join(REF_DIR_ROOT,
+            base_ref = os.path.join(ref_root,
                                     ref_subdir,
                                     f"{res}", 
                                     f"nthreads{nthreads}",
@@ -197,7 +191,9 @@ def parse_args():
     # create-refs
     p1 = subs.add_parser("create-refs", help="Submit jobs and store refs")
     p1.add_argument("-g", "--ref-subdirs", nargs="+", required=True,
-                    help="One or more ref subdirectories")
+                    help="One or more reference binary directories")
+    p1.add_argument("-og", "--output-refdir", nargs=1, required=True,
+                    help="The directory in which to store the result output")
     p1.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"],
                     help="RESolution names")
     p1.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
@@ -209,13 +205,15 @@ def parse_args():
     p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
                     help="Number of steps")
     p1.set_defaults(func=lambda args: create_runs(
-        args.ref_subdirs, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="ref"
+        args.ref_subdirs, args.output_refdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="ref"
     ))
 
     # run tests
     p2 = subs.add_parser("run-tests", help="Run the tests")
     p2.add_argument("-t", "--test-subdirs", nargs="+", required=True,
-                    help="One or more test subdirectories")
+                    help="One or more test binary directories")
+    p2.add_argument("-ot", "--output-testdir", nargs=1, required=True,
+                    help="The directory in which to store the test result output")
     p2.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
     p2.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
                     help="Number of threads")
@@ -227,15 +225,19 @@ def parse_args():
                     help="Number of steps")
 
     p2.set_defaults(func=lambda args: create_runs(
-        args.test_subdirs, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="test"
+        args.test_subdirs, args.output_testdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="test"
     ))
 
     # compare
     p3 = subs.add_parser("compare", help="Diff refs vs. tests")
     p3.add_argument("-g", "--ref-subdir", required=True,
-                    help="Which ref subdir to compare against")
+                    help="Which reference binary to compare against")
     p3.add_argument("-t", "--test-subdirs", nargs="+", required=True,
-                    help="One or more test subdirectories")
+                    help="One or more test binary directories")
+    p3.add_argument("-og", "--output-refdir", nargs=1, required=True,
+                    help="The directory in which the references are stored")
+    p3.add_argument("-ot", "--output-testdir", nargs=1, required=True,
+                    help="The directory in which the test result outputs are stored")
     p3.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
     p3.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1],
                     help="Number of threads")
@@ -247,6 +249,7 @@ def parse_args():
                     help="Number of steps")
     p3.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
+        args.output_refdir, args.output_testdir,
         args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps
     ))
 
