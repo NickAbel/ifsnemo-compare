@@ -106,9 +106,16 @@ machine_file = cfg["user"]["machine_file"]
 remote_path = cfg["paths"]["remote_project_dir"]
 local_path = Path(cfg["paths"]["local_build_dir"])
 
+resolution = cfg["ifsnemo_compare"]["resolution"]
+steps = cfg["ifsnemo_compare"]["steps"]
+threads = cfg["ifsnemo_compare"]["threads"]
+ppn = cfg["ifsnemo_compare"]["ppn"]
+nodes = cfg["ifsnemo_compare"]["nodes"]
+
 ov = cfg["overrides"]
 
 ifs_source_git_url = ov["IFS_BUNDLE_IFS_SOURCE_GIT"].format(**ov)
+dnb_sandbox_subdir = ov['DNB_IFSNEMO_URL']
 
 # Generate overrides.yaml
 (local_path / "overrides.yaml").write_text(f"""---
