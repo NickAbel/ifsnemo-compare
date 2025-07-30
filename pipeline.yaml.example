@@ -1,6 +1,7 @@
 user:
-  ecmwf_username: ecmeXXXX
   remote_username: bscXXXXXX
+  remote_machine_url: 
+  machine_file: 
 
 paths:
   local_bin_dir: ~/bin
