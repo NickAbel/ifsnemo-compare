@@ -74,7 +74,7 @@ Create these two files in `ifsnemo-build/`:
     - export DNB_SANDBOX_SUBDIR="ifsMASTER.SP.CPU.GPP"
   ```
 
-- `accounts.yaml`
+- `account.yaml`
 
   ```yaml
   ---
