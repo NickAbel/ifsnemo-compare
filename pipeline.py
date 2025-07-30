@@ -119,8 +119,8 @@ environment:
   - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"
 """)
 
-# Generate accounts.yaml
-(local_path / "accounts.yaml").write_text(f"""---
+# Generate account.yaml
+(local_path / "account.yaml").write_text(f"""---
 psubmit:
   queue_name: "{cfg['psubmit']['queue_name']}"
   account:     {cfg['psubmit']['account']}
