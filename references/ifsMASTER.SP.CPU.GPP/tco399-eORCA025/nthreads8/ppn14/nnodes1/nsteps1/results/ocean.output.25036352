@@ -1,0 +1,1817 @@
+ 
+    CNRS - NERC - Met OFFICE - MERCATOR-ocean - CMCC
+                        NEMO team
+             Ocean General Circulation Model
+                 NEMO version 4.0  (2019) 
+ 
+            ._      ._      ._      ._      ._    
+        _.-._)`\_.-._)`\_.-._)`\_.-._)`\_.-._)`\_ 
+ 
+            o         _,           _,             
+             o      .' (        .-' /             
+            o     _/..._'.    .'   /              
+       (    o .-'`      ` '-./  _.'               
+        )    ( o)           ;= <_         (       
+       (      '-.,\\__ __.-;`\   '.        )      
+        )  )       \) |`\ \)  '.   \      (   (   
+       (  (           \_/       '-._\      )   )  
+        )  ) jgs                     `    (   (   
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+ 
+ Working precision = double-precision
+ 
+
+AAAAAAAA
+
+            
+ domain_cfg : domain size read in domain_cfg file
+ ~~~~~~~~~~ 
+                     iom_nf90_open ~~~ open existing file: domain_cfg.nc in READ
+  mode
+                    ---> domain_cfg.nc OK
+                     iom_close ~~~ close file: domain_cfg.nc ok
+       cn_cfg = orca   nn_cfg =           25
+       jpiglo =         1442
+       jpjglo =         1207
+       jpkglo =           75
+       type of global domain lateral boundary   jperio =            4
+    Namelist nammpp
+       jpni and jpnj will be calculated automatically
+       avoid use of mpi_allgather at the north fold  ln_nnogather =  T
+                     iom_nf90_open ~~~ open existing file: domain_cfg.nc in READ
+  mode
+                    ---> domain_cfg.nc OK
+ mpp_init:
+ ~~~~~~~~ 
+ 
+    ==> you use the best mpi decomposition
+ 
+   Number of mpi processes:    14
+   Number of ocean subdomains =    14
+   Number of suppressed land subdomains =     0
+ 
+                     iom_close ~~~ close file: domain_cfg.nc ok
+ 
+ MPI Message Passing MPI - domain lay out over processors
+ 
+    defines mpp subdomains
+       jpni =            7
+       jpnj =            2
+ 
+       sum ilci(i,1) =         1454  jpiglo =         1442
+       sum ilcj(1,j) =         1209  jpjglo =         1207
+ 
+           ****************************************************************
+           *              *               *               *               *   
+         2 *  208  x604   *   208  x604   *   208  x604   *   208  x604   *   
+           *          7   *           8   *           9   *          10   *        
+           *              *               *               *               *   
+           ****************************************************************
+           *              *               *               *               *   
+         1 *  208  x605   *   208  x605   *   208  x605   *   208  x605   *   
+           *          0   *           1   *           2   *           3   *        
+           *              *               *               *               *   
+           ****************************************************************
+                   1               2               3               4             
+ 
+           ************************************************
+           *              *               *               *   
+         2 *  208  x604   *   207  x604   *   207  x604   *   
+           *         11   *          12   *          13   *        
+           *              *               *               *   
+           ************************************************
+           *              *               *               *   
+         1 *  208  x605   *   207  x605   *   207  x605   *   
+           *          4   *           5   *           6   *        
+           *              *               *               *   
+           ************************************************
+                   5               6               7             
+ 
+    resulting internal parameters : 
+       nproc  =            0
+       nowe   =            6    noea  =             1
+       nono   =            7    noso  =            -1
+       nbondi =            0
+       nbondj =           -1
+       npolj  =            0
+     l_Iperio =  F
+     l_Jperio =  F
+       nlci   =          208
+       nlcj   =          605
+       nimpp  =            1
+       njmpp  =            1
+       nreci  =            2
+       nrecj  =            2
+       nn_hls =            1
+ 
+    ==>>>   North fold boundary prepared for jpni >1
+ 
+ mpp_init_ioipsl :   iloc  =          208         605
+ ~~~~~~~~~~~~~~~     iabsf =            1           1
+                     ihals =            1           0
+                     ihale =            1           1
+ thread            0  of            8  nompstas(itid,jpj) =            1 
+  nompends(itid,jpj)           76  nlats =           76
+ thread            3  of            8  nompstas(itid,jpj) =          229 
+  nompends(itid,jpj)          303  nlats =           75
+ thread            5  of            8  nompstas(itid,jpj) =          380 
+  nompends(itid,jpj)          454  nlats =           75
+ thread            1  of            8  nompstas(itid,jpj) =           77 
+  nompends(itid,jpj)          152  nlats =           76
+ thread            6  of            8  nompstas(itid,jpj) =          455 
+  nompends(itid,jpj)          530  nlats =           76
+ thread            2  of            8  nompstas(itid,jpj) =          153 
+  nompends(itid,jpj)          228  nlats =           76
+ thread            7  of            8  nompstas(itid,jpj) =          531 
+  nompends(itid,jpj)          605  nlats =           75
+ thread            4  of            8  nompstas(itid,jpj) =          304 
+  nompends(itid,jpj)          379  nlats =           76
+ 
+ nemo_ctl: Control prints
+ ~~~~~~~~
+    Namelist namctl
+       run control (for debugging)     ln_ctl     =  F
+        finer control over o/p sn_cfctl%l_config  =  T
+                               sn_cfctl%l_runstat =  F
+                               sn_cfctl%l_trcstat =  F
+                               sn_cfctl%l_oceout  =  F
+                               sn_cfctl%l_layout  =  F
+                               sn_cfctl%l_mppout  =  F
+                               sn_cfctl%l_mpptop  =  F
+                               sn_cfctl%procmin   =            0
+                               sn_cfctl%procmax   =      1000000
+                               sn_cfctl%procincr  =            1
+                               sn_cfctl%ptimincr  =            1
+       level of print                  nn_print   =            0
+       Start i indice for SUM control  nn_ictls   =            0
+       End i indice for SUM control    nn_ictle   =            0
+       Start j indice for SUM control  nn_jctls   =            0
+       End j indice for SUM control    nn_jctle   =            0
+       number of proc. following i     nn_isplt   =            1
+       number of proc. following j     nn_jsplt   =            1
+       timing by routine               ln_timing  =  T
+       CFL diagnostics                 ln_diacfl  =  F
+       Create nemo.stat file           ln_nemostat=  F
+ 
+    Namelist namcfg
+       read domain configuration file                ln_read_cfg      =  T
+          filename to be read                           cn_domcfg     = 
+ domain_cfg
+          keep closed seas in the domain (if exist)     ln_closea     =  F
+       create a configuration definition file        ln_write_cfg     =  F
+          filename to be written                        cn_domcfg_out = 
+ domain_cfg_out
+       use file attribute if exists as i/p j-start   ln_use_jattr     =  F
+      file   : timing.output open ok
+      unit   =           21
+      status = REPLACE
+      form   = FORMATTED
+      access = SEQUENTIAL
+ 
+ 
+ phy_cst : initialization of ocean parameters and constants
+ ~~~~~~~
+       mathematical constant                 rpi =    3.14159265358979     
+       day                                rday   =    86400.0000000000       s
+       sideral year                       rsiyea =    31558149.0101107       s
+       sideral day                        rsiday =    86164.0996559118       s
+       omega                              omega  =   7.292115083046062E-005  s^-
+ 1
+ 
+       nb of months per year               raamo =    12.0000000000000      
+  months
+       nb of hours per day                 rjjhh =    24.0000000000000      
+  hours
+       nb of minutes per hour              rhhmm =    60.0000000000000       mn
+       nb of seconds per minute            rmmss =    60.0000000000000       s
+ 
+       earth radius                         ra   =    6371229.00000000       m
+       gravity                              grav =    9.80665000000000      
+  m/s^2
+ 
+       freezing point of water              rt0  =    273.150000000000       K
+ 
+    reference density and heat capacity now defined in eosbn2.f90
+ 
+       thermal conductivity of pure ice          =    2.03439600000000      
+  J/s/m/K
+       thermal conductivity of snow is defined in a namelist 
+       fresh ice specific heat                   =    2067.00000000000      
+  J/kg/K
+       latent heat of fusion of fresh ice / snow =    334000.000000000       J/k
+ g
+       latent heat of subl.  of fresh ice / snow =    2834000.00000000       J/k
+ g
+       density of sea ice                        =    917.000000000000      
+  kg/m^3
+       density of snow                           =    330.000000000000      
+  kg/m^3
+       density of freshwater (in melt ponds)     =    1000.00000000000      
+  kg/m^3
+       salinity of ice (for pisces)              =    6.00000000000000       psu
+       salinity of sea (for pisces and isf)      =    34.7000000000000       psu
+       latent heat of evaporation (water)        =    2500000.00000000      
+  J/m^3
+       von Karman constant                       =   0.400000000000000     
+       Stefan-Boltzmann constant                 =   5.670000000000000E-008 
+  J/s/m^2/K^4
+ 
+       conversion: degre ==> radian          rad =   1.745329251994330E-002
+ 
+       smallest real computer value       rsmall =   5.960464477539062E-008
+ 
+ eos_init : equation of state
+ ~~~~~~~~
+    Namelist nameos : Chosen the Equation Of Seawater (EOS)
+       TEOS-10 : rho=F(Conservative Temperature, Absolute  Salinity, depth)   ln
+ _TEOS10 =  T
+       EOS-80  : rho=F(Potential    Temperature, Practical Salinity, depth)   ln
+ _EOS80  =  F
+       S-EOS   : rho=F(Conservative Temperature, Absolute  Salinity, depth)   ln
+ _SEOS   =  F
+ 
+    ==>>>   use of TEOS-10 equation of state (cons. temp. and abs. salinity)
+ 
+    ==>>>   model uses Conservative Temperature
+            Important: model must be initialized with CT and SA fields
+ 
+    Associated physical constant
+       volumic mass of reference           rau0  =    1026.00000000000      
+  kg/m^3
+       1. / rau0                        r1_rau0  =   9.746588693957114E-004 
+  m^3/kg
+       ocean specific heat                 rcp   =    3991.86795711963      
+  J/Kelvin
+       rau0 * rcp                       rau0_rcp =    4095656.52400474     
+       1. / ( rau0 * rcp )           r1_rau0_rcp =   2.441610994816036E-007
+ 
+ wad_init : Wetting and drying initialization through namelist read
+ ~~~~~~~~
+    Namelist namwad
+       Logical for Iter Lim wd option   ln_wd_il     =  F
+       Logical for Dir. Lim wd option   ln_wd_dl     =  F
+       Depth at which wet/drying starts rn_wdmin0    =   0.300000000000000     
+       Minimum wet depth on dried cells rn_wdmin1    =   0.200000000000000     
+       Tolerance of min wet depth       rn_wdmin2    =   1.000000000000000E-004
+       land elevation threshold         rn_wdld      =    2.50000000000000     
+       Max iteration for W/D limiter    nn_wdit      =           20
+       T => baroclinic u,v=0 at dry pts: ln_wd_dl_bc =  F
+       use a ramp for rwd limiter:  ln_wd_dl_rwd_rmp =  F
+       cut off depth sbc for wd   rn_wd_sbcdep       =    5.00000000000000     
+       fraction to start sbc wgt rn_wd_sbcfra        =   0.999000000000000     
+ 
+ dom_init : domain initialization
+ ~~~~~~~~
+    Domain info
+       dimension of model:
+              Local domain      Global domain       Data domain 
+               jpi     :     208   jpiglo  :    1442
+               jpj     :     605   jpjglo  :    1207
+               jpk     :      75   jpkglo  :      75
+               jpij    :  125840
+       mpp local domain info (mpp):
+               jpni    :            7    nn_hls  :            1
+               jpnj    :            2    nn_hls  :            1
+               jpnij   :           14
+       lateral boundary of the Global domain : jperio  =            4
+          (i.e. cyclic east-west and north fold with T-point pivot)
+       Ocean model configuration used:
+          cn_cfg = orca   nn_cfg =           25
+ 
+ dom_glo : domain: global <<==>> local 
+ ~~~~~~~ 
+    global domain:   jpiglo =         1442  jpjglo =         1207  jpkglo = 
+          75
+    local  domain:   jpi    =          208  jpj    =          605  jpk    = 
+          75
+ 
+    conversion from local to global domain indices (and vise versa) done
+ 
+ dom_nam : domain initialization through namelist read
+ ~~~~~~~ 
+    Namelist : namrun   ---   run parameters
+       Assimilation cycle              nn_no           =            0
+       experiment name for output      cn_exp          = hz9n
+       file prefix restart input       cn_ocerst_in    = restart
+       restart input directory         cn_ocerst_indir = .
+       file prefix restart output      cn_ocerst_out   = restart
+       restart output directory        cn_ocerst_outdir= 
+ /lus/h2tcws01/project/destine/ClimateDT_399runs/hist_spinup_399_v18/restartdir/
+       restart logical                 ln_rstart       =  T
+       slim restart output option      nn_slimrst      =            0
+       slim restart input option       nn_slimrstin    =            0
+       read rcf file for restart ctl  ln_rcf_read      =  F
+       write rcf file for restart ctl ln_rcf_write     =  T
+       start with forward time step    nn_euler        =            1
+       control of time step            nn_rstctl       =            0
+       number of the first time step   nn_it000        =            1
+       number of the last time step    nn_itend        =            4
+       initial calendar date aammjj    nn_date0        =     19900101
+       initial time of day in hhmm     nn_time0        =            0
+       leap year calendar (0/1)        nn_leapy        =            1
+       initial state output            nn_istate       =            0
+       frequency of restart file       nn_stock        =           -1
+       mask land points                ln_mskland      =  T
+       additional CF standard metadata ln_cfmeta       =  T
+       overwrite an existing file      ln_clobber      =  T
+       NetCDF chunksize (bytes)        nn_chunksz      =            0
+       IS coupling at the restart step ln_iscpl        =  F
+       READ restart for a single file using XIOS ln_xios_read = F
+       Write restart using XIOS        nn_wxios   =            0
+ 
+  ===>>> : W A R N I N G
+ 
+          ===============
+ 
+ nn_stock = -1 --> no restart will be done
+ 
+ 
+    ==>>>   The IOIPSL calendar is "gregorian", i.e. leap year
+ 
+    Namelist : namdom   ---   space & time domain
+       linear free surface (=T)                ln_linssh   =  F
+       create mesh/mask file                   ln_meshmask =  F
+       treshold to open the isf cavity         rn_isfhmin  = 
+   1.00000000000000       [m]
+       ocean time step                         rn_rdt      = 
+   900.000000000000     
+       asselin time filter parameter           rn_atfp     = 
+  0.100000000000000     
+       online coarsening of dynamical fields   ln_crs      =  F
+ 
+    Namelist namnc4 - Netcdf4 chunking parameters
+       number of chunks in i-dimension             nn_nchunks_i =            4
+       number of chunks in j-dimension             nn_nchunks_j =            4
+       number of chunks in k-dimension             nn_nchunks_k =           31
+       apply netcdf4/hdf5 chunking & compression   ln_nc4zip    =  T
+ 
+ dom_hgr : define the horizontal mesh from ithe following par_oce parameters 
+ ~~~~~~~   
+    namcfg : read (=T) or user defined (=F) configuration    ln_read_cfg  =  T
+ 
+    ==>>>   read horizontal mesh in domain_cfg file
+ 
+    hgr_read : read the horizontal coordinates in mesh_mask
+    ~~~~~~~~      jpiglo =         1442  jpjglo =         1207  jpk = 
+          75
+                     iom_nf90_open ~~~ open existing file: domain_cfg.nc in READ
+  mode
+                    ---> domain_cfg.nc OK
+           read glamt (rec:      1) in domain_cfg.nc ok
+           read glamu (rec:      1) in domain_cfg.nc ok
+           read glamv (rec:      1) in domain_cfg.nc ok
+           read glamf (rec:      1) in domain_cfg.nc ok
+           read gphit (rec:      1) in domain_cfg.nc ok
+           read gphiu (rec:      1) in domain_cfg.nc ok
+           read gphiv (rec:      1) in domain_cfg.nc ok
+           read gphif (rec:      1) in domain_cfg.nc ok
+           read e1t (rec:      1) in domain_cfg.nc ok
+           read e1u (rec:      1) in domain_cfg.nc ok
+           read e1v (rec:      1) in domain_cfg.nc ok
+           read e1f (rec:      1) in domain_cfg.nc ok
+           read e2t (rec:      1) in domain_cfg.nc ok
+           read e2u (rec:      1) in domain_cfg.nc ok
+           read e2v (rec:      1) in domain_cfg.nc ok
+           read e2f (rec:      1) in domain_cfg.nc ok
+            Coriolis factor at f- and t-points read in domain_cfg file
+           read ff_f (rec:      1) in domain_cfg.nc ok
+           read ff_t (rec:      1) in domain_cfg.nc ok
+                     iom_close ~~~ close file: domain_cfg.nc ok
+           Coriolis parameter have been read in domain_cfg file
+           u- & v-surfaces calculated as e1 e2 product
+ 
+ dom_zgr : vertical coordinate
+ ~~~~~~~
+ 
+    ==>>>   Read vertical mesh in domain_cfg file
+ 
+    zgr_read : read the vertical coordinates in domain_cfg file
+    ~~~~~~~~
+                     iom_nf90_open ~~~ open existing file: domain_cfg.nc in READ
+  mode
+                    ---> domain_cfg.nc OK
+           read e3t_1d (rec:      1) in domain_cfg.nc ok
+           read e3w_1d (rec:      1) in domain_cfg.nc ok
+           read e3t_0 (rec:      1) in domain_cfg.nc ok
+           read e3u_0 (rec:      1) in domain_cfg.nc ok
+           read e3v_0 (rec:      1) in domain_cfg.nc ok
+           read e3f_0 (rec:      1) in domain_cfg.nc ok
+           read e3w_0 (rec:      1) in domain_cfg.nc ok
+           read e3uw_0 (rec:      1) in domain_cfg.nc ok
+           read e3vw_0 (rec:      1) in domain_cfg.nc ok
+ 
+               Reference 1D z-coordinate depth and scale factors:
+          level  gdept_1d  gdepw_1d  e3t_1d   e3w_1d  
+             1     0.51     0.00     1.02     1.01
+             2     1.56     1.02     1.08     1.05
+             3     2.67     2.10     1.15     1.11
+             4     3.86     3.25     1.23     1.19
+             5     5.14     4.49     1.34     1.28
+             6     6.54     5.83     1.47     1.40
+             7     8.09     7.30     1.64     1.55
+             8     9.82     8.93     1.84     1.73
+             9    11.77    10.77     2.08     1.95
+            10    13.99    12.85     2.37     2.22
+            11    16.53    15.22     2.71     2.53
+            12    19.43    17.93     3.11     2.90
+            13    22.76    21.04     3.56     3.33
+            14    26.56    24.60     4.05     3.80
+            15    30.87    28.65     4.59     4.32
+            16    35.74    33.24     5.15     4.87
+            17    41.18    38.39     5.73     5.44
+            18    47.21    44.12     6.33     6.03
+            19    53.85    50.45     6.95     6.64
+            20    61.11    57.40     7.58     7.26
+            21    69.02    64.98     8.24     7.91
+            22    77.61    73.23     8.95     8.59
+            23    86.93    82.18     9.71     9.32
+            24    97.04    91.88    10.54    10.11
+            25   108.03   102.42    11.47    10.99
+            26   120.00   113.89    12.51    11.97
+            27   133.08   126.39    13.68    13.08
+            28   147.41   140.07    15.02    14.33
+            29   163.16   155.10    16.55    15.76
+            30   180.55   171.64    18.28    17.39
+            31   199.79   189.92    20.26    19.24
+            32   221.14   210.18    22.51    21.35
+            33   244.89   232.70    25.07    23.75
+            34   271.36   257.76    27.95    26.47
+            35   300.89   285.72    31.20    29.53
+            36   333.86   316.92    34.85    32.98
+            37   370.69   351.77    38.91    36.83
+            38   411.79   390.68    43.41    41.11
+            39   457.63   434.09    48.37    45.83
+            40   508.64   482.46    53.78    51.01
+            41   565.29   536.23    59.64    56.65
+            42   628.03   595.87    65.93    62.73
+            43   697.26   661.81    72.63    69.23
+            44   773.37   734.43    79.67    76.11
+            45   856.68   814.11    87.01    83.31
+            46   947.45   901.12    94.57    90.77
+            47  1045.85   995.69   102.27    98.41
+            48  1151.99  1097.95   110.01   106.14
+            49  1265.86  1207.96   117.71   113.87
+            50  1387.38  1325.67   125.28   121.52
+            51  1516.36  1450.95   132.63   128.99
+            52  1652.57  1583.58   139.70   136.20
+            53  1795.67  1723.28   146.41   143.10
+            54  1945.30  1869.69   152.73   149.62
+            55  2101.03  2022.42   158.62   155.73
+            56  2262.42  2181.04   164.06   161.40
+            57  2429.03  2345.10   169.04   166.60
+            58  2600.38  2514.14   173.56   171.36
+            59  2776.04  2687.70   177.65   175.66
+            60  2955.57  2865.35   181.31   179.53
+            61  3138.56  3046.66   184.58   182.99
+            62  3324.64  3231.24   187.48   186.08
+            63  3513.45  3418.72   190.05   188.80
+            64  3704.66  3608.77   192.30   191.21
+            65  3897.98  3801.07   194.28   193.33
+            66  4093.16  3995.35   196.01   195.18
+            67  4289.95  4191.37   197.52   196.79
+            68  4488.15  4388.89   198.84   198.20
+            69  4687.58  4587.73   199.98   199.43
+            70  4888.07  4787.70   200.97   200.49
+            71  5089.48  4988.67   201.82   201.41
+            72  5291.68  5190.49   202.56   202.20
+            73  5494.58  5393.05   203.20   202.89
+            74  5698.06  5596.25   203.75   203.49
+            75  5902.06  5800.00   203.75   204.00
+           read top_level (rec:      1) in domain_cfg.nc ok
+           read bottom_level (rec:      1) in domain_cfg.nc ok
+                     iom_close ~~~ close file: domain_cfg.nc ok
+ 
+ clo_bat : suppression of closed seas
+ ~~~~~~~
+                     iom_nf90_open ~~~ open existing file: domain_cfg.nc in READ
+  mode
+                    ---> domain_cfg.nc OK
+ Suppressing closed seas in bathymetry based on closea_mask field,
+           read closea_mask (rec:      1) in domain_cfg.nc ok
+                     iom_close ~~~ close file: domain_cfg.nc ok
+ 
+    Type of vertical coordinate (read in domain_cfg
+  file or set in userdef_nam) :
+       z-coordinate - full steps      ln_zco    =  F
+       z-coordinate - partial steps   ln_zps    =  T
+       s- or hybrid z-s-coordinate    ln_sco    =  F
+       ice shelf cavities             ln_isfcav =  F
+ 
+     zgr_top_bot : ocean top and bottom k-index of T-, U-, V- and W-levels 
+     ~~~~~~~~~~~
+ 
+ dommsk : ocean mask 
+ ~~~~~~
+    Namelist namlbc
+       lateral momentum boundary cond.    rn_shlat  =   0.000000000000000E+000
+       consistency with analytical form   ln_vorlat =  F
+ 
+    ==>>>   ocean lateral  free-slip
+ 
+ usr_def_fmask : ORCA_R          25 
+  : NO alteration of fmask in specific straits 
+ ~~~~~~~~~~~~~
+ 
+ dom_vvl_init : Variable volume activated
+ ~~~~~~~~~~~~
+ 
+ dom_vvl_ctl : choice/control of the variable vertical coordinate
+ ~~~~~~~~~~~
+    Namelist nam_vvl : chose a vertical coordinate
+       zstar                      ln_vvl_zstar   =  T
+       ztilde                     ln_vvl_ztilde  =  F
+       layer                      ln_vvl_layer   =  F
+       ztilde as zstar   ln_vvl_ztilde_as_zstar  =  F
+       ztilde near the equator    ln_vvl_zstar_at_eqtor  =  F
+       !
+       thickness diffusion coefficient                      rn_ahe3      = 
+  0.000000000000000E+000
+       maximum e3t deformation fractional change            rn_zdef_max  = 
+  0.900000000000000     
+       z-tilde to zstar restoration timescale (days)        rn_rst_e3t   = 
+   30.0000000000000     
+       z-tilde cutoff frequency of low-pass filter (days)   rn_lf_cutoff = 
+   5.00000000000000     
+          debug prints flag                                 ln_vvl_dbg   =  F
+ 
+       ==>>>   zstar vertical coordinate is used
+ 
+ rst_read : read oce NetCDF restart file
+ rst_read : configured with NetCDF4 support
+ ~~~~~~~~
+                     iom_nf90_open ~~~ open existing file: ./restart.nc in READ 
+ mode
+                    ---> ./restart.nc OK
+           read sshn (rec:      1) in ./restart.nc ok
+           read e3t_b (rec:      1) in ./restart.nc ok
+           read e3t_n (rec:      1) in ./restart.nc ok
+ dom_vvl_rst : e3t_b and e3t_n found in restart files
+ 
+ dom_init :   ==>>>   END of domain initialization
+ ~~~~~~~~
+ 
+ 
+ istate_init : Initialization of the dynamics and tracers
+ ~~~~~~~~~~~
+ 
+ dta_tsd_init : Temperature & Salinity data 
+ ~~~~~~~~~~~~ 
+    Namelist namtsd
+       Initialisation of ocean T & S with T &S input data   ln_tsd_init =  F
+       damping of ocean T & S toward T &S input data        ln_tsd_dmp  =  F
+ 
+ 
+    ===>>   T & S data not used
+ 
+  ===>>> : W A R N I N G
+ 
+          ===============
+ 
+ iom_nf90_chkatt: no attribute DELAY_fwb                              found
+ 
+           read ub (rec:      1) in ./restart.nc ok
+           read vb (rec:      1) in ./restart.nc ok
+           read tb (rec:      1) in ./restart.nc ok
+           read sb (rec:      1) in ./restart.nc ok
+           read sshb (rec:      1) in ./restart.nc ok
+           read un (rec:      1) in ./restart.nc ok
+           read vn (rec:      1) in ./restart.nc ok
+           read tn (rec:      1) in ./restart.nc ok
+           read sn (rec:      1) in ./restart.nc ok
+           read sshn (rec:      1) in ./restart.nc ok
+           read rhop (rec:      1) in ./restart.nc ok
+  *** Info read in restart : 
+    previous time-step                               :       175296
+  *** restart option
+  nrstdt = 0 : no control of nit000
+ 
+  *** Info used values : 
+    date ndastp                                      :     19900100
+    number of elapsed days since the begining of run :   0.000000000000000E+000
+    nn_time0                                         :            0
+ 
+ =======>> 1/2 time step before the start of the run DATE Y/M/D =   1989/12/31  nsec_day:   85950  nsec_week:  604350                     nsec_month: 2677950  nsec_year:31535550
+======>> time-step =       1      New day, DATE Y/M/D = 1990/01/01      nday_year = 001
+         nsec_year =      450   nsec_month =     450   nsec_day =   450
+   nsec_week =   605250
+ 
+ zdf_phy_init: ocean vertical physics
+ ~~~~~~~~~~~~
+    Namelist namzdf : set vertical mixing mixing parameters
+       adaptive-implicit vertical advection
+          Courant number targeted application   ln_zad_Aimp =  F
+       vertical closure scheme
+          constant vertical mixing coefficient    ln_zdfcst =  F
+          Richardson number dependent closure     ln_zdfric =  F
+          Turbulent Kinetic Energy closure (TKE)  ln_zdftke =  T
+          Generic Length Scale closure (GLS)      ln_zdfgls =  F
+          OSMOSIS-OBL closure (OSM)               ln_zdfosm =  F
+       convection: 
+          enhanced vertical diffusion             ln_zdfevd =  T
+             applied on momentum (=1/0)             nn_evdm =            1
+             vertical coefficient for evd           rn_evd  = 
+   10.0000000000000     
+          non-penetrative convection (npc)        ln_zdfnpc =  F
+             npc call  frequency                    nn_npc  =            1
+             npc print frequency                    nn_npcp =          365
+       double diffusive mixing                    ln_zdfddm =  T
+          maximum avs for dd mixing                 rn_avts = 
+  1.000000000000000E-004
+          heat/salt buoyancy flux ratio             rn_hsbfr= 
+   1.60000000000000     
+       gravity wave-induced mixing
+          surface  wave (Qiao et al 2010)         ln_zdfswm =  F
+          internal wave (de Lavergne et al 2017)  ln_zdfiwm =  F
+       coefficients : 
+          vertical eddy viscosity                 rn_avm0   = 
+  1.200000000000000E-004
+          vertical eddy diffusivity               rn_avt0   = 
+  1.200000000000000E-005
+          constant background or profile          nn_avb    =            0
+          horizontal variation for avtb           nn_havtb  =            1
+ 
+    ==>>>   convection: use enhanced vertical diffusion scheme
+ 
+    ==>>>   use double diffusive mixing: avs /= avt
+ 
+ zdf_tke_init : tke turbulent closure scheme - initialisation
+ ~~~~~~~~~~~~
+    Namelist namzdf_tke : set tke mixing parameters
+       coef. to compute avt                        rn_ediff  = 
+  0.100000000000000     
+       Kolmogoroff dissipation coef.               rn_ediss  = 
+  0.700000000000000     
+       tke surface input coef.                     rn_ebb    = 
+   67.8300000000000     
+       minimum value of tke                        rn_emin   = 
+  1.000000000000000E-006
+       surface minimum value of tke                rn_emin0  = 
+  1.000000000000000E-004
+       prandl number flag                          nn_pdl    =            1
+       background shear (>0)                       rn_bshear = 
+  9.999999999999999E-021
+       mixing length type                          nn_mxl    =            3
+          surface mixing length = F(stress) or not    ln_mxl0   =  T
+          surface  mixing length minimum value        rn_mxl0   = 
+  4.000000000000000E-002
+       type of scaling under sea-ice               nn_mxlice =            2
+    ==>>>   scaling with mean sea-ice thickness
+       Langmuir cells parametrization              ln_lc     =  T
+          coef to compute vertical velocity of LC     rn_lc  = 
+  0.150000000000000     
+       test param. to add tke induced by wind      nn_etau   =            1
+           type of tke penetration profile            nn_htau   =            4
+           fraction of TKE that penetrates            rn_efr    = 
+  5.000000000000000E-002
+       langmuir & surface wave breaking under ice  nn_eice =            0
+    ==>>>   no impact of ice cover on langmuir & surface wave breaking
+ 
+    Ocean wave effects in the TKE are activated :
+       average out the surface value over first layer   ln_ebbavg =  T
+       Fraction of swh to scale the TKE flux penetration rn_swhfr = 
+  0.250000000000000     
+ 
+ 
+    Namelist namdrg_top/_bot:   used values:
+       top    ocean cavity roughness (m)          rn_z0(_top)= 
+  0.000000000000000E+000
+       Bottom seafloor     roughness (m)          rn_z0(_bot)= 
+  0.000000000000000E+000
+ 
+    ==>>>   critical Richardson nb with your parameters  ri_cri = 
+  0.222222222222222     
+ 
+    ==>>>   minimum mixing length with your parameters rmxl_min = 
+  9.999999999999998E-003
+ 
+    ==>>>   use a surface mixing length = F(stress) :   set rn_mxl0 = rmxl_min
+           read en (rec:      1) in ./restart.nc ok
+           read avt_k (rec:      1) in ./restart.nc ok
+           read avm_k (rec:      1) in ./restart.nc ok
+           read dissl (rec:      1) in ./restart.nc ok
+ 
+ zdf_tmx_init : tidal mixing
+ ~~~~~~~~~~~~
+    Namelist namzdf_tmx : set tidal mixing parameters
+       Vertical decay scale for turbulence   =    500.000000000000     
+       Brunt-Vaisala frequency threshold     =   1.000000000000000E-008
+       Tidal dissipation efficiency          =   0.333000000000000     
+       Mixing efficiency                     =   0.200000000000000     
+       ITF specific parameterisation         =  T
+       ITF tidal dissipation efficiency      =    1.00000000000000     
+                     iom_nf90_open ~~~ open existing file: mask_itf.nc in READ m
+ ode
+                    ---> mask_itf.nc OK
+           read tmaskitf (rec:      1) in mask_itf.nc ok
+                     iom_close ~~~ close file: mask_itf.nc ok
+                     iom_nf90_open ~~~ open existing file: M2rowdrg.nc in READ m
+ ode
+                    ---> M2rowdrg.nc OK
+           read field (rec:      1) in M2rowdrg.nc ok
+                     iom_close ~~~ close file: M2rowdrg.nc ok
+                     iom_nf90_open ~~~ open existing file: K1rowdrg.nc in READ m
+ ode
+                    ---> K1rowdrg.nc OK
+           read field (rec:      1) in K1rowdrg.nc ok
+                     iom_close ~~~ close file: K1rowdrg.nc ok
+ 
+ zdf_drg_init : top and/or bottom drag setting
+ ~~~~~~~~~~~~
+    Namelist namdrg : top/bottom friction choices
+       free-slip       : Cd = 0                  ln_drg_OFF  =  F
+       linear  drag    : Cd = Cd0                ln_lin      =  F
+       non-linear  drag: Cd = Cd0_nl |U|         ln_non_lin  =  T
+       logarithmic drag: Cd = vkarmn/log(z/z0)   ln_loglayer =  F
+       implicit friction                         ln_drgimp   =  F
+       implicit ice-ocean drag                   ln_drgice_imp  = F
+ 
+    Namelist namdrg_bot : set BOTTOM friction parameters
+       drag coefficient                        rn_Cd0   = 
+  1.000000000000000E-003
+       characteristic velocity (linear case)   rn_Uc0   = 
+  0.400000000000000       m/s
+       non-linear drag maximum                 rn_Cdmax = 
+  0.100000000000000     
+       background kinetic energy  (n-l case)   rn_ke0   = 
+  2.500000000000000E-003
+       bottom roughness           (n-l case)   rn_z0    = 
+  3.000000000000000E-003
+       set a regional boost of Cd0             ln_boost =  T
+          associated boost factor              rn_boost = 
+   50.0000000000000     
+ 
+    ==>>>   use a regional boost read in bfr_coef.nc file
+            using enhancement factor of    50.0000000000000     
+                     iom_nf90_open ~~~ open existing file: bfr_coef.nc in READ m
+ ode
+                    ---> bfr_coef.nc OK
+           read bfr_coef (rec:      1) in bfr_coef.nc ok
+                     iom_close ~~~ close file: bfr_coef.nc ok
+ 
+    ==>>>   quadratic BOTTOM friction (propotional to module of the velocity)
+    with    a drag coefficient Cd0 =   1.000000000000000E-003 , and
+            a background velocity module of (rn_ke0)^1/2 = 
+  5.000000000000000E-002 m/s)
+ 
+ tide_init : tidal components not used (ln_tide = F)
+ ~~~~~~~~~ 
+ 
+ sbc_init : surface boundary condition setting
+ ~~~~~~~~ 
+    Namelist namsbc (partly overwritten with CPP key setting)
+       frequency update of sbc (and ice)             nn_fsbc       = 
+           1
+       Type of air-sea fluxes : 
+          user defined formulation                   ln_usr        =  F
+          flux         formulation                   ln_flx        =  F
+          bulk         formulation                   ln_blk        =  F
+       Type of coupling (Ocean/Ice/Atmosphere) : 
+          ocean-atmosphere coupled formulation       ln_cpl        =  F
+          mixed forced-coupled     formulation       ln_mixcpl     =  F
+          OASIS coupling (with atm or sas)           lk_oasis      =  F
+          components of your executable              nn_components = 
+           0
+          coupled    formulation (single exe)        ln_sglexe     =  T
+          coupled    formulation (sgl exe wam only)  ln_sglwam     =  F
+       Sea-ice : 
+          ice management in the sbc (=0/1/2/3)       nn_ice        = 
+           2
+          ice embedded into ocean                    ln_ice_embd   =  F
+       Misc. options of sbc : 
+          Light penetration in temperature Eq.       ln_traqsr     =  T
+             daily mean to diurnal cycle qsr            ln_dm2dc   =  F
+          Sea Surface Restoring on SST and/or SSS    ln_ssr        =  F
+          FreshWater Budget control  (=0/1/2)        nn_fwb        = 
+           0
+          Patm gradient added in ocean & ice Eqs.    ln_apr_dyn    =  F
+          runoff / runoff mouths                     ln_rnf        =  T
+          iceshelf formulation                       ln_isf        =  T
+          nb of iterations if land-sea-mask applied  nn_lsm        = 
+           0
+          Steric Height and Bottom pressure                        = 
+           1
+          Steric Height Calculation method                         = 
+           0
+          Surface Waves:                             ln_wave       =  T
+             Charnock coefficient                    ln_charnock   =  F
+             neutral drag coefficient                ln_cdgw       =  F
+             wave modified ocean stress              ln_tauwoc     =  F
+             wave modified ocean stress component    ln_tauw       =  T
+             Stokes drift divergence and tracer adv  ln_sdw        =  T
+             Stokes Coriolis term                    ln_stcor      =  T
+               vertical parametrization              nn_sdrift     = 
+           1
+               Stokes transport calculation          nn_sdtrans    = 
+          -1
+             mask waves if sea ice was present       ln_wvinice    =  F
+             neutral 10m winds speed                 ln_wspd       =  F
+             surface air density                     ln_rhoaw      =  F
+             wave modified TKE (from zdftke module)  ln_wavetke    =  T
+          Read forcing fields on master processr     ln_sglread_sbc=  F
+     Couple cloud cover from atmos in sbcsglcpl      ln_limcplcld  =  F
+          Use low cloud cover(ln_limcplcld must be T)ln_limcpllcc  =  F
+     Use ice category coupling (not supported!)      ln_icecplcat  =  F
+       Read Surface forcing perturbations                  ln_pert  =  F
+ 
+  ===>>> : W A R N I N G
+ 
+          ===============
+ 
+ The wave modified ocean stress components are used (ln_tauw=.true.)
+ This will override any other specification of the ocean stress
+ 
+ 
+    ==>>>   NEMO configured as a single executable (i.e. including both OPA and 
+ Surface module)
+ 
+    ==>>>   sglexe coupled formulation
+ 
+ sbc_ssm_init : sea surface mean fields, nn_fsbc=1 : instantaneous values
+ ~~~~~~~~~~~ 
+    default initialisation of ss._m arrays
+ 
+ sbc_isf_init : heat flux of the ice shelf
+ ~~~~~~~~~~~~
+    Namelist namsbc_isf :
+       type ice shelf melting/freezing         nn_isf      =            3
+       bulk formulation (nn_isf=1 only)        nn_isfblk   =            1
+       thickness of the top boundary layer     rn_hisf_tbl = 
+   30.0000000000000     
+       gamma formulation                       nn_gammablk =            1
+       gammat coefficient                      rn_gammat0  = 
+  1.000000000000000E-004
+       gammas coefficient                      rn_gammas0  = 
+  1.000000000000000E-004
+       top drag coef. used (from namdrg_top)   rn_Cd0      = 
+  0.000000000000000E+000
+ 
+ sbc_isf_init : read fresh water flux isf data
+ ~~~~~~~~~~~~
+    fld_fill : fill data structure with information from namelist namsbc_isf
+    ~~~~~~~~
+       list of files and frequency (>0: in hours ; <0 in months)
+       root filename: ./runoff_1m_nomask_icb_climatology.nc   variable name: 
+ sofwfisf
+          frequency:   -12.0000000000000         time interp:  F    climatology:
+   T
+          weights:    pairing:    data type: yearly     land/sea mask:
+ 
+       ==>>>   rnf file for isf (nn_isf = 3)
+                     iom_nf90_open ~~~ open existing file: runoff_1m_nomask_icb_
+ climatology.nc in READ mode
+                    ---> runoff_1m_nomask_icb_climatology.nc OK
+           read sozisfmax (rec:      1) in runoff_1m_nomask_icb_climatology.nc ok
+                     iom_close ~~~ close file: runoff_1m_nomask_icb_climatology.
+ nc ok
+                     iom_nf90_open ~~~ open existing file: runoff_1m_nomask_icb_
+ climatology.nc in READ mode
+                    ---> runoff_1m_nomask_icb_climatology.nc OK
+           read sozisfmin (rec:      1) in runoff_1m_nomask_icb_climatology.nc ok
+                     iom_close ~~~ close file: runoff_1m_nomask_icb_climatology.
+ nc ok
+ 
+ sbc_rnf_init : runoff 
+ ~~~~~~~~~~~~ 
+    Namelist namsbc_rnf
+       specific river mouths treatment            ln_rnf_mouth =  T
+       river mouth additional Kz                  rn_avt_rnf   = 
+  2.000000000000000E-003
+       depth of river mouth additional mixing     rn_hrnf      = 
+   10.0000000000000     
+       multiplicative factor for runoff           rn_rfact     = 
+   1.00000000000000     
+ 
+    ==>>>   runoffs inflow read in a file
+ 
+    fld_fill : fill data structure with information from namelist namsbc_rnf
+    ~~~~~~~~
+       list of files and frequency (>0: in hours ; <0 in months)
+       root filename: ./runoff_1m_nomask_icb_climatology.nc   variable name: 
+ sornficb
+          frequency:   -1.00000000000000         time interp:  T    climatology:
+   T
+          weights:    pairing:    data type: yearly     land/sea mask:
+ 
+    ==>>>   runoffs temperatures read in a file
+    ==>>>   runoffs temperatures file is a mask  T
+ 
+    fld_fill : fill data structure with information from namelist namsbc_rnf
+    ~~~~~~~~
+       list of files and frequency (>0: in hours ; <0 in months)
+       root filename: ./runoff_1m_nomask_icb_climatology.nc   variable name: 
+ icbtemper
+          frequency:   -1.00000000000000         time interp:  F    climatology:
+   T
+          weights:    pairing:    data type: yearly     land/sea mask:
+ 
+    ==>>>   Specific treatment used in vicinity of river mouths :
+              - Increase Kz in surface layers (if rn_hrnf > 0 )
+                by   2.000000000000000E-003  m2/s  over            8  w-levels
+              - set to zero SSS damping       (if ln_ssr=T)
+              - mixed upstream-centered       (if ln_traadv_cen2=T)
+ 
+    rnf_mouth : river mouth mask
+    ~~~~~~~~~ 
+                     iom_nf90_open ~~~ open existing file: ./runoff_1m_nomask_ic
+ b_climatology.nc in READ mode
+                    ---> ./runoff_1m_nomask_icb_climatology.nc OK
+           read socoefr (rec:      1) in ./runoff_1m_nomask_icb_climatology.nc ok
+                     iom_close ~~~ close file: ./runoff_1m_nomask_icb_climatolog
+ y.nc ok
+ 
+ Sea Ice Model: SI3 (Sea Ice modelling Integrated Initiative)
+ ~~~~~~~~~~~~~
+ 
+ ice_init: Arrays allocation & Initialization of all routines & init state
+ ~~~~~~~~
+      file   : namelist_ice_ref open ok
+      unit   =           22
+      status = OLD
+      form   = FORMATTED
+      access = SEQUENTIAL
+ 
+      file   : namelist_ice_cfg open ok
+      unit   =           23
+      status = OLD
+      form   = FORMATTED
+      access = SEQUENTIAL
+ 
+      file   : output.namelist.ice open ok
+      unit   =           24
+      status = UNKNOWN
+      form   = FORMATTED
+      access = SEQUENTIAL
+ 
+ 
+    par_init: ice parameters shared among all the routines
+    ~~~~~~~~
+       Namelist nampar: 
+          number of ice  categories                           jpl       = 
+           5
+          number of ice  layers                               nlay_i    = 
+           4
+          number of snow layers                               nlay_s    = 
+           1
+          virtual ITD param for jpl=1 (T) or not (F)     ln_virtual_itd =  F
+          Ice dynamics       (T) or not (F)                   ln_icedyn =  T
+          Ice thermodynamics (T) or not (F)                   ln_icethd =  T
+          maximum ice concentration for NH                              = 
+  0.997000000000000     
+          maximum ice concentration for SH                              = 
+  0.997000000000000     
+ 
+       ice timestep rdt_ice = nn_fsbc*rdt =    900.000000000000     
+ 
+ ice_itd_init: Initialization of ice cat distribution 
+ ~~~~~~~~~~~~
+    Namelist namitd: 
+       Ice categories are defined by a function of rn_himean**(-0.05)    ln_cat_
+ hfn =  T
+          mean ice thickness in the domain                               rn_hime
+ an  =    2.00000000000000     
+       Ice categories are defined by rn_catbnd                           ln_cat_
+ usr =  F
+       minimum ice thickness allowed                                     rn_himi
+ n   =   0.100000000000000     
+       maximum ice thickness allowed                                     rn_hima
+ x   =    99.0000000000000     
+ 
+    ===>>>   resulting thickness category boundaries :
+             hi_max(:)=   0.000000000000000E+000  0.454016742415552     
+   1.12931382308363        2.14145898894797        3.67059640991554     
+   99.0000000000000     
+ 
+ ice_thd_init: Ice Thermodynamics
+ ~~~~~~~~~~~~
+    Namelist namthd:
+       activate ice thick change from top/bot (T) or not (F)                ln_i
+ cedH   =  T
+       activate lateral melting (T) or not (F)                              ln_i
+ cedA   =  T
+       activate ice growth in open-water (T) or not (F)                     ln_i
+ cedO   =  T
+       activate gravity drainage and flushing (T) or not (F)                ln_i
+ cedS   =  T
+       heat in the leads is used to melt sea-ice before warming the ocean   ln_l
+ eadhfx =  T
+ 
+ ice_thd_zdf_init: Ice vertical heat diffusion
+ ~~~~~~~~~~~~~~~~
+    Namelist namthd_zdf:
+       Bitz and Lipscomb (1999) formulation                      ln_zdf_BL99   =
+   T
+       thermal conductivity in the ice (Untersteiner 1964)       ln_cndi_U64   =
+   F
+       thermal conductivity in the ice (Pringle et al 2007)      ln_cndi_P07   =
+   T
+       thermal conductivity in the snow                          rn_cnd_s      =
+    0.350000000000000     
+       heat flux from ocean to sea ice                           rn_oiht       =
+    3.000000000000000E-003
+       extinction radiation parameter in sea ice                 rn_kappa_i    =
+     1.00000000000000     
+       extinction radiation parameter in snw      (nn_qtrice=0)  rn_kappa_s    =
+     10.0000000000000     
+       extinction radiation parameter in melt snw (nn_qtrice=1)  rn_kappa_smlt =
+     7.00000000000000     
+       extinction radiation parameter in dry  snw (nn_qtrice=1)  rn_kappa_sdry =
+     10.0000000000000     
+       check convergence of heat diffusion scheme                ln_zdf_chkcvg =
+   F
+ 
+ ice_thd_da_init: Ice lateral melting
+ ~~~~~~~~~~~~~~~
+    Namelist namthd_da:
+       Coef. beta for lateral melting param.               rn_beta = 
+   1.00000000000000     
+       Minimum floe diameter for lateral melting param.    rn_dmin = 
+   8.00000000000000     
+ 
+ ice_thd_do_init: Ice growth in open water
+ ~~~~~~~~~~~~~~~
+    Namelist namthd_do:
+       ice thickness for lateral accretion                       rn_hinew   = 
+  0.100000000000000     
+       Frazil ice thickness as a function of wind or not         ln_frazil  =  F
+       Maximum proportion of frazil ice collecting at bottom     rn_maxfraz = 
+   1.00000000000000     
+       Threshold relative drift speed for collection of frazil   rn_vfraz   = 
+  0.417000000000000     
+       Squeezing coefficient for collection of frazil            rn_Cfraz   = 
+   5.00000000000000     
+ 
+ ice_thd_sal_init : Ice parameters for salinity 
+ ~~~~~~~~~~~~~~~~
+    Namelist namthd_sal:
+       switch for salinity                                     nn_icesal  = 
+           2
+       bulk salinity value if nn_icesal = 1                    rn_icesal  = 
+   4.00000000000000     
+       restoring salinity for gravity drainage                 rn_sal_gd  = 
+   5.00000000000000     
+       restoring time for for gravity drainage                 rn_time_gd = 
+   1730000.00000000     
+       restoring salinity for flushing                         rn_sal_fl  = 
+   2.00000000000000     
+       restoring time for flushing                             rn_time_fl = 
+   864000.000000000     
+       Maximum tolerated ice salinity                          rn_simax   = 
+   20.0000000000000     
+       Minimum tolerated ice salinity                          rn_simin   = 
+  0.100000000000000     
+ 
+ ice_thd_pnd_init: ice parameters for melt ponds
+ ~~~~~~~~~~~~~~~~
+    Namelist namicethd_pnd:
+       Melt ponds activated or not                                 ln_pnd       
+ =  T
+          Level ice melt pond scheme                               ln_pnd_LEV   
+ =  T
+             Minimum ice fraction that contributes to melt ponds   rn_apnd_min  
+ =   0.150000000000000     
+             Maximum ice fraction that contributes to melt ponds   rn_apnd_max  
+ =   0.850000000000000     
+             Pond flushing efficiency                              rn_pnd_flush 
+ =   0.000000000000000E+000
+          Constant ice melt pond scheme                            ln_pnd_CST   
+ =  F
+             Prescribed pond fraction                              rn_apnd      
+ =   0.200000000000000     
+             Prescribed pond depth                                 rn_hpnd      
+ =   5.000000000000000E-002
+          Frozen lids on top of melt ponds                         ln_pnd_lids  
+ =  T
+          Melt ponds affect albedo or not                          ln_pnd_alb   
+ =  T
+ 
+ ice_sbc_init: ice parameters for ice dynamics/thermodynamics 
+ ~~~~~~~~~~~~~~~~
+    Namelist namsbc:
+       drag coefficient for oceanic stress                       rn_cio        =
+    7.500000000000000E-003
+       fraction of ice covered by snow (options 0,1,2)           nn_snwfra     =
+             0
+       coefficient for ice-lead partition of snowfall            rn_snwblow    =
+    0.660000000000000     
+       Multicategory heat flux formulation                       nn_flxdist    =
+            -1
+       Use conduction flux as surface condition                  ln_cndflx     =
+   F
+          emulate conduction flux                                ln_cndemulate =
+   F
+       solar flux transmitted thru the surface scattering layer  nn_qtrice     =
+             0
+          = 0  Grenfell and Maykut 1977
+          = 1  Lebrun 2019
+ 
+    SI3: use per-category fluxes (nn_flxdist = -1) 
+ 
+ ice_istate_init: ice parameters inititialisation 
+ ~~~~~~~~~~~~~~~
+    Namelist namini:
+       ice initialization (T) or not (F)                ln_iceini      =  T
+       ice initialization call to ice_cor in icestp     nn_iceinicor   = 
+           0
+       ignore ice age from restart file                 ln_iceageign   =  F
+       ice initialization from a netcdf file            nn_iceini_file = 
+           0
+       max ocean temp. above Tfreeze with initial ice   rn_thres_sst   = 
+   2.00000000000000     
+       initial snw thickness in the north-south         rn_hts_ini     = 
+  0.300000000000000       0.300000000000000     
+       initial ice thickness in the north-south         rn_hti_ini     = 
+   3.00000000000000        1.00000000000000     
+       initial ice concentr  in the north-south         rn_ati_ini     = 
+  0.900000000000000       0.900000000000000     
+       initial ice salinity  in the north-south         rn_smi_ini     = 
+   6.30000000000000        6.30000000000000     
+       initial surf temperat in the north-south         rn_tsu_ini     = 
+   270.000000000000        270.000000000000     
+       initial ice temperat  in the north-south         rn_tmi_ini     = 
+   270.000000000000        270.000000000000     
+       initial snw temperat  in the north-south         rn_tms_ini     = 
+   270.000000000000        270.000000000000     
+       initial pnd fraction  in the north-south         rn_apd_ini     = 
+  0.200000000000000       0.200000000000000     
+       initial pnd depth     in the north-south         rn_hpd_ini     = 
+  5.000000000000000E-002  5.000000000000000E-002
+       initial pnd lid depth in the north-south         rn_hld_ini     = 
+  0.000000000000000E+000  0.000000000000000E+000
+ 
+ ice_rst_read: read ice NetCDF restart file
+ ~~~~~~~~~~~~
+                     iom_nf90_open ~~~ open existing file: ./restart_ice_in.nc i
+ n READ mode
+                    ---> ./restart_ice_in.nc OK
+    read ice restart file at time step    :    175296.000000000     
+    in any case we force it to nit000 - 1 :            0
+           read v_i (rec:      1) in ./restart_ice_in.nc ok
+           read v_s (rec:      1) in ./restart_ice_in.nc ok
+           read sv_i (rec:      1) in ./restart_ice_in.nc ok
+           read a_i (rec:      1) in ./restart_ice_in.nc ok
+           read t_su (rec:      1) in ./restart_ice_in.nc ok
+           read u_ice (rec:      1) in ./restart_ice_in.nc ok
+           read v_ice (rec:      1) in ./restart_ice_in.nc ok
+           read e_s_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read e_i_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read e_i_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read e_i_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read e_i_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read oa_i (rec:      1) in ./restart_ice_in.nc ok
+           read a_ip (rec:      1) in ./restart_ice_in.nc ok
+           read v_ip (rec:      1) in ./restart_ice_in.nc ok
+           read v_il (rec:      1) in ./restart_ice_in.nc ok
+    ==>>   previous run without conductivity output then set it to zero
+           read alb_ice (rec:      1) in ./restart_ice_in.nc ok
+ 
+ ice_dyn_init: ice parameters for ice dynamics 
+ ~~~~~~~~~~~~
+    Namelist namdyn:
+       Full ice dynamics      (rhg + adv + ridge/raft + corr) ln_dynALL       = 
+ T
+       No ridge/raft & No cor (rhg + adv)                     ln_dynRHGADV    = 
+ F
+       Advection 1D only      (Schar & Smolarkiewicz 1996)    ln_dynADV1D     = 
+ F
+       Advection 2D only      (rn_uvice + adv)                ln_dynADV2D     = 
+ F
+          with prescribed velocity given by   (u,v)_ice = (rn_uice,rn_vice)   = 
+ (  1.000000000000000E-005 ,  0.000000000000000E+000 )
+       lateral boundary condition for sea ice dynamics        rn_ishlat       = 
+   2.00000000000000     
+       Landfast: param from Lemieux 2016                      ln_landfast_L16 = 
+ F
+          fraction of ocean depth that ice must reach         rn_lf_depfra    = 
+  0.125000000000000     
+          maximum bottom stress per unit area of contact      rn_lf_bfr       = 
+   10.0000000000000     
+          relax time scale (s-1) to reach static friction     rn_lf_relax     = 
+  1.000000000000000E-005
+          isotropic tensile strength                          rn_lf_tensile   = 
+  5.000000000000000E-002
+ 
+    ===>>>   ice lateral  no-slip
+ 
+ ice_dyn_rdgrft_init: ice parameters for ridging/rafting 
+ ~~~~~~~~~~~~~~~~~~
+    Namelist namdyn_rdgrft:
+       ice strength parameterization Hibler (1979)              ln_str_H79   = 
+ T
+             1st bulk-rheology parameter                        rn_pstar     = 
+   15000.0000000000     
+             2nd bulk-rhelogy parameter                         rn_crhg      = 
+   20.0000000000000     
+       Fraction of shear energy contributing to ridging         rn_csrdg     = 
+  0.500000000000000     
+       linear ridging participation function                    ln_partf_lin = 
+ F
+             Fraction of ice coverage contributing to ridging   rn_gstar     = 
+  0.150000000000000     
+       Exponential ridging participation function               ln_partf_exp = 
+ T
+             Equivalent to G* for an exponential function       rn_astar     = 
+  3.000000000000000E-002
+       Ridging of ice sheets or not                             ln_ridging   = 
+ T
+             max ridged ice thickness                           rn_hstar     = 
+   25.0000000000000     
+             Initial porosity of ridges                         rn_porordg   = 
+  0.300000000000000     
+             Fraction of snow volume conserved during ridging   rn_fsnwrdg   = 
+  0.500000000000000     
+             Fraction of pond volume conserved during ridging   rn_fpndrdg   = 
+   1.00000000000000     
+       Rafting of ice sheets or not                             ln_rafting   = 
+ T
+             Parmeter thickness (threshold between ridge-raft)  rn_hraft     = 
+  0.750000000000000     
+             Rafting hyperbolic tangent coefficient             rn_craft     = 
+   5.00000000000000     
+             Fraction of snow volume conserved during rafting   rn_fsnwrft   = 
+  0.500000000000000     
+             Fraction of pond volume conserved during rafting   rn_fpndrft   = 
+   1.00000000000000     
+ 
+ ice_dyn_rhg_init: ice parameters for ice dynamics 
+ ~~~~~~~~~~~~~~~
+    Namelist : namdyn_rhg:
+       rheology EVP (icedyn_rhg_evp)                        ln_rhg_EVP    =  T
+          use adaptive EVP (aEVP)                           ln_aEVP       =  F
+          creep limit                                       rn_creepl     = 
+  2.000000000000000E-009
+          eccentricity of the elliptical yield curve        rn_ecc        = 
+   2.00000000000000     
+          number of iterations for subcycling               nn_nevp       = 
+         120
+          ratio of elastic timescale over ice time step     rn_relast     = 
+  0.333000000000000     
+       check convergence of rheology                        nn_rhg_chkcvg = 
+           0
+          no check
+           read stress1_i (rec:      1) in ./restart_ice_in.nc ok
+           read stress2_i (rec:      1) in ./restart_ice_in.nc ok
+           read stress12_i (rec:      1) in ./restart_ice_in.nc ok
+ 
+ ice_dyn_adv_init: ice parameters for ice dynamics 
+ ~~~~~~~~~~~~~~~~
+    Namelist namdyn_adv:
+       type of advection scheme (Prather)             ln_adv_Pra =  T
+       type of advection scheme (Ulimate-Macho)       ln_adv_UMx =  F
+          order of the Ultimate-Macho scheme          nn_UMx     =            5
+           read sxice (rec:      1) in ./restart_ice_in.nc ok
+           read syice (rec:      1) in ./restart_ice_in.nc ok
+           read sxxice (rec:      1) in ./restart_ice_in.nc ok
+           read syyice (rec:      1) in ./restart_ice_in.nc ok
+           read sxyice (rec:      1) in ./restart_ice_in.nc ok
+           read sxsn (rec:      1) in ./restart_ice_in.nc ok
+           read sysn (rec:      1) in ./restart_ice_in.nc ok
+           read sxxsn (rec:      1) in ./restart_ice_in.nc ok
+           read syysn (rec:      1) in ./restart_ice_in.nc ok
+           read sxysn (rec:      1) in ./restart_ice_in.nc ok
+           read sxa (rec:      1) in ./restart_ice_in.nc ok
+           read sya (rec:      1) in ./restart_ice_in.nc ok
+           read sxxa (rec:      1) in ./restart_ice_in.nc ok
+           read syya (rec:      1) in ./restart_ice_in.nc ok
+           read sxya (rec:      1) in ./restart_ice_in.nc ok
+           read sxsal (rec:      1) in ./restart_ice_in.nc ok
+           read sysal (rec:      1) in ./restart_ice_in.nc ok
+           read sxxsal (rec:      1) in ./restart_ice_in.nc ok
+           read syysal (rec:      1) in ./restart_ice_in.nc ok
+           read sxysal (rec:      1) in ./restart_ice_in.nc ok
+           read sxage (rec:      1) in ./restart_ice_in.nc ok
+           read syage (rec:      1) in ./restart_ice_in.nc ok
+           read sxxage (rec:      1) in ./restart_ice_in.nc ok
+           read syyage (rec:      1) in ./restart_ice_in.nc ok
+           read sxyage (rec:      1) in ./restart_ice_in.nc ok
+           read sxc0_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read syc0_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxxc0_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read syyc0_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxyc0_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxe_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sye_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxxe_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read syye_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxye_l01 (rec:      1) in ./restart_ice_in.nc ok
+           read sxe_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read sye_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read sxxe_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read syye_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read sxye_l02 (rec:      1) in ./restart_ice_in.nc ok
+           read sxe_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read sye_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read sxxe_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read syye_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read sxye_l03 (rec:      1) in ./restart_ice_in.nc ok
+           read sxe_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read sye_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read sxxe_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read syye_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read sxye_l04 (rec:      1) in ./restart_ice_in.nc ok
+           read sxap (rec:      1) in ./restart_ice_in.nc ok
+           read syap (rec:      1) in ./restart_ice_in.nc ok
+           read sxxap (rec:      1) in ./restart_ice_in.nc ok
+           read syyap (rec:      1) in ./restart_ice_in.nc ok
+           read sxyap (rec:      1) in ./restart_ice_in.nc ok
+           read sxvp (rec:      1) in ./restart_ice_in.nc ok
+           read syvp (rec:      1) in ./restart_ice_in.nc ok
+           read sxxvp (rec:      1) in ./restart_ice_in.nc ok
+           read syyvp (rec:      1) in ./restart_ice_in.nc ok
+           read sxyvp (rec:      1) in ./restart_ice_in.nc ok
+           read sxvl (rec:      1) in ./restart_ice_in.nc ok
+           read syvl (rec:      1) in ./restart_ice_in.nc ok
+           read sxxvl (rec:      1) in ./restart_ice_in.nc ok
+           read syyvl (rec:      1) in ./restart_ice_in.nc ok
+           read sxyvl (rec:      1) in ./restart_ice_in.nc ok
+ 
+ ice_update_init: ice-ocean stress init
+ ~~~~~~~~~~~~~~~
+           read snwice_mass (rec:      1) in ./restart_ice_in.nc ok
+           read snwice_mass_b (rec:      1) in ./restart_ice_in.nc ok
+ 
+ ice_alb_init: set albedo parameters
+ ~~~~~~~~~~~~
+    Namelist namalb:
+       albedo of dry snow                   rn_alb_sdry = 
+  0.870000000000000     
+       albedo of melting snow               rn_alb_smlt = 
+  0.800000000000000     
+       albedo of dry ice                    rn_alb_idry = 
+  0.670000000000000     
+       albedo of bare puddled ice           rn_alb_imlt = 
+  0.580000000000000     
+       albedo of ponded ice                 rn_alb_dpnd = 
+  0.370000000000000     
+ 
+ ice_dia_init: ice diagnostics
+  ~~~~~~~~~~~
+    Namelist namdia:
+       Diagnose online heat/mass/salt conservation ln_icediachk  =  F
+          threshold for conservation (gridcell)    rn_icechk_cel = 
+   100.000000000000     
+          threshold for conservation (global)      rn_icechk_glo = 
+   1.00000000000000     
+       Output          heat/mass/salt budget       ln_icediahsb  =  F
+       control prints for a given grid point       ln_icectl     =  F
+          chosen grid point position          (iiceprt,jiceprt)  = (          10
+ ,          10 )
+                     iom_close ~~~ close file: ./restart_ice_in.nc ok
+ 
+ sbc_wave_init : Wave module
+ ~~~~~~~~~~~~~
+    fld_fill : fill data structure with information from namelist namsbc_wave
+    ~~~~~~~~
+       list of files and frequency (>0: in hours ; <0 in months)
+       root filename: ./swh   variable name: swh
+          frequency:    6.00000000000000         time interp:  F    climatology:
+   F
+          weights:    pairing:    data type: monthly    land/sea mask:
+ 
+ bdy_init : open boundaries not used (ln_bdy = F)
+ ~~~~~~~~
+ 
+ ldf_tra_init : lateral tracer diffusion
+ ~~~~~~~~~~~~ 
+    Namelist : namtra_ldf --- lateral mixing parameters (type, direction, coeffi
+ cients)
+       type :
+          no explicit diffusion                   ln_traldf_OFF   =  F
+          laplacian operator                      ln_traldf_lap   =  T
+          bilaplacian operator                    ln_traldf_blp   =  F
+       direction of action :
+          iso-level                               ln_traldf_lev   =  F
+          horizontal (geopotential)               ln_traldf_hor   =  F
+          iso-neutral Madec operator              ln_traldf_iso   =  T
+          iso-neutral triad operator              ln_traldf_triad =  F
+             use the Method of Stab. Correction   ln_traldf_msc   =  F
+             maximum isoppycnal slope             rn_slpmax       = 
+  1.000000000000000E-002
+             pure lateral mixing in ML            ln_triad_iso    =  F
+             switching triad or not               rn_sw_triad     = 
+   1.00000000000000     
+             lateral mixing on bottom             ln_botmix_triad =  F
+       coefficients :
+          type of time-space variation            nn_aht_ijk_t    =           20
+             lateral diffusive velocity (if cst)  rn_Ud           = 
+  1.100000000000000E-002  m/s
+             lateral diffusive length   (if cst)  rn_Ld           = 
+   200000.000000000       m
+ 
+    ==>>>   Rotated laplacian operator (standard)
+ 
+    ==>>>   eddy diffusivity = F( e1, e2 ) or F( e1^3, e2^3 ) (lap or blp case)
+            using a fixed diffusive velocity =   1.100000000000000E-002 
+  m/s   and   Ld = Max(e1,e2)
+            maximum reachable coefficient (at the Equator) = 
+   611.594078967002       m2/s  for e1=1°)
+ 
+    ldf_c2d :   aht = Ufac * max(e1,e2)   with Ufac =   5.500000000000000E-003 
+  m/s
+ 
+ ldf_eiv_init : eddy induced velocity parametrization
+ ~~~~~~~~~~~~ 
+    Namelist namtra_eiv : 
+       Eddy Induced Velocity (eiv) param.         ln_ldfeiv     =  F
+       eiv streamfunction & velocity diag.        ln_ldfeiv_dia =  F
+       coefficients :
+          type of time-space variation            nn_aei_ijk_t  =           20
+          lateral diffusive velocity (if cst)     rn_Ue         = 
+  2.000000000000000E-002  m/s
+          lateral diffusive length   (if cst)     rn_Le         = 
+   200000.000000000       m
+ 
+    ==>>>   eddy induced velocity param is NOT used
+ 
+ ldf_dyn : lateral momentum physics
+ ~~~~~~~
+    Namelist namdyn_ldf : set lateral mixing parameters
+       type :
+          no explicit diffusion                ln_dynldf_OFF =  F
+          laplacian operator                   ln_dynldf_lap =  F
+          bilaplacian operator                 ln_dynldf_blp =  T
+       direction of action :
+          iso-level                            ln_dynldf_lev =  T
+          horizontal (geopotential)            ln_dynldf_hor =  F
+          iso-neutral                          ln_dynldf_iso =  F
+       coefficients :
+          type of time-space variation         nn_ahm_ijk_t  =           20
+          lateral viscous velocity  (if cst)      rn_Uv      = 
+  8.380000000000000E-002  m/s
+          lateral viscous length    (if cst)      rn_Lv      = 
+   10000.0000000000       m
+          background viscosity (iso-lap case)     rn_ahm_b   = 
+  0.000000000000000E+000  m2/s
+       Smagorinsky settings (nn_ahm_ijk_t  = 32) :
+          Smagorinsky coefficient              rn_csmc       = 
+   3.50000000000000     
+          factor multiplier for eddy visc.
+             lower limit (default 1.0)         rn_minfac    = 
+   1.00000000000000     
+             upper limit (default 1.0)         rn_maxfac    = 
+   1.00000000000000     
+       V34/V36 like settings : 
+          lateral laplacian eddy viscosity     rn_ahm_0_lap = 
+   10000.0000000000     
+          lateral laplacian eddy visco. equ.   rn_ahm_0_lap_eq = 
+   2000.00000000000     
+          lateral eddy diffusivity             rn_aht_0     = 
+   1000.00000000000     
+       Output fields used                      ln_outfile   =  F
+ 
+    ==>>>   iso-level bi-laplacian operator
+ 
+    ==>>>   eddy viscosity = F( e1, e2 ) or F( e1^3, e2^3 ) (lap. or blp. case)
+            using a fixed viscous velocity =   8.380000000000000E-002 
+  m/s   and   Lv = Max(e1,e2)
+            maximum reachable coefficient (at the Equator) = 
+   9602062329487.55       m4/s  for e1=1°)
+ 
+    ldf_c2d :   aht = Ufac * max(e1,e2)   with Ufac =   6.983333333333333E-003 
+  m/s
+ 
+ tra_qsr_init : penetration of the surface solar radiation
+ ~~~~~~~~~~~~
+    Namelist namtra_qsr : set the parameter of penetration
+       RGB (Red-Green-Blue) light penetration       ln_qsr_rgb =  F
+       2 band               light penetration       ln_qsr_2bd =  T
+       bio-model            light penetration       ln_qsr_bio =  F
+       RGB : Chl data (=1) or cst value (=0)        nn_chldta  =            0
+       RGB & 2 bands: fraction of light (rn_si1)    rn_abs     = 
+  0.580000000000000     
+       RGB & 2 bands: shortess depth of extinction  rn_si0     = 
+  0.350000000000000     
+       2 bands: longest depth of extinction         rn_si1     = 
+   23.0000000000000     
+ 
+    ==>>>   2 bands light penetration
+         level of light extinction =           45  ref depth = 
+   901.117997114539       m
+           read fraqsr_1lev (rec:      1) in ./restart.nc ok
+ 
+ tra_bbc : Bottom Boundary Condition (bbc), apply a Geothermal heating
+ ~~~~~~~   
+    Namelist nambbc : set bbc parameters
+       Apply a geothermal heating at ocean bottom   ln_trabbc     =  T
+       type of geothermal flux                      nn_geoflx     =            2
+       Constant geothermal flux value               rn_geoflx_cst = 
+  8.640000000000000E-002
+ 
+    ==>>>   variable geothermal heat flux
+ 
+    fld_fill : fill data structure with information from namelist nambbc
+    ~~~~~~~~
+       list of files and frequency (>0: in hours ; <0 in months)
+       root filename: ./geothermal_heating.nc   variable name: heatflow
+          frequency:   -12.0000000000000         time interp:  F    climatology:
+   T
+          weights:    pairing:    data type: yearly     land/sea mask:
+                     iom_nf90_open ~~~ open existing file: ./geothermal_heating.
+ nc in READ mode
+                    ---> ./geothermal_heating.nc OK
+           read heatflow (rec:      1) in ./geothermal_heating.nc ok
+   fld_read: var heatflow kt =        1 (   0.0052 days), Y/M/D = 1990/01/01, record:   0001 (days    0.0000 <->  365.0000)
+ 
+ tra_bbl_init : bottom boundary layer initialisation
+ ~~~~~~~~~~~~
+        Namelist nambbl : set bbl parameters
+           bottom boundary layer flag          ln_trabbl  =  T
+           diffusive bbl (=1)   or not (=0)    nn_bbl_ldf =            1
+           advective bbl (=1/2) or not (=0)    nn_bbl_adv =            1
+           diffusive bbl coefficient           rn_ahtbbl  = 
+   1000.00000000000       m2/s
+           advective bbl coefficient           rn_gambbl  = 
+   10.0000000000000       s
+        * Advective BBL using upper velocity
+ 
+ tra_dmp_init : T and S newtonian relaxation
+ ~~~~~~~~~~~~
+    Namelist namtra_dmp : set relaxation parameters
+       Apply relaxation   or not       ln_tradmp   =  F
+          mixed layer damping option      nn_zdmp  =            0
+          Damping file name               cn_resto = 
+ resto.nc                                                                       
+                                                                                
+                                           
+ 
+ 
+ tra_adv_init : choice/control of the tracer advection scheme
+ ~~~~~~~~~~~~
+    Namelist namtra_adv : chose a advection scheme for tracers
+       No advection on T & S                     ln_traadv_OFF =  F
+       centered scheme                           ln_traadv_cen =  F
+             horizontal 2nd/4th order               nn_cen_h   =            2
+             vertical   2nd/4th order               nn_cen_v   =            2
+       Flux Corrected Transport scheme           ln_traadv_fct =  T
+             horizontal 2nd/4th order               nn_fct_h   =            2
+             vertical   2nd/4th order               nn_fct_v   =            2
+       MUSCL scheme                              ln_traadv_mus =  F
+             + upstream scheme near river mouths    ln_mus_ups =  F
+       UBS scheme                                ln_traadv_ubs =  F
+             vertical   2nd/4th order               nn_ubs_v   =            2
+       QUICKEST scheme                           ln_traadv_qck =  F
+ 
+    ==>>>   FCT      scheme is used. Horizontal order:            2 
+  Vertical   order:            2
+ 
+ tra_mle_init : mixed layer eddy (MLE) advection acting on tracers
+ ~~~~~~~~~~~~~
+    Namelist namtra_mle : mixed layer eddy advection applied on tracers
+       use mixed layer eddy (MLE, i.e. Fox-Kemper param) (T/F)      ln_mle      
+  =  F
+          MLE type: =0 standard Fox-Kemper ; =1 new formulation        nn_mle   
+  =            1
+          magnitude of the MLE (typical value: 0.06 to 0.08)           rn_ce    
+  =   6.000000000000000E-002
+          scale of ML front (ML radius of deformation) (rn_mle=0)      rn_lf    
+  =    5000.00000000000      m
+          maximum time scale of MLE                    (rn_mle=0)      rn_time  
+  =    172800.000000000      s
+          reference latitude (degrees) of MLE coef.    (rn_mle=1)      rn_lat   
+  =    20.0000000000000      deg
+          space interp. of MLD at u-(v-)pts (0=min,1=averaged,2=max)   nn_mld_uv
+  =            0
+          =1 no MLE in case of convection ; =0 always MLE              nn_conv  
+  =            0
+          Density difference used to define ML for FK              rn_rho_c_mle 
+  =   1.000000000000000E-002
+ 
+    ==>>>   Mixed Layer Eddy parametrisation NOT used
+ 
+ tra_ldf_init : lateral tracer diffusive operator
+ ~~~~~~~~~~~~
+    Namelist namtra_ldf: already read in ldftra module
+       see ldf_tra_init report for lateral mixing parameters
+ 
+    ==>>>   Rotated laplacian operator (standard)
+ 
+ dyn_adv_init : choice/control of the momentum advection scheme
+ ~~~~~~~~~~~~
+    Namelist namdyn_adv : chose a advection formulation & scheme for momentum
+       linear dynamics : no momentum advection          ln_dynadv_OFF  =  F
+       Vector form: 2nd order centered scheme           ln_dynadv_vec  =  T
+          with Hollingsworth scheme (=1) or not (=0)       nn_dynkeg   = 
+           1
+       flux form: 2nd order centred scheme              ln_dynadv_cen2 =  F
+                  3rd order UBS scheme                  ln_dynadv_ubs  =  F
+ 
+    ==>>>   vector form : keg + zad + vor is used
+               with Hollingsworth keg scheme
+ 
+ dyn_vor_init : vorticity term : read namelist and control the consistency
+ ~~~~~~~~~~~~
+    Namelist namdyn_vor : choice of the vorticity term scheme
+       enstrophy conserving scheme                    ln_dynvor_ens =  F
+       f-point energy conserving scheme               ln_dynvor_ene =  F
+       t-point energy conserving scheme               ln_dynvor_enT =  F
+       energy conserving scheme  (een using e3t)      ln_dynvor_eeT =  F
+       enstrophy and energy conserving scheme         ln_dynvor_een =  T
+          e3f = averaging /4 (=0) or /sum(tmask) (=1)    nn_een_e3f = 
+           0
+       mixed enstrophy/energy conserving scheme       ln_dynvor_mix =  F
+       masked (=T) or unmasked(=F) vorticity          ln_dynvor_msk =  F
+ 
+       change fmask value in the angles (T)           ln_vorlat =  F
+ 
+    ==>>>   vector form dynamics : total vorticity = Coriolis + relative vortici
+ ty
+ 
+    ==>>>   energy and enstrophy conserving scheme (EEN)
+ 
+ dyn_ldf_init : Choice of the lateral diffusive operator on dynamics
+ ~~~~~~~~~~~~
+    Namelist namdyn_ldf: already read in ldfdyn module
+       see ldf_dyn_init report for lateral mixing parameters
+ 
+    ==>>>   iso-level bi-laplacian operator
+ 
+ dyn_hpg_init : hydrostatic pressure gradient initialisation
+ ~~~~~~~~~~~~
+    Namelist namdyn_hpg : choice of hpg scheme
+       z-coord. - full steps                             ln_hpg_zco    =  F
+       z-coord. - partial steps (interpolation)          ln_hpg_zps    =  F
+       s-coord. (standard jacobian formulation)          ln_hpg_sco    =  T
+       s-coord. (standard jacobian formulation) for isf  ln_hpg_isf    =  F
+       s-coord. (Density Jacobian: Cubic polynomial)     ln_hpg_djc    =  F
+       s-coord. (Pressure Jacobian: Cubic polynomial)    ln_hpg_prj    =  F
+ 
+    ==>>>   s-coord. (standard jacobian formulation)
+ 
+ 
+ dyn_spg_init : choice of the surface pressure gradient scheme
+ ~~~~~~~~~~~~
+    Namelist : namdyn_spg                    
+       Explicit free surface                  ln_dynspg_exp =  F
+       Free surface with time splitting       ln_dynspg_ts  =  T
+ 
+    ==>>>   free surface with time splitting scheme
+ 
+ dyn_spg_ts_init : split-explicit free surface
+ ~~~~~~~~~~~~~~~
+      ln_ts_auto =.true. Automatically set nn_baro 
+      Max. courant number allowed:   0.800000000000000     
+      ln_bt_av =.true.  ==> Time averaging over nn_baro time steps is on 
+      ln_bt_fw=.true.  => Forward integration of barotropic variables 
+      Time filter choice, nn_bt_flt:            1
+            Boxcar: width = nn_baro
+  
+      nn_baro =           51
+      Barotropic time step [s] is :   17.6470588235294     
+      Maximum Courant number is   :  0.786574963963412     
+      Time diffusion parameter rn_bt_alpha:   0.000000000000000E+000
+           read ub2_b (rec:      1) in ./restart.nc ok
+           read vb2_b (rec:      1) in ./restart.nc ok
+           read un_bf (rec:      1) in ./restart.nc ok
+           read vn_bf (rec:      1) in ./restart.nc ok
+ 
+ ldf_slp_init : direction of lateral mixing
+ ~~~~~~~~~~~~
+    ==>>>   iso operator (Madec)
+ 
+ icb_nam : iceberg initialization through namberg namelist read
+ ~~~~~~~~ 
+ 
+    ==>>>   No icebergs used
+ 
+ sto_par_init : NO use of stochastic parameterization
+ ~~~~~~~~~~~~
+ 
+ flo_stp : call floats routine 
+ ~~~~~~~
+ 
+          Namelist floats :
+             Activate floats or not                   ln_floats    =  F
+                number of floats                      jpnfl        = 
+           1
+                number of new floats                  jpnflnewflo  = 
+           0
+                restart                               ln_rstflo    =  F
+                frequency of float output file        nn_writefl   = 
+          75
+                frequency of float restart file       nn_stockfl   = 
+        5475
+                Argo type floats                      ln_argo      =  F
+                Computation of T trajectories         ln_flork4    =  F
+                Use of ariane convention              ln_ariane    =  T
+                ascii output (T) or netcdf output (F) ln_flo_ascii =  T
+ 
+ dia_ptr_init : poleward transport and msf initialization
+ ~~~~~~~~~~~~
+    Namelist namptr : set ptr parameters
+       Poleward heat & salt transport (T) or not (F)      ln_diaptr  =  F
+  
+ diadct_init: compute transports through sections 
+ ~~~~~~~~~~~~~~~~~~~~~
+        Calculate transport thru sections: ln_diadct =  F
+        Frequency of computation:          nn_dct    =           15
+        Frequency of write:                nn_dctwri =           15
+        Debug section number:          112
+ 
+ dia_hsb_init : heat and salt budgets diagnostics
+ ~~~~~~~~~~~~ 
+    Namelist  namhsb :
+       check the heat and salt budgets (T) or not (F)       ln_diahsb =  F
+ 
+ trd_init : Momentum/Tracers trends
+ ~~~~~~~~
+    Namelist namtrd : set trends parameters
+       global domain averaged dyn & tra trends   ln_glo_trd  =  F
+       U & V trends: 3D output                   ln_dyn_trd  =  F
+       U & V trends: Mixed Layer averaged        ln_dyn_mxl  =  F
+       T & S trends: 3D output                   ln_tra_trd  =  F
+       T & S trends: Mixed Layer averaged        ln_tra_mxl  =  F
+       Kinetic   Energy trends                   ln_KE_trd   =  F
+       Potential Energy trends                   ln_PE_trd   =  F
+       Barotropic vorticity trends               ln_vor_trd  =  F
+       frequency of trends diagnostics (glo)     nn_trd      =          365
+ 
+ dia_obs_init : NO Observation diagnostic used
+ ~~~~~~~~~~~~
+ 
+ dia_25h_init : Output 25 hour mean diagnostics
+ ~~~~~~~~~~~~
+    Namelist nam_dia25h : set 25h outputs 
+       Switch for 25h diagnostics (T) or not (F)  ln_dia25h  =  F
+ 
+ dia_harm_init: Tidal harmonic analysis initialization
+ ~~~~~~~~~~~~~ 
+ Tidal diagnostics =  F
+    First time step used for analysis:         nit000_han=            1
+    Last  time step used for analysis:         nitend_han=           75
+    Time step frequency for harmonic analysis: nstep_han =           15
+ 
+ asm_inc_init : Assimilation increment initialization :
+ ~~~~~~~~~~~~
+    Namelist namasm : set assimilation increment parameters
+       Logical switch for writing out background state          ln_bkgwri =  F
+       Logical switch for applying tracer increments            ln_trainc =  F
+       Logical switch for applying velocity increments          ln_dyninc =  F
+       Logical switch for applying SSH increments               ln_sshinc =  F
+       Logical switch for Direct Initialization (DI)            ln_asmdin =  F
+       Logical switch for Direct Initialization (DI) of ice     ln_icedin =  F
+       Logical switch for applying sea ice increments        ln_seaiceinc =  F
+       Logical switch for applying sea ice conc increments a_i  ln_a_iinc =  F
+       Logical switch for Incremental Analysis Updating (IAU)   ln_asmiau =  F
+       Timestep of background in [0,nitend-nit000-1]            nitbkg    = 
+           0
+       Timestep of background for DI in [0,nitend-nit000-1]     nitdin    = 
+           0
+       Timestep of start of IAU interval in [0,nitend-nit000-1] nitiaustr = 
+           1
+       Timestep of end of IAU interval in [0,nitend-nit000-1]   nitiaufin = 
+          15
+       Type of IAU weighting function                           niaufn    = 
+           0
+       Logical switch for ensuring that the sa > salfixmin      ln_salfix =  F
+       Minimum salinity after applying the increments           salfixmin = 
+  -9999.00000000000     
+       Divergence damping iterations                            nn_divdmp = 
+           0
+       Ice splitting option                                na_iincr_split = 
+           0
+       Ice thickness for new ice from da option              nh_iincr_min = 
+           0
+       Minimum ice thickness for new ice from da                zhi_damin = 
+  0.500000000000000     
+       Limit for open water detection for ice da           zopenwater_lim = 
+  1.000000000000000E-002
+       Ice increment induces temperature increment    lice_temp_increment =  T
+       Maximum depth level for ice-temp increment    nice_temp_max_levels = 
+          12
+       Weighting of ice-temp increment (K/(m^2/m^2))   zice_temp_strength = 
+  0.000000000000000E+000
+ 
+    Time steps referenced to current cycle:
+        iitrst      =            0
+        nit000      =            1
+        nitend      =            4
+        nitbkg_r    =            0
+        nitdin_r    =            0
+        nitiaustr_r =            1
+        nitiaufin_r =           15
+ 
+    Dates referenced to current cycle:
+        ndastp         =     19900101
+        ndate0         =     19900101
+        nn_time0       =            0
+        ditend_date    =    19900101.0100000     
+        ditbkg_date    =    19900101.0000000     
+        ditdin_date    =    19900101.0000000     
+        ditiaustr_date =    19900101.0015000     
+        ditiaufin_date =    19900101.0345000     
+ 
+  ===>>> : W A R N I N G
+ 
+          ===============
+ 
+  ln_trainc, ln_dyninc, ln_sshinc and ln_seaiceinc are set to .false. :
+  The assimilation increments are not applied
+ 
+    ==>>>   Euler time step switch is            1
+ 
+  ===>>> : W A R N I N G
+ 
+          ===============
+ 
+ end of record or file while reading namelist nambias in reference namelist iost
+ at =    -1
+ 

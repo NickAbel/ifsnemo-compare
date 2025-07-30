@@ -1,0 +1,30 @@
+   jpnij   jpimax  jpjmax    jpk  jpiglo  jpjglo ( local:    narea     jpi     jpj )
+      14     208     605      75    1442    1207 ( local:        1     208     605 )
+nproc nlci nlcj nldi nldj nlei nlej nimp njmp nono noso nowe noea nbondi nbondj 
+    0  208  605    2    1  207  604    1    1    7   -1    6    1      0     -1
+    1  208  605    2    1  207  604  207    1    8   -1    0    2      0     -1
+    2  208  605    2    1  207  604  413    1    9   -1    1    3      0     -1
+    3  208  605    2    1  207  604  619    1   10   -1    2    4      0     -1
+    4  208  605    2    1  207  604  825    1   11   -1    3    5      0     -1
+    5  207  605    2    1  206  604 1031    1   12   -1    4    6      0     -1
+    6  207  605    2    1  206  604 1236    1   13   -1    5    0      0     -1
+    7  208  604    2    2  207  604    1  604   13    0   13    8      0      1
+    8  208  604    2    2  207  604  207  604   12    1    7    9      0      1
+    9  208  604    2    2  207  604  413  604   11    2    8   10      0      1
+   10  208  604    2    2  207  604  619  604   -1    3    9   11      0      1
+   11  208  604    2    2  207  604  825  604    9    4   10   12      0      1
+   12  207  604    2    2  206  604 1031  604    8    5   11   13      0      1
+   13  207  604    2    2  206  604 1236  604    7    6   12    7      0      1
+ 
+ 
+ number of subdomains located along the north fold :            7
+ Rank of the subdomains located along the north fold :            7
+           7           8           9          10          11
+          12          13
+ 
+ 
+ north fold exchanges with explicit point-to-point messaging :
+ nfsloop :            0
+ nfeloop :            0
+ nsndto :            0
+ isendto :            0           0           0

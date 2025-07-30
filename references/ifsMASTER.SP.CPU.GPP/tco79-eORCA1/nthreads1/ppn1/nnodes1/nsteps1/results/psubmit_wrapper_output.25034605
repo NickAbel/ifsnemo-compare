@@ -1,0 +1,11 @@
+>>> PSUBMIT: PWD=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo
+>>> PSUBMIT: INJOB_INIT_COMMANDS: "export LD_LIBRARY_PATH=lib:$LD_LIBRARY_PATH"
+>>> PSUBMIT: Nodelist gs16r1b36:1
++ [hres:88s:14:41:22:5729]: du -sh .
+89M	.
++ [hres:88s:14:41:22:5730]: [[ '' = '' ]]
++ [hres:88s:14:41:22:5733]: [[ 174 -eq 0 ]]
++ [hres:88s:14:41:22:5794]: set -x
++ [hres:88s:14:41:22:5795]: exit 174
+        tm_1_CNT4: 0
+>>> PSUBMIT: Exiting...

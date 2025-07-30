@@ -1,0 +1,4 @@
+   jpnij   jpimax  jpjmax    jpk  jpiglo  jpjglo ( local:    narea     jpi     jpj )
+       1     362     332      75     362     332 ( local:        1     362     332 )
+nproc nlci nlcj nldi nldj nlei nlej nimp njmp nono noso nowe noea nbondi nbondj 
+    0  362  332    1    1  362  332    1    1   -1   -1    0    0      2      2

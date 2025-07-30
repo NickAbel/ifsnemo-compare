@@ -1,0 +1,60 @@
+---
+execution:
+    success: false
+model:
+    last_step: 0
+    ssh_norm_max: [  ]
+    U_norm_max: [  ]
+    S_min: [  ]
+    S_max: [  ]
+timing:
+    elapsed_time:
+        tm_0_CNT0: 0
+        tm_1_CNT4: 0
+        tm_7_SCAN2M: 0
+        tm_8_SCAN2M: 0
+        tm_10_SCAN2M: 0
+        tm_13_SCAN2M: 0
+        tm_32_NEMO: 0
+        tm_37_CPGLAG: 0
+        tm_38_WAM: 0
+        tm_51_SCAN2M: 0
+        tm_65_RADINTG: 0
+        tm_66_RADINTG: 0
+        tm_89_SCAN2M: 0
+        tm_102_LTINV_CTL: 0
+        tm_103_LTDIR_CTL: 0
+        tm_106_FTDIR_CTL: 0
+        tm_107_FTINV_CTL: 0
+        tm_152_LTINV_CTL: 0
+        tm_153_LTDIR_CTL: 0
+        tm_157_FTINV_CTL: 0
+        tm_158_FTDIR_CTL: 0
+        tm_nemo_stp: 0
+        tm_nemo_sbc: 0
+        tm_nemo_icestp: 0
+        tm_nemo_ice_dyn: 0
+        tm_nemo_icethd: 0
+        tm_nemo_stp_thermodyn: 0
+        tm_nemo_zdf_phy: 0
+        tm_nemo_stp_lateral: 0
+        tm_nemo_ldf_slp: 0
+        tm_nemo_stp_oceandyn: 0
+        tm_nemo_dom_vvl_sf_nxt: 0
+        tm_nemo_dyn_adv: 0
+        tm_nemo_dyn_vor: 0
+        tm_nemo_dyn_ldf: 0
+        tm_nemo_dyn_hpg: 0
+        tm_nemo_dyn_spg: 0
+        tm_nemo_dyn_zdf: 0
+        tm_nemo_stp_diag: 0
+        tm_nemo_dia_wri: 0
+        tm_nemo_stp_tracers: 0
+        tm_nemo_tra_adv: 0
+        tm_nemo_tra_ldf: 0
+        tm_nemo_tra_zdf: 0
+        tm_nemo_stp_nxt: 0
+        tm_nemo_tra_nxt: 0
+        tm_nemo_dyn_nxt: 0
+        tm_nemo_dom_vvl_sf_swp: 0
+        tm_nemo_dia_hsb: 0

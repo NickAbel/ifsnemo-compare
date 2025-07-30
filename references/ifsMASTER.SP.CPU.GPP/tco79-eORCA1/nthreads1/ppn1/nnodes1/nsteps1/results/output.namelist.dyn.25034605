@@ -1,0 +1,169 @@
+ &NAMCTL
+ LN_CTL  = F,
+ SN_CFCTL%L_CONFIG        = T,
+ SN_CFCTL%L_RUNSTAT       = T,
+ SN_CFCTL%L_TRCSTAT       = F,
+ SN_CFCTL%L_OCEOUT        = F,
+ SN_CFCTL%L_LAYOUT        = F,
+ SN_CFCTL%L_MPPOUT        = F,
+ SN_CFCTL%L_MPPTOP        = F,
+ SN_CFCTL%PROCMIN =           0,
+ SN_CFCTL%PROCMAX =     1000000,
+ SN_CFCTL%PROCINCR        =           1,
+ SN_CFCTL%PTIMINCR        =           1,
+ NN_PRINT        =           0,
+ NN_ICTLS        =           0,
+ NN_ICTLE        =           0,
+ NN_ISPLT        =           1,
+ NN_JSPLT        =           1,
+ NN_JCTLS        =           0,
+ NN_JCTLE        =           0,
+ LN_TIMING       = T,
+ LN_DIACFL       = F,
+ LN_TIMING_DETAIL        = T,
+ LN_SMSLABEL     = F,
+ CN_SMSLABEL     = smslabel                                                        ,
+ CN_SMSEVENT     = ecflow_client --event                                           ,
+ NN_SMSFRQ       =          24,
+ LN_SGLREAD      = T,
+ LN_SGLWRITE     = F,
+ LN_TIMING_ONEFILE       = T,
+ LN_TIMING_BARRIER       = F,
+ LN_TIMING_CHECK = F,
+ NN_OMPOPT       =           0,
+ NN_OMPHT        =           2,
+ LN_WRITE_DOMAINS        = F,
+ LN_DIAWRI_INSTANT       = F,
+ LN_DIAWRI_FULL  = T,
+ CN_DIAWRI_OUTDIR        = ./                                                                                                        
+                                                                                                                                     
+                   ,
+ LN_MPPWRITE     = F,
+ LN_MPPWRITE_ABT = F,
+ LN_NEMOSTAT     = F
+ /
+ &NAMCFG
+ LN_READ_CFG     = T,
+ CN_DOMCFG       = domain_cfg                                                                                                        
+                                                                                                                                     
+           ,
+ LN_CLOSEA       = F,
+ LN_WRITE_CFG    = F,
+ CN_DOMCFG_OUT   = domain_cfg_out                                                                                                    
+                                                                                                                                     
+           ,
+ LN_USE_JATTR    = F
+ /
+ &NAMMPP
+ JPNI    =          -1,
+ JPNJ    =          -1,
+ LN_NNOGATHER    = T,
+ LN_LISTONLY     = F
+ /
+ &NAMEOS
+ LN_TEOS10       = T,
+ LN_EOS80        = F,
+ LN_SEOS = F,
+ RN_A0   =  0.165500000000000     ,
+ RN_B0   =  0.765540000000000     ,
+ RN_LAMBDA1      =  5.952000000000000E-002,
+ RN_MU1  =  1.497000000000000E-004,
+ RN_LAMBDA2      =  7.491400000000000E-004,
+ RN_MU2  =  1.109000000000000E-005,
+ RN_NU   =  2.434100000000000E-003
+ /
+ &NAMWAD
+ LN_WD_IL        = F,
+ LN_WD_DL        = F,
+ RN_WDMIN0       =  0.300000000000000     ,
+ RN_WDMIN1       =  0.200000000000000     ,
+ RN_WDMIN2       =  1.000000000000000E-004,
+ RN_WDLD =   2.50000000000000     ,
+ NN_WDIT =          20,
+ LN_WD_DL_BC     = F,
+ LN_WD_DL_RMP    = F,
+ RN_WD_SBCDEP    =   5.00000000000000     ,
+ RN_WD_SBCFRA    =  0.999000000000000     
+ /
+ &NAMRUN
+ CN_OCERST_INDIR = .                                                                                                                 
+                                                                                                                                     
+           ,
+ CN_OCERST_OUTDIR        = ./                                                                                                        
+                                                                                                                                     
+                   ,
+ NN_STOCKLIST    =       -9999, 9*0,
+ LN_RST_LIST     = F,
+ NN_NO   =           0,
+ CN_EXP  = hz9m                                                                                                                      
+                                                                                                                                     
+   ,
+ CN_OCERST_IN    = restart                                                                                                           
+                                                                                                                                     
+           ,
+ CN_OCERST_OUT   = restart                                                                                                           
+                                                                                                                                     
+           ,
+ LN_RSTART       = T,
+ NN_RSTCTL       =           0,
+ NN_IT000        =           1,
+ NN_ITEND        =           1,
+ NN_DATE0        =    20200120,
+ NN_TIME0        =           0,
+ NN_LEAPY        =           1,
+ NN_ISTATE       =           0,
+ NN_STOCK        =          -1,
+ NN_WRITE        =          -1,
+ LN_MSKLAND      = T,
+ LN_CLOBBER      = T,
+ NN_CHUNKSZ      =           0,
+ NN_EULER        =           1,
+ LN_CFMETA       = T,
+ LN_ISCPL        = F,
+ LN_XIOS_READ    = F,
+ NN_WXIOS        =           0,
+ LN_RSTDATE      = F,
+ LN_WRITERST     = T,
+ LN_RSTTIME      = T,
+ NN_SLIMRST      =           0,
+ NN_SLIMRSTIN    =           0,
+ LN_RCF_READ     = F,
+ LN_RCF_WRITE    = F
+ /
+ &NAMDOM
+ LN_LINSSH       = F,
+ RN_ISFHMIN      =   1.00000000000000     ,
+ RN_RDT  =   3600.00000000000     ,
+ RN_ATFP =  0.100000000000000     ,
+ LN_CRS  = F,
+ LN_MESHMASK     = T
+ /
+ &NAMNC4
+ NN_NCHUNKS_I    =           4,
+ NN_NCHUNKS_J    =           4,
+ NN_NCHUNKS_K    =          75,
+ LN_NC4ZIP       = F
+ /
+ &NAMLBC
+ RN_SHLAT        =  0.000000000000000E+000,
+ LN_VORLAT       = F,
+ LN_SHLAT2D      = T,
+ CN_SHLAT2D_FILE = shlat2d.nc                                                                                                        
+                                                                                                                                     
+           ,
+ CN_SHLAT2D_VAR  = shlat2d                                                                                                           
+                                                                                                                                     
+           
+ /
+ &NAM_VVL
+ LN_VVL_ZSTAR    = T,
+ LN_VVL_ZTILDE   = F,
+ LN_VVL_LAYER    = F,
+ LN_VVL_ZTILDE_AS_ZSTAR  = F,
+ LN_VVL_ZSTAR_AT_EQTOR   = F,
+ RN_AHE3 =  0.000000000000000E+000,
+ RN_RST_E3T      =   30.0000000000000     ,
+ RN_LF_CUTOFF    =   5.00000000000000     ,
+ RN_ZDEF_MAX     =  0.900000000000000     ,
+ LN_VVL_DBG      = F
+ /

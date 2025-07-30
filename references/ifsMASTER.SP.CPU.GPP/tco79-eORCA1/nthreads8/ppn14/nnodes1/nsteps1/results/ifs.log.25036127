@@ -1,0 +1,1646 @@
++ [hres:1s:15:08:22:2252]: [[ '' = '' ]]
++ [hres:1s:15:08:22:2254]: pwd
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:1s:15:08:22:2256]: delaybef=0
++ [hres:1s:15:08:22:2257]: delayaft=0
++ [hres:1s:15:08:22:2258]: [[ undef != \u\n\d\e\f ]]
+++ [hres:1s:15:08:22:2267]: which lfs
+++ [hres:1s:15:08:22:0]: alias
+++ [hres:1s:15:08:22:1]: /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot lfs
+++ [hres:1s:15:08:22:1]: eval declare -f
++++ [hres:1s:15:08:22:1]: declare -f
+/usr/bin/which: no lfs in (/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin:/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/bin:/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/bin:/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/bin:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/bin:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/bin:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/bin:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/bin/intel64:/home/bsc/bsc631248/.local/bin:/home/bsc/bsc631248/bin:/home/bsc/bsc631248/sshfs-laptop/bin:/apps/modules/bsc/bin:/apps/GPP/UCX/1.15.0/INTEL/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)
+++ [hres:1s:15:08:22:2267]: echo ''
++ [hres:1s:15:08:22:2267]: lustrefs=
++ [hres:1s:15:08:22:2268]: [[ -n '' ]]
++ [hres:1s:15:08:22:2284]: [[ -f /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/hres ]]
++ [hres:1s:15:08:22:2285]: cp -f /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/hres .
++ [hres:1s:15:08:22:2289]: [[ -f /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/compinfo.txt ]]
++ [hres:1s:15:08:22:2305]: [[ -n '' ]]
++ [hres:1s:15:08:22:2311]: export ATP_ENABLED=1
++ [hres:1s:15:08:22:2311]: ATP_ENABLED=1
++ [hres:1s:15:08:22:2312]: export ATP_MAX_CORES=1
++ [hres:1s:15:08:22:2312]: ATP_MAX_CORES=1
++ [hres:1s:15:08:22:2315]: export DEBUG=0
++ [hres:1s:15:08:22:2315]: DEBUG=0
++ [hres:1s:15:08:22:2316]: export FDB_ABORT=yes
++ [hres:1s:15:08:22:2316]: FDB_ABORT=yes
++ [hres:1s:15:08:22:2317]: export FDB_BUF_SECT_SIZE=85705728
++ [hres:1s:15:08:22:2317]: FDB_BUF_SECT_SIZE=85705728
++ [hres:1s:15:08:22:2318]: export FDB_CONFIG_MODE=async
++ [hres:1s:15:08:22:2318]: FDB_CONFIG_MODE=async
++ [hres:1s:15:08:22:2319]: export FDB_GROUP=ecmwf
++ [hres:1s:15:08:22:2319]: FDB_GROUP=ecmwf
++ [hres:1s:15:08:22:2320]: export FDB_IO=write
++ [hres:1s:15:08:22:2320]: FDB_IO=write
++ [hres:1s:15:08:22:2321]: export FDB_IROOT=/dummy/lb/fdb
++ [hres:1s:15:08:22:2321]: FDB_IROOT=/dummy/lb/fdb
++ [hres:1s:15:08:22:2322]: export FDB_MPI_CACHE=no
++ [hres:1s:15:08:22:2322]: FDB_MPI_CACHE=no
++ [hres:1s:15:08:22:2323]: export FDB_NOF_BUFF=8
++ [hres:1s:15:08:22:2323]: FDB_NOF_BUFF=8
++ [hres:1s:15:08:22:2324]: [[ 0 -ne 1 ]]
++ [hres:1s:15:08:22:2324]: [[ 0 -eq 0 ]]
++ [hres:1s:15:08:22:2325]: export FDB_ROOT=/dummy/lb/fdb
++ [hres:1s:15:08:22:2325]: FDB_ROOT=/dummy/lb/fdb
++ [hres:1s:15:08:22:2327]: export FDB_SIGNALS=no
++ [hres:1s:15:08:22:2327]: FDB_SIGNALS=no
++ [hres:1s:15:08:22:2328]: export ECCODES_API_WRITE_ON_FAIL=0
++ [hres:1s:15:08:22:2328]: ECCODES_API_WRITE_ON_FAIL=0
++ [hres:1s:15:08:22:2329]: export ECCODES_GRIBEX_MODE_ON=1
++ [hres:1s:15:08:22:2329]: ECCODES_GRIBEX_MODE_ON=1
+++ [hres:1s:15:08:22:2330]: echo :128000000
+++ [hres:1s:15:08:22:2330]: perl -pe 's/^://; s/(\d+)k[i]?b\b/$1*1024/ige; s/(\d+)k\b/${1}000/ig; s/(\d+)m[i]?b\b/$1*1024*1024/ige; s/(\d+)m\b/${1}000000/ig; s/(\d+)g[i]?b\b/$1*1024*1024*1024/ige; s/(\d+)g\b/${1}000000000/ig;'
++ [hres:1s:15:08:22:2330]: mbxsize=128000000
++ [hres:1s:15:08:23:2331]: [[ 128000000 -le 2147483647 ]]
++ [hres:2s:15:08:23:2332]: [[ 1 -eq 1 ]]
++ [hres:2s:15:08:23:2333]: mbxsize=0
++ [hres:2s:15:08:23:2335]: export MPL_MBX_SIZE=0
++ [hres:2s:15:08:23:2335]: MPL_MBX_SIZE=0
++ [hres:2s:15:08:23:2338]: export MPL_WAITALL=true
++ [hres:2s:15:08:23:2338]: MPL_WAITALL=true
++ [hres:2s:15:08:23:2339]: export MPL_WAITANY=true
++ [hres:2s:15:08:23:2339]: MPL_WAITANY=true
++ [hres:2s:15:08:23:2341]: [[ 0 -ne 1 ]]
++ [hres:2s:15:08:23:2341]: [[ 0 -eq 0 ]]
++ [hres:2s:15:08:23:2342]: [[ 0 -gt 0 ]]
++ [hres:2s:15:08:23:2342]: [[ undef = @(od|rd|incite|nextgems|eerie) ]]
++ [hres:2s:15:08:23:2364]: export CRAY_RANK_THREAD_PREFIX=1
++ [hres:2s:15:08:23:2364]: CRAY_RANK_THREAD_PREFIX=1
++ [hres:2s:15:08:23:2368]: cat /proc/self/limits
+Limit                     Soft Limit           Hard Limit           Units     
+Max cpu time              unlimited            unlimited            seconds   
+Max file size             unlimited            unlimited            bytes     
+Max data size             unlimited            unlimited            bytes     
+Max stack size            2144256000           unlimited            bytes     
+Max core file size        0                    unlimited            bytes     
+Max resident set          234881024000         234881024000         bytes     
+Max processes             1030081              1030081              processes 
+Max open files            131072               131072               files     
+Max locked memory         unlimited            unlimited            bytes     
+Max address space         unlimited            unlimited            bytes     
+Max file locks            unlimited            unlimited            locks     
+Max pending signals       1030081              1030081              signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Max realtime timeout      unlimited            unlimited            us        
+++ [hres:2s:15:08:23:2369]: which prlimit
++ [hres:2s:15:08:23:2369]: prlimit=/usr/bin/prlimit
++ [hres:2s:15:08:23:2370]: [[ /usr/bin/prlimit = '' ]]
++ [hres:2s:15:08:23:2370]: /usr/bin/prlimit
+RESOURCE   DESCRIPTION                                SOFT         HARD UNITS
+AS         address space limit                   unlimited    unlimited bytes
+CORE       max core file size                            0    unlimited bytes
+CPU        CPU time                              unlimited    unlimited seconds
+DATA       max data size                         unlimited    unlimited bytes
+FSIZE      max file size                         unlimited    unlimited bytes
+LOCKS      max number of file locks held         unlimited    unlimited locks
+MEMLOCK    max locked-in-memory address space    unlimited    unlimited bytes
+MSGQUEUE   max bytes in POSIX mqueues               819200       819200 bytes
+NICE       max nice prio allowed to raise                0            0 
+NOFILE     max number of open files                 131072       131072 files
+NPROC      max number of processes                 1030081      1030081 processes
+RSS        max resident set size              234881024000 234881024000 bytes
+RTPRIO     max real-time priority                        0            0 
+RTTIME     timeout for real-time tasks           unlimited    unlimited microsecs
+SIGPENDING max number of pending signals           1030081      1030081 signals
+STACK      max stack size                       2144256000    unlimited bytes
++ [hres:2s:15:08:23:2371]: ulimit -a
+real-time non-blocking time  (microseconds, -R) unlimited
+core file size              (blocks, -c) 0
+data seg size               (kbytes, -d) unlimited
+scheduling priority                 (-e) 0
+file size                   (blocks, -f) unlimited
+pending signals                     (-i) 1030081
+max locked memory           (kbytes, -l) unlimited
+max memory size             (kbytes, -m) 229376000
+open files                          (-n) 131072
+pipe size                (512 bytes, -p) 8
+POSIX message queues         (bytes, -q) 819200
+real-time priority                  (-r) 0
+stack size                  (kbytes, -s) 2094000
+cpu time                   (seconds, -t) unlimited
+max user processes                  (-u) 1030081
+virtual memory              (kbytes, -v) unlimited
+file locks                          (-x) unlimited
++ [hres:2s:15:08:23:2373]: hardlimit=unlimited
++ [hres:2s:15:08:23:2374]: ulimit -m unlimited
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/hres: line 2374: ulimit: max memory size: cannot modify limit: Operation not permitted
++ [hres:2s:15:08:23:2374]: :
++ [hres:2s:15:08:23:2375]: [[ intelmpi = \h\p\c\x ]]
++ [hres:2s:15:08:23:2379]: hardlimit=unlimited
++ [hres:2s:15:08:23:2380]: [[ -f /proc/self/limits ]]
+++ [hres:2s:15:08:23:2381]: fgrep 'Max stack size' /proc/self/limits
+++ [hres:2s:15:08:23:2381]: awk '{print $5}'
++ [hres:2s:15:08:23:2381]: limit=unlimited
++ [hres:2s:15:08:23:2382]: [[ unlimited != unlimited ]]
++ [hres:2s:15:08:23:2385]: hardlimit=unlimited
++ [hres:2s:15:08:23:2387]: ulimit -s unlimited
++ [hres:2s:15:08:23:2389]: hardlimit=unlimited
++ [hres:2s:15:08:23:2390]: [[ -f /proc/self/limits ]]
+++ [hres:2s:15:08:23:2391]: fgrep 'Max data size' /proc/self/limits
+++ [hres:2s:15:08:23:2391]: awk '{print $5}'
++ [hres:2s:15:08:23:2391]: limit=unlimited
++ [hres:2s:15:08:23:2392]: [[ unlimited != unlimited ]]
++ [hres:2s:15:08:23:2395]: hardlimit=unlimited
++ [hres:2s:15:08:23:2397]: ulimit -d unlimited
++ [hres:2s:15:08:23:2399]: hardlimit=unlimited
++ [hres:2s:15:08:23:2400]: [[ -f /proc/self/limits ]]
+++ [hres:2s:15:08:23:2401]: fgrep 'Max address space' /proc/self/limits
+++ [hres:2s:15:08:23:2401]: awk '{print $5}'
++ [hres:2s:15:08:23:2401]: limit=unlimited
++ [hres:2s:15:08:23:2402]: [[ unlimited != unlimited ]]
++ [hres:2s:15:08:23:2405]: hardlimit=unlimited
++ [hres:2s:15:08:23:2407]: ulimit -v unlimited
++ [hres:2s:15:08:23:2415]: export DR_HOOK_NOT_MPI=0
++ [hres:2s:15:08:23:2415]: DR_HOOK_NOT_MPI=0
++ [hres:2s:15:08:23:2417]: export DR_HOOK_WATCH_PRINT_MAX=300
++ [hres:2s:15:08:23:2417]: DR_HOOK_WATCH_PRINT_MAX=300
++ [hres:2s:15:08:23:2419]: rm -f core 'core.*'
++ [hres:2s:15:08:23:2420]: ulimit -S -c 0
++ [hres:2s:15:08:23:2421]: [[ 1 -eq 1 ]]
++ [hres:2s:15:08:23:2422]: [[ -n '' ]]
++ [hres:2s:15:08:23:2425]: export DR_HOOK_HARAKIRI_TIMEOUT=60
++ [hres:2s:15:08:23:2425]: DR_HOOK_HARAKIRI_TIMEOUT=60
++ [hres:2s:15:08:23:2428]: DR_HOOK_ALLOW_COREDUMP=-1
++ [hres:2s:15:08:23:2434]: nundefld=-99999999
++ [hres:2s:15:08:23:2441]: tps=56
++ [hres:2s:15:08:23:2442]: [[ 56 -ge 8 ]]
++ [hres:2s:15:08:23:2443]: tps=7
++ [hres:2s:15:08:23:2444]: tpwn=14
++ [hres:2s:15:08:23:2445]: [[ 14 -ne 14 ]]
++ [hres:2s:15:08:23:2458]: iotps=0
++ [hres:2s:15:08:23:2459]: [[ 0 -ge 0 ]]
++ [hres:2s:15:08:23:2459]: [[ 0 -gt 0 ]]
++ [hres:2s:15:08:23:2468]: iotps=0
++ [hres:2s:15:08:23:2469]: iotpwn=0
++ [hres:2s:15:08:23:2473]: [[ 1 -eq 1 ]]
++ [hres:2s:15:08:23:2474]: export MKL_NUM_THREADS=1
++ [hres:2s:15:08:23:2474]: MKL_NUM_THREADS=1
++ [hres:2s:15:08:23:2475]: export MKL_DYNAMIC=FALSE
++ [hres:2s:15:08:23:2475]: MKL_DYNAMIC=FALSE
++ [hres:2s:15:08:23:2476]: export MKL_VERBOSE=0
++ [hres:2s:15:08:23:2476]: MKL_VERBOSE=0
++ [hres:2s:15:08:24:2478]: export MKL_CBWR=AUTO,STRICT
++ [hres:3s:15:08:24:2478]: MKL_CBWR=AUTO,STRICT
++ [hres:3s:15:08:24:2479]: export KMP_DETERMINISTIC_REDUCTION=true
++ [hres:3s:15:08:24:2479]: KMP_DETERMINISTIC_REDUCTION=true
++ [hres:3s:15:08:24:2482]: export EC_MEMINFO=1
++ [hres:3s:15:08:24:2482]: EC_MEMINFO=1
++ [hres:3s:15:08:24:2483]: export EC_PMON=-1
++ [hres:3s:15:08:24:2483]: EC_PMON=-1
+++ [hres:3s:15:08:24:2484]: pwd
++ [hres:3s:15:08:24:2484]: TMPDIR=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:3s:15:08:24:2485]: export TMPDIR
++ [hres:3s:15:08:24:2486]: export EC_MEMINFO_TMPDIR=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:3s:15:08:24:2486]: EC_MEMINFO_TMPDIR=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:3s:15:08:24:2487]: export EC_MEMINFO_JOBNAME=ifsnemo-basic-test
++ [hres:3s:15:08:24:2487]: EC_MEMINFO_JOBNAME=ifsnemo-basic-test
++ [hres:3s:15:08:24:2488]: export EC_MEMINFO_JOBID=25036127
++ [hres:3s:15:08:24:2488]: EC_MEMINFO_JOBID=25036127
++ [hres:3s:15:08:24:2490]: ecbind=0
++ [hres:3s:15:08:24:2492]: [[ 0 -gt 0 ]]
++ [hres:3s:15:08:24:2520]: export OMP_NUM_THREADS=8
++ [hres:3s:15:08:24:2520]: OMP_NUM_THREADS=8
++ [hres:3s:15:08:24:2521]: export OMP_THREAD_LIMIT=8
++ [hres:3s:15:08:24:2521]: OMP_THREAD_LIMIT=8
++ [hres:3s:15:08:24:2522]: export OMP_DYNAMIC=false
++ [hres:3s:15:08:24:2522]: OMP_DYNAMIC=false
++ [hres:3s:15:08:24:2523]: export OMP_MAX_ACTIVE_LEVELS=1
++ [hres:3s:15:08:24:2523]: OMP_MAX_ACTIVE_LEVELS=1
++ [hres:3s:15:08:24:2525]: thread_stacksize_mb=164
++ [hres:3s:15:08:24:2526]: thread_stacksize_mb=164
++ [hres:3s:15:08:24:2527]: export THREAD_GUARDSIZE=0M
++ [hres:3s:15:08:24:2527]: THREAD_GUARDSIZE=0M
++ [hres:3s:15:08:24:2528]: export OMP_STACKSIZE=164M
++ [hres:3s:15:08:24:2528]: OMP_STACKSIZE=164M
++ [hres:3s:15:08:24:2529]: unset STACKSIZE
++ [hres:3s:15:08:24:2531]: cat /proc/self/limits
+Limit                     Soft Limit           Hard Limit           Units     
+Max cpu time              unlimited            unlimited            seconds   
+Max file size             unlimited            unlimited            bytes     
+Max data size             unlimited            unlimited            bytes     
+Max stack size            unlimited            unlimited            bytes     
+Max core file size        0                    unlimited            bytes     
+Max resident set          234881024000         234881024000         bytes     
+Max processes             1030081              1030081              processes 
+Max open files            131072               131072               files     
+Max locked memory         unlimited            unlimited            bytes     
+Max address space         unlimited            unlimited            bytes     
+Max file locks            unlimited            unlimited            locks     
+Max pending signals       1030081              1030081              signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Max realtime timeout      unlimited            unlimited            us        
++ [hres:3s:15:08:24:2532]: [[ /usr/bin/prlimit = '' ]]
++ [hres:3s:15:08:24:2532]: /usr/bin/prlimit
+RESOURCE   DESCRIPTION                                SOFT         HARD UNITS
+AS         address space limit                   unlimited    unlimited bytes
+CORE       max core file size                            0    unlimited bytes
+CPU        CPU time                              unlimited    unlimited seconds
+DATA       max data size                         unlimited    unlimited bytes
+FSIZE      max file size                         unlimited    unlimited bytes
+LOCKS      max number of file locks held         unlimited    unlimited locks
+MEMLOCK    max locked-in-memory address space    unlimited    unlimited bytes
+MSGQUEUE   max bytes in POSIX mqueues               819200       819200 bytes
+NICE       max nice prio allowed to raise                0            0 
+NOFILE     max number of open files                 131072       131072 files
+NPROC      max number of processes                 1030081      1030081 processes
+RSS        max resident set size              234881024000 234881024000 bytes
+RTPRIO     max real-time priority                        0            0 
+RTTIME     timeout for real-time tasks           unlimited    unlimited microsecs
+SIGPENDING max number of pending signals           1030081      1030081 signals
+STACK      max stack size                        unlimited    unlimited bytes
++ [hres:3s:15:08:24:2533]: ulimit -a
+real-time non-blocking time  (microseconds, -R) unlimited
+core file size              (blocks, -c) 0
+data seg size               (kbytes, -d) unlimited
+scheduling priority                 (-e) 0
+file size                   (blocks, -f) unlimited
+pending signals                     (-i) 1030081
+max locked memory           (kbytes, -l) unlimited
+max memory size             (kbytes, -m) 229376000
+open files                          (-n) 131072
+pipe size                (512 bytes, -p) 8
+POSIX message queues         (bytes, -q) 819200
+real-time priority                  (-r) 0
+stack size                  (kbytes, -s) unlimited
+cpu time                   (seconds, -t) unlimited
+max user processes                  (-u) 1030081
+virtual memory              (kbytes, -v) unlimited
+file locks                          (-x) unlimited
++ [hres:3s:15:08:24:2535]: [[ 1 -eq 1 ]]
++ [hres:3s:15:08:24:2538]: export MALLOC_MMAP_MAX_=0
++ [hres:3s:15:08:24:2538]: MALLOC_MMAP_MAX_=0
++ [hres:3s:15:08:24:2540]: export MALLOC_TRIM_THRESHOLD_=536870912
++ [hres:3s:15:08:24:2540]: MALLOC_TRIM_THRESHOLD_=536870912
++ [hres:3s:15:08:24:2542]: export MALLOC_CHECK_=7
++ [hres:3s:15:08:24:2542]: MALLOC_CHECK_=7
++ [hres:3s:15:08:24:2544]: export MALLOC_PERTURB_=0
++ [hres:3s:15:08:24:2544]: MALLOC_PERTURB_=0
++ [hres:3s:15:08:24:2547]: export FORT_BLOCKSIZE=1048576
++ [hres:3s:15:08:24:2547]: FORT_BLOCKSIZE=1048576
++ [hres:3s:15:08:24:2548]: export FORT_BUFFERED=true
++ [hres:3s:15:08:24:2548]: FORT_BUFFERED=true
++ [hres:3s:15:08:24:2552]: export DR_HOOK_RANDOM_MEMSTAT=0
++ [hres:3s:15:08:24:2552]: DR_HOOK_RANDOM_MEMSTAT=0
++ [hres:3s:15:08:24:2554]: [[ false = true ]]
++ [hres:3s:15:08:24:2570]: [[ false = false ]]
++ [hres:3s:15:08:24:2571]: export DR_HOOK_INIT_SIGNALS=1
++ [hres:3s:15:08:24:2571]: DR_HOOK_INIT_SIGNALS=1
++ [hres:3s:15:08:24:2572]: export DR_HOOK=1
++ [hres:3s:15:08:24:2572]: DR_HOOK=1
++ [hres:3s:15:08:24:2573]: export DR_HOOK_OPT=none
++ [hres:3s:15:08:24:2573]: DR_HOOK_OPT=none
+++ [hres:3s:15:08:24:2574]: pwd
++ [hres:3s:15:08:24:2574]: export DR_HOOK_PROFILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/drhook
++ [hres:3s:15:08:24:2574]: DR_HOOK_PROFILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/drhook
++ [hres:3s:15:08:24:2583]: export DR_HOOK_TRAPFPE=1
++ [hres:3s:15:08:24:2583]: DR_HOOK_TRAPFPE=1
++ [hres:3s:15:08:24:2584]: export DR_HOOK_TRAPFPE_INVALID=1
++ [hres:3s:15:08:24:2584]: DR_HOOK_TRAPFPE_INVALID=1
++ [hres:3s:15:08:24:2585]: export DR_HOOK_TRAPFPE_DIVBYZERO=1
++ [hres:3s:15:08:24:2585]: DR_HOOK_TRAPFPE_DIVBYZERO=1
++ [hres:3s:15:08:24:2586]: export DR_HOOK_TRAPFPE_OVERFLOW=1
++ [hres:3s:15:08:24:2586]: DR_HOOK_TRAPFPE_OVERFLOW=1
++ [hres:3s:15:08:24:2588]: export LINUXTRBK_FULLPATH=1
++ [hres:3s:15:08:24:2588]: LINUXTRBK_FULLPATH=1
++ [hres:3s:15:08:24:2590]: echo 'Multio enabled: 0, 0, 0'
+Multio enabled: 0, 0, 0
++ [hres:3s:15:08:24:2592]: [[ 1 -eq 1 ]]
++ [hres:3s:15:08:24:2592]: [[ V40 = V40 ]]
++ [hres:3s:15:08:24:2593]: [[ -1 -gt 0 ]]
++ [hres:3s:15:08:24:2596]: nemo_compute_tasks=14
++ [hres:3s:15:08:24:2599]: [[ 14 -ne 14 ]]
++ [hres:3s:15:08:24:2607]: export IFSGRID=O80
++ [hres:3s:15:08:24:2607]: IFSGRID=O80
++ [hres:3s:15:08:24:2608]: export MULTIOSTREAM=hz9m
++ [hres:3s:15:08:24:2608]: MULTIOSTREAM=hz9m
++ [hres:3s:15:08:24:2610]: [[ generic = \l\u\m\-\c ]]
++ [hres:3s:15:08:25:2610]: [[ generic = \l\u\m\-\g ]]
++ [hres:4s:15:08:25:2618]: export LOGROOT=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/logs
++ [hres:4s:15:08:25:2618]: LOGROOT=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/logs
++ [hres:4s:15:08:25:2622]: abort=no
++ [hres:4s:15:08:25:2623]: debug_packages_errcnt=0
++ [hres:4s:15:08:25:2624]: echo 'DEBUG PACKAGES :: '
+DEBUG PACKAGES :: 
+++ [hres:4s:15:08:25:2625]: echo
+++ [hres:4s:15:08:25:2625]: sed -e '{s/:/ /g};{s/^\(.*\)$/\U\1/}'
++ [hres:4s:15:08:25:2642]: [[ 0 -gt 0 ]]
++ [hres:4s:15:08:25:2651]: echo 'MULTIPLE PRODUCTION FDBS :: '
+MULTIPLE PRODUCTION FDBS :: 
++ [hres:4s:15:08:25:2652]: abort=no
++ [hres:4s:15:08:25:2653]: [[ 0 -ne 0 ]]
++ [hres:4s:15:08:25:2683]: [[ 0 -ne 0 ]]
++ [hres:4s:15:08:25:2683]: [[ 0 -ne 0 ]]
++ [hres:4s:15:08:25:2692]: [[ no = \y\e\s ]]
++ [hres:4s:15:08:25:2697]: export MULTIO_SERVER_CONFIG_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/etc/multio
++ [hres:4s:15:08:25:2697]: MULTIO_SERVER_CONFIG_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/etc/multio
++ [hres:4s:15:08:25:2698]: export MULTIO_SERVER_DISTRIBUTION=even
++ [hres:4s:15:08:25:2698]: MULTIO_SERVER_DISTRIBUTION=even
++ [hres:4s:15:08:25:2699]: export MULTIO_SERVER_MPI_POOL_SIZE=4096
++ [hres:4s:15:08:25:2699]: MULTIO_SERVER_MPI_POOL_SIZE=4096
++ [hres:4s:15:08:25:2700]: export MULTIO_CLIENT_MPI_POOL_SIZE=1024
++ [hres:4s:15:08:25:2700]: MULTIO_CLIENT_MPI_POOL_SIZE=1024
++ [hres:4s:15:08:25:2701]: export MULTIO_MPI_BUFFER_SIZE=1048576
++ [hres:4s:15:08:25:2701]: MULTIO_MPI_BUFFER_SIZE=1048576
++ [hres:4s:15:08:25:2702]: export MULTIO_MESSAGE_QUEUE_SIZE=4194304
++ [hres:4s:15:08:25:2702]: MULTIO_MESSAGE_QUEUE_SIZE=4194304
++ [hres:4s:15:08:25:2704]: export MULTIO_DEBUG=0
++ [hres:4s:15:08:25:2704]: MULTIO_DEBUG=0
++ [hres:4s:15:08:25:2706]: export MULTIO_RAPS_TEMPLATES_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_templates
++ [hres:4s:15:08:25:2706]: MULTIO_RAPS_TEMPLATES_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_templates
++ [hres:4s:15:08:25:2707]: export MULTIO_RAPS_PLANS_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_yaml
++ [hres:4s:15:08:25:2707]: MULTIO_RAPS_PLANS_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_yaml
++ [hres:4s:15:08:25:2708]: export MULTIO_PLANS_FILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_yaml/multio-ifs-wam-config.yaml
++ [hres:4s:15:08:25:2708]: MULTIO_PLANS_FILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_yaml/multio-ifs-wam-config.yaml
++ [hres:4s:15:08:25:2709]: export MULTIO_RAPS_OUTPUT_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:4s:15:08:25:2709]: MULTIO_RAPS_OUTPUT_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:4s:15:08:25:2710]: export MULTIO_RAPS_DO_STATISTICS_RESTART=0
++ [hres:4s:15:08:25:2710]: MULTIO_RAPS_DO_STATISTICS_RESTART=0
++ [hres:4s:15:08:25:2711]: export MULTIO_RAPS_GRID_TYPE=O80
++ [hres:4s:15:08:25:2711]: MULTIO_RAPS_GRID_TYPE=O80
++ [hres:4s:15:08:25:2713]: export MULTIO_RAPS_TEMPLATES_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_templates
++ [hres:4s:15:08:25:2713]: MULTIO_RAPS_TEMPLATES_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/multio_templates
++ [hres:4s:15:08:25:2715]: lfdbop=true
++ [hres:4s:15:08:25:2717]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:4s:15:08:25:2717]: [[ undef = \e\e\r\i\e ]]
++ [hres:4s:15:08:25:2778]: [[ 0 -eq 1 ]]
++ [hres:4s:15:08:25:2791]: [[ 0 -ne 0 ]]
++ [hres:4s:15:08:25:2821]: MULTIO_ENABLE_FDB=false
++ [hres:4s:15:08:25:2833]: [[ 0 -eq 1 ]]
++ [hres:4s:15:08:25:2836]: export MULTIO_ENABLE_SINK_FILE=false
++ [hres:4s:15:08:25:2836]: MULTIO_ENABLE_SINK_FILE=false
++ [hres:4s:15:08:25:2841]: export MULTIO_NEXTGEMS_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2841]: MULTIO_NEXTGEMS_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2842]: export MULTIO_EERIE_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2842]: MULTIO_EERIE_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2843]: export MULTIO_NEXTGEMS_PLANS_HIGHRES_H1024_ENABLED=false
++ [hres:4s:15:08:25:2843]: MULTIO_NEXTGEMS_PLANS_HIGHRES_H1024_ENABLED=false
++ [hres:4s:15:08:25:2844]: export MULTIO_NEXTGEMS_PLANS_HIGHRES_H512_ENABLED=false
++ [hres:4s:15:08:25:2844]: MULTIO_NEXTGEMS_PLANS_HIGHRES_H512_ENABLED=false
++ [hres:4s:15:08:25:2845]: export MULTIO_NEXTGEMS_PLANS_STANDARDRES_ENABLED=false
++ [hres:4s:15:08:25:2845]: MULTIO_NEXTGEMS_PLANS_STANDARDRES_ENABLED=false
++ [hres:4s:15:08:25:2846]: export MULTIO_NEXTGEMS_PLANS_LOWRES_ENABLED=false
++ [hres:4s:15:08:25:2846]: MULTIO_NEXTGEMS_PLANS_LOWRES_ENABLED=false
++ [hres:4s:15:08:25:2847]: export MULTIO_NEXTGEMS_T1_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2847]: MULTIO_NEXTGEMS_T1_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2848]: export MULTIO_OD_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2848]: MULTIO_OD_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2849]: export MULTIO_WAM_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2849]: MULTIO_WAM_PLANS_ENABLED=false
++ [hres:4s:15:08:25:2850]: export MULTIO_MODEL=IFS
++ [hres:4s:15:08:25:2850]: MULTIO_MODEL=IFS
++ [hres:4s:15:08:25:2852]: export MULTIO_NATIVE_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2852]: MULTIO_NATIVE_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2853]: export MULTIO_HEALPIX_STANDARD_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2853]: MULTIO_HEALPIX_STANDARD_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2854]: export MULTIO_HEALPIX_HIGH_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2854]: MULTIO_HEALPIX_HIGH_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2855]: export MULTIO_REGULLAR_LL_STANDARD_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2855]: MULTIO_REGULLAR_LL_STANDARD_OCEAN_OUTPUT=false
++ [hres:4s:15:08:25:2856]: export MULTIO_NEXTGEMS_PLANS_LL_LOWRES_ENABLED=false
++ [hres:4s:15:08:25:2856]: MULTIO_NEXTGEMS_PLANS_LL_LOWRES_ENABLED=false
++ [hres:4s:15:08:25:2857]: export MULTIO_NEXTGEMS_PLANS_LL_STANDARDRES_ENABLE=false
++ [hres:4s:15:08:25:2857]: MULTIO_NEXTGEMS_PLANS_LL_STANDARDRES_ENABLE=false
++ [hres:4s:15:08:25:2858]: [[ 0 -eq 1 ]]
++ [hres:4s:15:08:26:2860]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:5s:15:08:26:2894]: [[ undef = \e\e\r\i\e ]]
++ [hres:5s:15:08:26:2896]: [[ undef = \o\d ]]
++ [hres:5s:15:08:26:2911]: [[ 0 -eq 1 ]]
++ [hres:5s:15:08:26:2916]: [[ 0 -eq 1 ]]
++ [hres:5s:15:08:26:2941]: [[ 0 -gt 0 ]]
++ [hres:5s:15:08:26:2967]: [[ 0 -gt 0 ]]
++ [hres:5s:15:08:26:2992]: [[ V40 = \V\4\0 ]]
++ [hres:5s:15:08:26:2993]: export NEMOIOSERVER=yes
++ [hres:5s:15:08:26:2993]: NEMOIOSERVER=yes
++ [hres:5s:15:08:26:2995]: cat
++ [hres:5s:15:08:26:3005]: for dd in $ifsdata ${ifs:-}
++ [hres:5s:15:08:26:3007]: ln -s /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/data/ifsdata .
++ [hres:5s:15:08:26:3010]: '[' -d /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc ']'
++ [hres:5s:15:08:26:3011]: shopt -s nullglob
++ [hres:5s:15:08:26:3012]: label_files=("$label"/*)
++ [hres:5s:15:08:26:3013]: shopt -u nullglob
++ [hres:5s:15:08:26:3014]: ((  41 > 0  ))
++ [hres:5s:15:08:26:3015]: ln -s /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/79_4 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMBC /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMCLhz9mINIT /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMCLhz9mINIT.0 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMGGhz9mINIT /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMGGhz9mINIUA /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMSHhz9mINIT /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/cdwavein /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.2020.ice.restart.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.2020.oce.restart.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.clock.20Jan2020 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fort.4 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.config /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.config~ /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.cvmix /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.dyn /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.forcing /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.ice /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.icepack /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.io /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce.GM /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce.noGM /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.tra /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.tra~ /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist_ice /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomcoup.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomstep.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomwamcoup.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namnemocoup.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namnemowamcoup.in /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/sfcwindin /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/specwavein /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/uwavein /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_grid_tables /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_input_gflags /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_namelist /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_subgrid_0 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_subgrid_1 /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_subgrid_2 .
++ [hres:5s:15:08:26:3017]: unset label_files
++ [hres:5s:15:08:26:3020]: [[ undef = @(od|rd) ]]
++ [hres:5s:15:08:26:3027]: find . -name '*.orig' -type l -print0
++ [hres:5s:15:08:26:3027]: xargs -0 -r rm -fv
++ [hres:5s:15:08:26:3029]: namelist=namelist
++ [hres:5s:15:08:26:3030]: namelist_ice=namelist_ice
++ [hres:5s:15:08:26:3031]: [[ V40 = V40 ]]
++ [hres:5s:15:08:26:3032]: namelist=namelist_cfg
++ [hres:5s:15:08:26:3033]: namelist_ice=namelist_ice_cfg
++ [hres:5s:15:08:26:3036]: [[ 1 -eq 1 ]]
++ [hres:5s:15:08:26:3037]: ln -s /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/data/remap/nemo/V40/eORCA1_Z75 remap
++ [hres:5s:15:08:26:3038]: ocedirconst=/gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common
++ [hres:5s:15:08:26:3039]: ocedirdate=/gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000
++ [hres:5s:15:08:26:3040]: [[ ! -d /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common ]]
++ [hres:5s:15:08:26:3044]: [[ ! -d /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000 ]]
++ [hres:5s:15:08:26:3049]: shopt -s nullglob
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/K1rowdrg.nc
++ [hres:5s:15:08:26:3052]: b=K1rowdrg.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f K1rowdrg.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/K1rowdrg.nc K1rowdrg.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/M2rowdrg.nc
++ [hres:5s:15:08:26:3052]: b=M2rowdrg.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f M2rowdrg.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/M2rowdrg.nc M2rowdrg.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ahmcoef.nc
++ [hres:5s:15:08:26:3052]: b=ahmcoef.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f ahmcoef.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ahmcoef.nc ahmcoef.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bathy_meter.nc
++ [hres:5s:15:08:26:3052]: b=bathy_meter.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f bathy_meter.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bathy_meter.nc bathy_meter.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bfr_coef.nc
++ [hres:5s:15:08:26:3052]: b=bfr_coef.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f bfr_coef.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bfr_coef.nc bfr_coef.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/calving.nc
++ [hres:5s:15:08:26:3052]: b=calving.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f calving.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/calving.nc calving.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/coordinates.nc
++ [hres:5s:15:08:26:3052]: b=coordinates.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f coordinates.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/coordinates.nc coordinates.nc
++ [hres:5s:15:08:26:3050]: for f in $ocedirconst/*
+++ [hres:5s:15:08:26:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_potential_temperature_nomask.nc
++ [hres:5s:15:08:26:3052]: b=data_1m_potential_temperature_nomask.nc
++ [hres:5s:15:08:26:3053]: [[ ! -f data_1m_potential_temperature_nomask.nc ]]
++ [hres:5s:15:08:26:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_potential_temperature_nomask.nc data_1m_potential_temperature_nomask.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_salinity_nomask.nc
++ [hres:6s:15:08:27:3052]: b=data_1m_salinity_nomask.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f data_1m_salinity_nomask.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_salinity_nomask.nc data_1m_salinity_nomask.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/domain_cfg.nc
++ [hres:6s:15:08:27:3052]: b=domain_cfg.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f domain_cfg.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/domain_cfg.nc domain_cfg.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/eddy_viscosity_3D.nc
++ [hres:6s:15:08:27:3052]: b=eddy_viscosity_3D.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f eddy_viscosity_3D.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/eddy_viscosity_3D.nc eddy_viscosity_3D.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/geothermal_heating.nc
++ [hres:6s:15:08:27:3052]: b=geothermal_heating.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f geothermal_heating.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/geothermal_heating.nc geothermal_heating.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/grace_gz_bp.nc
++ [hres:6s:15:08:27:3052]: b=grace_gz_bp.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f grace_gz_bp.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/grace_gz_bp.nc grace_gz_bp.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mask_itf.nc
++ [hres:6s:15:08:27:3052]: b=mask_itf.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f mask_itf.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mask_itf.nc mask_itf.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mesh_mask.nc
++ [hres:6s:15:08:27:3052]: b=mesh_mask.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f mesh_mask.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mesh_mask.nc mesh_mask.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/resto.nc
++ [hres:6s:15:08:27:3052]: b=resto.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f resto.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/resto.nc resto.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask.nc
++ [hres:6s:15:08:27:3052]: b=runoff_1m_nomask.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f runoff_1m_nomask.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask.nc runoff_1m_nomask.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_climatology.nc
++ [hres:6s:15:08:27:3052]: b=runoff_1m_nomask_icb_climatology.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f runoff_1m_nomask_icb_climatology.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_climatology.nc runoff_1m_nomask_icb_climatology.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_interannual.nc
++ [hres:6s:15:08:27:3052]: b=runoff_1m_nomask_icb_interannual.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f runoff_1m_nomask_icb_interannual.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_interannual.nc runoff_1m_nomask_icb_interannual.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/shlat2d.nc
++ [hres:6s:15:08:27:3052]: b=shlat2d.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f shlat2d.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/shlat2d.nc shlat2d.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ssh.nc
++ [hres:6s:15:08:27:3052]: b=ssh.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f ssh.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ssh.nc ssh.nc
++ [hres:6s:15:08:27:3050]: for f in $ocedirconst/*
+++ [hres:6s:15:08:27:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/sss_1m.nc
++ [hres:6s:15:08:27:3052]: b=sss_1m.nc
++ [hres:6s:15:08:27:3053]: [[ ! -f sss_1m.nc ]]
++ [hres:6s:15:08:27:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/sss_1m.nc sss_1m.nc
++ [hres:6s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/subbasins.nc
++ [hres:7s:15:08:28:3052]: b=subbasins.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f subbasins.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/subbasins.nc subbasins.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask.nc
++ [hres:7s:15:08:28:3052]: b=tmask.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f tmask.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask.nc tmask.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=tmask_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f tmask_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask_r1x1.nc tmask_r1x1.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask.nc
++ [hres:7s:15:08:28:3052]: b=umask.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f umask.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask.nc umask.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=umask_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f umask_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask_r1x1.nc umask_r1x1.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask.nc
++ [hres:7s:15:08:28:3052]: b=vmask.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f vmask.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask.nc vmask.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=vmask_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f vmask_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask_r1x1.nc vmask_r1x1.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wT_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=wT_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f wT_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wT_r1x1.nc wT_r1x1.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wU_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=wU_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f wU_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wU_r1x1.nc wU_r1x1.nc
++ [hres:7s:15:08:28:3050]: for f in $ocedirconst/*
+++ [hres:7s:15:08:28:3052]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wV_r1x1.nc
++ [hres:7s:15:08:28:3052]: b=wV_r1x1.nc
++ [hres:7s:15:08:28:3053]: [[ ! -f wV_r1x1.nc ]]
++ [hres:7s:15:08:28:3054]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wV_r1x1.nc wV_r1x1.nc
++ [hres:7s:15:08:28:3058]: for f in $ocedirdate/*
+++ [hres:7s:15:08:28:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_cfg
++ [hres:7s:15:08:28:3060]: b=namelist_cfg
++ [hres:7s:15:08:28:3061]: [[ ! -f namelist_cfg ]]
++ [hres:7s:15:08:28:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_cfg namelist_cfg
++ [hres:7s:15:08:28:3058]: for f in $ocedirdate/*
+++ [hres:7s:15:08:28:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ice_cfg
++ [hres:7s:15:08:28:3060]: b=namelist_ice_cfg
++ [hres:7s:15:08:28:3061]: [[ ! -f namelist_ice_cfg ]]
++ [hres:7s:15:08:28:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ice_cfg namelist_ice_cfg
++ [hres:7s:15:08:28:3058]: for f in $ocedirdate/*
+++ [hres:7s:15:08:28:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ice_ref
++ [hres:7s:15:08:28:3060]: b=namelist_ice_ref
++ [hres:7s:15:08:28:3061]: [[ ! -f namelist_ice_ref ]]
++ [hres:7s:15:08:28:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ice_ref namelist_ice_ref
++ [hres:7s:15:08:28:3058]: for f in $ocedirdate/*
+++ [hres:7s:15:08:28:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ref
++ [hres:7s:15:08:28:3060]: b=namelist_ref
++ [hres:7s:15:08:28:3061]: [[ ! -f namelist_ref ]]
++ [hres:7s:15:08:28:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ref namelist_ref
++ [hres:7s:15:08:28:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc
++ [hres:8s:15:08:29:3060]: b=namelistfc
++ [hres:8s:15:08:29:3061]: [[ ! -f namelistfc ]]
++ [hres:8s:15:08:29:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc namelistfc
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp
++ [hres:8s:15:08:29:3060]: b=namelistfc.tmp
++ [hres:8s:15:08:29:3061]: [[ ! -f namelistfc.tmp ]]
++ [hres:8s:15:08:29:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp namelistfc.tmp
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp.bc
++ [hres:8s:15:08:29:3060]: b=namelistfc.tmp.bc
++ [hres:8s:15:08:29:3061]: [[ ! -f namelistfc.tmp.bc ]]
++ [hres:8s:15:08:29:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp.bc namelistfc.tmp.bc
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namio.in
++ [hres:8s:15:08:29:3060]: b=namio.in
++ [hres:8s:15:08:29:3061]: [[ ! -f namio.in ]]
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namnemocoup.in
++ [hres:8s:15:08:29:3060]: b=namnemocoup.in
++ [hres:8s:15:08:29:3061]: [[ ! -f namnemocoup.in ]]
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namnemowamcoup.in
++ [hres:8s:15:08:29:3060]: b=namnemowamcoup.in
++ [hres:8s:15:08:29:3061]: [[ ! -f namnemowamcoup.in ]]
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart.nc
++ [hres:8s:15:08:29:3060]: b=restart.nc
++ [hres:8s:15:08:29:3061]: [[ ! -f restart.nc ]]
++ [hres:8s:15:08:29:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart.nc restart.nc
++ [hres:8s:15:08:29:3058]: for f in $ocedirdate/*
+++ [hres:8s:15:08:29:3060]: basename /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart_ice_in.nc
++ [hres:8s:15:08:29:3060]: b=restart_ice_in.nc
++ [hres:8s:15:08:29:3061]: [[ ! -f restart_ice_in.nc ]]
++ [hres:8s:15:08:29:3062]: ln -s /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart_ice_in.nc restart_ice_in.nc
++ [hres:8s:15:08:29:3065]: shopt -u nullglob
++ [hres:8s:15:08:29:3067]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3071]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3076]: [[ 0 -eq 1 ]]
++ [hres:8s:15:08:29:3084]: [[ V40 == \V\4\0 ]]
++ [hres:8s:15:08:29:3085]: [[ 0 -eq 1 ]]
++ [hres:8s:15:08:29:3095]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3099]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3103]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3107]: [[ undef != \u\n\d\e\f ]]
++ [hres:8s:15:08:29:3119]: [[ ICMCL_79_2020 != \d\e\f\a\u\l\t ]]
++ [hres:8s:15:08:29:3120]: icmclchunkdir=/gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/ifsINIT
++ [hres:8s:15:08:29:3126]: [[ ! -d /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/ifsINIT ]]
++ [hres:8s:15:08:29:3130]: [[ -f ICMCLhz9mINIT ]]
++ [hres:8s:15:08:29:3131]: rm -f ICMCLhz9mINIT
++ [hres:8s:15:08:29:3133]: [[ -f /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/ifsINIT/ICMCL_79_2020 ]]
++ [hres:8s:15:08:29:3134]: ln -s /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/ifsINIT/ICMCL_79_2020 ICMCLhz9mINIT
++ [hres:8s:15:08:29:3141]: [[ 1 -eq 0 ]]
++ [hres:8s:15:08:29:3159]: [[ undef = \e\e\r\i\e ]]
++ [hres:8s:15:08:29:3186]: [[ true = true ]]
++ [hres:8s:15:08:29:3188]: for f in wam_namelist $namelist_ice $namelist namelist_streams_io
++ [hres:8s:15:08:29:3190]: [[ -f wam_namelist ]]
++ [hres:8s:15:08:29:3191]: cat wam_namelist
++ [hres:8s:15:08:29:3192]: cat wam_namelist
++ [hres:8s:15:08:29:3193]: rm -f wam_namelist
++ [hres:8s:15:08:29:3194]: mv wam_namelist.3263396 wam_namelist
++ [hres:8s:15:08:29:3195]: perl -pe 's%/ec.*(\")%./$1%;' -i wam_namelist
++ [hres:8s:15:08:29:3196]: chmod ug+rw wam_namelist
++ [hres:8s:15:08:29:3188]: for f in wam_namelist $namelist_ice $namelist namelist_streams_io
++ [hres:8s:15:08:29:3190]: [[ -f namelist_ice_cfg ]]
++ [hres:8s:15:08:29:3191]: cat namelist_ice_cfg
++ [hres:8s:15:08:29:3192]: cat namelist_ice_cfg
++ [hres:8s:15:08:29:3193]: rm -f namelist_ice_cfg
++ [hres:8s:15:08:29:3194]: mv namelist_ice_cfg.3263396 namelist_ice_cfg
++ [hres:8s:15:08:29:3195]: perl -pe 's%/ec.*(\")%./$1%;' -i namelist_ice_cfg
++ [hres:9s:15:08:30:3196]: chmod ug+rw namelist_ice_cfg
++ [hres:9s:15:08:30:3188]: for f in wam_namelist $namelist_ice $namelist namelist_streams_io
++ [hres:9s:15:08:30:3190]: [[ -f namelist_cfg ]]
++ [hres:9s:15:08:30:3191]: cat namelist_cfg
++ [hres:9s:15:08:30:3192]: cat namelist_cfg
++ [hres:9s:15:08:30:3193]: rm -f namelist_cfg
++ [hres:9s:15:08:30:3194]: mv namelist_cfg.3263396 namelist_cfg
++ [hres:9s:15:08:30:3195]: perl -pe 's%/ec.*(\")%./$1%;' -i namelist_cfg
++ [hres:9s:15:08:30:3196]: chmod ug+rw namelist_cfg
++ [hres:9s:15:08:30:3188]: for f in wam_namelist $namelist_ice $namelist namelist_streams_io
++ [hres:9s:15:08:30:3190]: [[ -f namelist_streams_io ]]
++ [hres:9s:15:08:30:3203]: wam_namelists=(wam_namelist)
++ [hres:9s:15:08:30:3204]: for f in "${wam_namelists[@]}"
++ [hres:9s:15:08:30:3206]: [[ -f wam_namelist ]]
++ [hres:9s:15:08:30:3217]: perl -p -e 's%(LSMSSIG_WAM\s*=\s*)\S+\s*,%${1}F,%;' -e 's%\b(NPROMA_WAM\s*=\s*)\d+%${1}16%;' -e 's%(\bCPATH\s*=\s*\")\S+(\")%${1}restart.dir${2}%;' -i wam_namelist
++ [hres:9s:15:08:30:3223]: [[ undef = \o\d ]]
++ [hres:9s:15:08:30:3262]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:9s:15:08:30:3262]: [[ undef = \e\e\r\i\e ]]
++ [hres:9s:15:08:30:3302]: [[ undef = \i\n\c\i\t\e ]]
++ [hres:9s:15:08:30:3326]: [[ 1 -eq 1 ]]
++ [hres:9s:15:08:30:3327]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3329]: [[ 0 -eq 1 ]]
++ [hres:9s:15:08:30:3332]: [[ -f remap/namnemocoup.in ]]
++ [hres:9s:15:08:30:3337]: cat namnemocoup.in
++ [hres:9s:15:08:30:3338]: cat namnemocoup.in
++ [hres:9s:15:08:30:3339]: rm -f namnemocoup.in
++ [hres:9s:15:08:30:3340]: mv namnemocoup.in.3263396 namnemocoup.in
++ [hres:9s:15:08:30:3341]: perl -p -e 's%/ec.*/(remap/)%./$1%;' -e 's%'\''/ec.*'\''%'\''./'\'',%;' -i namnemocoup.in
++ [hres:9s:15:08:30:3346]: [[ V40 = \V\4\0 ]]
++ [hres:9s:15:08:30:3347]: perl -pe s%ORCA025_Z75%eORCA1_Z75%g -i namnemocoup.in
++ [hres:9s:15:08:30:3327]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3329]: [[ 0 -eq 1 ]]
++ [hres:9s:15:08:30:3332]: [[ -f remap/namnemowamcoup.in ]]
++ [hres:9s:15:08:30:3337]: cat namnemowamcoup.in
++ [hres:9s:15:08:30:3338]: cat namnemowamcoup.in
++ [hres:9s:15:08:30:3339]: rm -f namnemowamcoup.in
++ [hres:9s:15:08:30:3340]: mv namnemowamcoup.in.3263396 namnemowamcoup.in
++ [hres:9s:15:08:30:3341]: perl -p -e 's%/ec.*/(remap/)%./$1%;' -e 's%'\''/ec.*'\''%'\''./'\'',%;' -i namnemowamcoup.in
++ [hres:9s:15:08:30:3346]: [[ V40 = \V\4\0 ]]
++ [hres:9s:15:08:30:3347]: perl -pe s%ORCA025_Z75%eORCA1_Z75%g -i namnemowamcoup.in
++ [hres:9s:15:08:30:3351]: lparintmultatm=TRUE
++ [hres:9s:15:08:30:3352]: perl -pe 's%^/\s*$%  lparintmultatm=TRUE,\n/\n%' -i namnemocoup.in
++ [hres:9s:15:08:30:3354]: lparintmultwam=TRUE
++ [hres:9s:15:08:30:3355]: perl -pe 's%^/\s*$%  lparintmultwam=TRUE,\n/\n%' -i namnemowamcoup.in
++ [hres:9s:15:08:30:3357]: lparbcast=TRUE
++ [hres:9s:15:08:30:3358]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3360]: perl -pe 's%\b(lparbcast\s*=\s*)\w+\b%${1}TRUE%' -i namnemocoup.in
++ [hres:9s:15:08:30:3358]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3360]: perl -pe 's%\b(lparbcast\s*=\s*)\w+\b%${1}TRUE%' -i namnemowamcoup.in
++ [hres:9s:15:08:30:3363]: [[ 0 -eq 0 ]]
++ [hres:9s:15:08:30:3364]: parnemoinput=.false.
++ [hres:9s:15:08:30:3370]: for f in $namelist
++ [hres:9s:15:08:30:3372]: perl -p -e 's/\b(nn_itend\s*=\s*)\d+/${1}1/; ' -e 's/\b(nn_date0\s*=\s*)\d+/${1}20200120/; ' -e 's/\b(jpnij\s*=\s*)\d+/${1}14/;' -e 's/\b(jpni\s*=\s*)\d+/${1}-1/;' -e 's/\b(jpnj\s*=\s*)\d+/${1}-1/;' -e 's/\b(rn_rdt\s*=\s*)\S+/${1}3600/;' -e 's/\b(ln_smslabel\s*=\s*)(\S+)/${1}.false./;' -i namelist_cfg
++ [hres:9s:15:08:30:3382]: perl -p -e 's/\b(ln_grid_search_lookup\s*=\s*)(\S+)/${1}.false./;' -i namelist_cfg
++ [hres:9s:15:08:30:3386]: [[ 0 -eq 1 ]]
++ [hres:9s:15:08:30:3396]: [[ 0 -eq 1 ]]
++ [hres:9s:15:08:30:3404]: [[ 0 -eq 1 ]]
++ [hres:9s:15:08:30:3414]: [[ 0 = 0 ]]
++ [hres:9s:15:08:30:3416]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3418]: perl -p -e 's/\b(l(?:write|read)dist\s*=\s*)\S+/${1}.false.,/;' -i namnemocoup.in
++ [hres:9s:15:08:30:3416]: for f in namnemocoup.in namnemowamcoup.in
++ [hres:9s:15:08:30:3418]: perl -p -e 's/\b(l(?:write|read)dist\s*=\s*)\S+/${1}.false.,/;' -i namnemowamcoup.in
++ [hres:9s:15:08:30:3439]: [[ 0 -gt 0 ]]
++ [hres:9s:15:08:30:3447]: [[ 0 -eq 0 ]]
++ [hres:9s:15:08:30:3454]: for f in $namelist_ice
++ [hres:9s:15:08:30:3456]: perl -p -e 's/\b(noumef\s*=\s*)\d+/${1}0/;' -i namelist_ice_cfg
++ [hres:9s:15:08:31:3462]: for f in namelist_streams_io $namelist
++ [hres:10s:15:08:31:3464]: perl -pe 's/\b(nstreams\s*=\s*)\d+/${1}0/' -i namelist_streams_io
+Can't open namelist_streams_io: No such file or directory.
++ [hres:10s:15:08:31:3462]: for f in namelist_streams_io $namelist
++ [hres:10s:15:08:31:3464]: perl -pe 's/\b(nstreams\s*=\s*)\d+/${1}0/' -i namelist_cfg
++ [hres:10s:15:08:31:3468]: for f in $namelist
++ [hres:10s:15:08:31:3470]: perl -p -e 's/\b(ln_writerst\s*=\s*)\S+/${1}.false./;' -i namelist_cfg
++ [hres:10s:15:08:31:3493]: [[ undef = @(od|rst|nextgems|eerie) ]]
++ [hres:10s:15:08:31:3493]: [[ 0 -eq 1 ]]
++ [hres:10s:15:08:31:3519]: [[ undef = \i\n\c\i\t\e ]]
++ [hres:10s:15:08:31:3533]: for f in $namelist
++ [hres:10s:15:08:31:3535]: perl -p -e 's/\b(ln_writerst\s*=\s*)\S+/${1}.false./;' -e 's/\b(nn_stock\s*=\s*)\S+/${1}-1/;' -e 's/\b(nn_write\s*=\s*)\S+/${1}-1/;' -i namelist_cfg
++ [hres:10s:15:08:31:3543]: [[ 0 -eq 1 ]]
++ [hres:10s:15:08:31:3569]: [[ 0 -eq 1 ]]
++ [hres:10s:15:08:31:3697]: for f in wam_grid_tables wam_subgrid_0 wam_subgrid_1 wam_subgrid_2
++ [hres:10s:15:08:31:3699]: [[ ! -w wam_grid_tables ]]
++ [hres:10s:15:08:31:3701]: cp --dereference wam_grid_tables wam_grid_tables.orig
++ [hres:10s:15:08:31:3702]: rm -f wam_grid_tables
++ [hres:10s:15:08:31:3703]: mv wam_grid_tables.orig wam_grid_tables
++ [hres:10s:15:08:31:3704]: chmod u+rw wam_grid_tables
++ [hres:10s:15:08:31:3697]: for f in wam_grid_tables wam_subgrid_0 wam_subgrid_1 wam_subgrid_2
++ [hres:10s:15:08:31:3699]: [[ ! -w wam_subgrid_0 ]]
++ [hres:10s:15:08:31:3701]: cp --dereference wam_subgrid_0 wam_subgrid_0.orig
++ [hres:10s:15:08:31:3702]: rm -f wam_subgrid_0
++ [hres:10s:15:08:31:3703]: mv wam_subgrid_0.orig wam_subgrid_0
++ [hres:10s:15:08:31:3704]: chmod u+rw wam_subgrid_0
++ [hres:10s:15:08:31:3697]: for f in wam_grid_tables wam_subgrid_0 wam_subgrid_1 wam_subgrid_2
++ [hres:10s:15:08:31:3699]: [[ ! -w wam_subgrid_1 ]]
++ [hres:10s:15:08:31:3701]: cp --dereference wam_subgrid_1 wam_subgrid_1.orig
++ [hres:10s:15:08:31:3702]: rm -f wam_subgrid_1
++ [hres:10s:15:08:31:3703]: mv wam_subgrid_1.orig wam_subgrid_1
++ [hres:10s:15:08:31:3704]: chmod u+rw wam_subgrid_1
++ [hres:10s:15:08:31:3697]: for f in wam_grid_tables wam_subgrid_0 wam_subgrid_1 wam_subgrid_2
++ [hres:10s:15:08:31:3699]: [[ ! -w wam_subgrid_2 ]]
++ [hres:10s:15:08:31:3701]: cp --dereference wam_subgrid_2 wam_subgrid_2.orig
++ [hres:10s:15:08:31:3702]: rm -f wam_subgrid_2
++ [hres:10s:15:08:31:3703]: mv wam_subgrid_2.orig wam_subgrid_2
++ [hres:10s:15:08:31:3704]: chmod u+rw wam_subgrid_2
++ [hres:10s:15:08:31:3708]: [[ 0 -eq 1 ]]
++ [hres:10s:15:08:31:3715]: [[ 0 -eq 1 ]]
++ [hres:10s:15:08:31:3723]: [[ ! -f fort.4 ]]
++ [hres:10s:15:08:31:3743]: fort4=fort.4.3263396
++ [hres:10s:15:08:31:3744]: cat fort.4
++ [hres:10s:15:08:31:3747]: env PRETTYFI_SPLIT=0 prettyfi_namelists.pl fort.4.3263396
+	Writing fort.4.3263396 => fort.4.3263396.sorted (178 namelists)
++ [hres:10s:15:08:31:3748]: mv fort.4.3263396.sorted fort.4.3263396
++ [hres:10s:15:08:31:3750]: cat fort.4
++ [hres:10s:15:08:31:3752]: cat fort.4
++ [hres:10s:15:08:31:3753]: rm -f fort.4
++ [hres:11s:15:08:32:3755]: env PRETTYFI_SPLIT=0 prettyfi_namelists.pl fort.4.orig
+	Writing fort.4.orig => fort.4.orig.sorted (178 namelists)
++ [hres:11s:15:08:32:3756]: mv fort.4.orig.sorted fort.4.orig
++ [hres:11s:15:08:32:3758]: lopt_scalar=true
++ [hres:11s:15:08:32:3760]: perl -p -e 's%(LREFOUT=)\S+,%${1}false,%;' -e 's%(LREFGEN=)\S+,%${1}false,%;' -e 's%(NWRTOUT=)\d+,%${1}14,%;' -e 's%(\s*NFPOS)\b%LREFOUT=false,\nLREFGEN=false,\nNOPT_MEMORY=2,\nNUNDEFLD=-99999999,\n\1%;' -e 's%(\'\'').*/(rcf|srf)\b%${1}restart.dir/$2%;' -e 's%\b(NOPT_MEMORY=)\S+,%${1}2,%;' -e 's%(NAEPHY\s*)\n%${1}\nNSTPW=1,\n%;' -e 's%\b(NSTPW=)\S+,%${1}1%;' -e 's%\b(NPROMA=)\S+,%${1}-16,%;' -e 's%\b(NRPROMA=)\S+,%${1}0,%;' -e 's%\b(NOUTPUT=)\S+,%${1}1,%;' -e 's%(NAMPAR0\s*)\n%${1}\nLOPT_SCALAR=true,\nLOPT_RS6K=false,\nNPRINTLEV=0,\n%;' -e 's%(NAMPAR1\s*)\n%${1}\nNTRANS_SYNC_LEVEL=0,\nNOUTTYPE=2,\n%;' -e 's%\b(LOPT_SCALAR=)\S+,%${1}true,%;' -e 's%\b(LOPT_RS6K=)\S+,%${1}false,%;' -e 's%\b(LERADI=)\S+,%${1}true,%;' -e 's%\b(NPROC_IO=)\d+,%${1}0,%;' -e 's%\b(NPROC=)\d+,%${1}14,%;' -e 's%\b(NPRNT_STATS=)\d+,%${1}14,%;' -e 's%\b(TSTEP=)\S+,%${1}3600,%;' -e 's%\b(CSTOP=)\S+,%${1}'\''h1'\'',%;' -e 's%\b(LSMSSIG=)\S+,%${1}true,%;' -e 's%\b(NPOSTS|NHISTS)=\S+,\s*$%%;' -e 's%\b(NFRPOS=)\S+,%${1}1,\nNPOSTS=1,999999,%;' -e 's%\b(NFRHIS=)\S+,%${1}1,\nNHISTS=1,999999,%;' -e 's%\b(LFDBOP=)\S+,%${1}true,%;' -e 's%\b(LWCOU=)\S+,%${1}true,%;' -e 's%\b(LWCOU2W=)\S+,%${1}true,%;' -e 's%\b(NFRCO=)\S+,%${1}1,%;' -e 's%\b(MBX_SIZE=)\d+,%${1}0,%;' -e 's%\b(MP_TYPE=)\S+,%${1}1,%;' -e 's%(NUNDEFLD=)\S+,%${1}-99999999,%;' -e 's%(NAMJFH\s*)\n%${1}\nN_VMASS=0,\n%;' -e 's%\b(N_VMASS=)\S+,%${1}0,%;' -e 's/LTWOTL=\w+,/LTWOTL=true,/;' -i fort.4.3263396
++ [hres:11s:15:08:32:3798]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:11s:15:08:32:3798]: [[ undef = \e\e\r\i\e ]]
++ [hres:11s:15:08:32:3813]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:3855]: [[ sp = \s\p ]]
++ [hres:11s:15:08:32:3857]: [[ -1 -eq 0 ]]
++ [hres:11s:15:08:32:3859]: [[ -1 -eq 1 ]]
++ [hres:11s:15:08:32:3862]: ieeehalt=
++ [hres:11s:15:08:32:3865]: [[ '' != '' ]]
++ [hres:11s:15:08:32:3872]: [[ hres = \h\r\e\s ]]
++ [hres:11s:15:08:32:3874]: [[ 1 -eq 0 ]]
++ [hres:11s:15:08:32:3876]: [[ 1 -eq 1 ]]
++ [hres:11s:15:08:32:3877]: deep=true
++ [hres:11s:15:08:32:3882]: [[ true != '' ]]
++ [hres:11s:15:08:32:3884]: perl -ne 'print unless (m%^\s*\&NAMCUMF\s*$%i .. m%^\s*/\s*$%)' -i fort.4.3263396
++ [hres:11s:15:08:32:3886]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:3911]: cat
++ [hres:11s:15:08:32:3925]: [[ undef = @(nextgems) ]]
++ [hres:11s:15:08:32:3925]: [[ undef = \e\e\r\i\e ]]
++ [hres:11s:15:08:32:3936]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:3951]: [[ 0 -eq 0 ]]
++ [hres:11s:15:08:32:3952]: perl -p -e 's/LEO3CH=\w+,/LEO3CH=false,/;' -e 's/YO3_NL%LGP=\w+,/YO3_NL%LGP=false,\nYO3_NL%NREQIN=0,/;' -i fort.4.3263396
++ [hres:11s:15:08:32:3958]: [[ undef = @(nextgems) ]]
++ [hres:11s:15:08:32:3958]: [[ undef = \e\e\r\i\e ]]
++ [hres:11s:15:08:32:4063]: [[ false == \t\r\u\e ]]
++ [hres:11s:15:08:32:4108]: [[ false == \t\r\u\e ]]
++ [hres:11s:15:08:32:4120]: [[ 0 -gt 0 ]]
++ [hres:11s:15:08:32:4153]: [[ 1 -eq 0 ]]
++ [hres:11s:15:08:32:4180]: [[ 1 -eq 1 ]]
++ [hres:11s:15:08:32:4181]: perl -p -e 's%LEOBC=true%LEOBC=false%;' -e 's%LEOBCICE=true%LEOBCICE=false%;' -i fort.4.3263396
++ [hres:11s:15:08:32:4195]: [[ 1 = 0 ]]
++ [hres:11s:15:08:32:4197]: [[ 1 = 1 ]]
++ [hres:11s:15:08:32:4198]: sicoupl=fractional
++ [hres:11s:15:08:32:4203]: [[ 1 -eq 1 ]]
++ [hres:11s:15:08:32:4203]: [[ V40 = V40 ]]
++ [hres:11s:15:08:32:4206]: perl -p -e 's%\b(LNEMOSI3=)\S+,%${1}.true.,%;' -i fort.4.3263396
++ [hres:11s:15:08:32:4209]: [[ 1 -eq 1 ]]
++ [hres:11s:15:08:32:4209]: [[ V40 = V40 ]]
++ [hres:11s:15:08:32:4211]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4214]: ice_model=NEMO4-SI3
++ [hres:11s:15:08:32:4217]: [[ fractional = \u\n\d\e\f ]]
++ [hres:11s:15:08:32:4219]: [[ fractional = \f\r\a\c\t\i\o\n\a\l ]]
++ [hres:11s:15:08:32:4220]: echo 'sicoupl=fractional with NEMO4-SI3: IFS clim. albedo and IFS ice surface temperature are used; IFS ice module enabled'
+sicoupl=fractional with NEMO4-SI3: IFS clim. albedo and IFS ice surface temperature are used; IFS ice module enabled
++ [hres:11s:15:08:32:4221]: perl -p -e 's%\b(LESICE=)\S+,%${1}.true.,%;' -e 's%\b(LNEMOLIMTEMP=)\S+,%${1}.false.,%;' -e 's%\b(LNEMOLIMALB=)\S+,%${1}.false.,%;' -e 's%\b(LNEMOSICOUP=)\S+,%${1}.false.,%;' -i fort.4.3263396
++ [hres:11s:15:08:32:4264]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4282]: [[ false = true ]]
++ [hres:11s:15:08:32:4297]: perl -pe 's%LSETOCEANICEMISSINGVALS=\S+%%;' -i fort.4.3263396
++ [hres:11s:15:08:32:4299]: [[ undef != \u\n\d\e\f ]]
++ [hres:11s:15:08:32:4305]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4429]: [[ undef = \r\d ]]
++ [hres:11s:15:08:32:4432]: [[ undef = \r\s\t ]]
++ [hres:11s:15:08:32:4450]: [[ undef = \o\d ]]
++ [hres:11s:15:08:32:4563]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:11s:15:08:32:4563]: [[ undef = \e\e\r\i\e ]]
++ [hres:11s:15:08:32:4684]: [[ undef = \i\n\c\i\t\e ]]
++ [hres:11s:15:08:32:4791]: [[ 0 -eq 0 ]]
++ [hres:11s:15:08:32:4792]: perl -ne 'print unless (m%^\s*\&namddh\s*$%i .. m%^\s*/\s*$%)' -i fort.4.3263396
++ [hres:11s:15:08:32:4793]: echo -e '&NAMDDH\n/'
++ [hres:11s:15:08:32:4794]: perl -pe 's/(CFDIRLST|CNPPATH)=(\S+)\s*\n//' -i fort.4.3263396
++ [hres:11s:15:08:32:4795]: perl -ne 'print unless (m%^\s*\&namsatsim\s*$%i .. m%^\s*/\s*$%)' -i fort.4.3263396
++ [hres:11s:15:08:32:4796]: echo -e '&NAMSATSIM\n/'
++ [hres:11s:15:08:32:4800]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4807]: [[ hres = @(hres|ens|oops) ]]
++ [hres:11s:15:08:32:4808]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4837]: nsiter=0
++ [hres:11s:15:08:32:4838]: [[ 0 -gt 0 ]]
++ [hres:11s:15:08:32:4852]: [[ 0 -eq 1 ]]
++ [hres:11s:15:08:32:4852]: [[ 0 -eq 2 ]]
++ [hres:11s:15:08:32:4858]: [[ 1 -eq 0 ]]
++ [hres:11s:15:08:32:4866]: perl -p -e 's/(\&NAMDYNA)\s*\n/${1}\nLRPRSLTRJ=false,\n/;' -i fort.4.3263396
++ [hres:11s:15:08:32:4871]: [[ hz9m != \h\z\9\m ]]
++ [hres:12s:15:08:33:4880]: perl -p -e 's/(CNMEXP=)\S+,/$1'\''hz9m'\'',/;' -i fort.4.3263396
++ [hres:12s:15:08:33:4884]: [[ -f namelist_cfg ]]
++ [hres:12s:15:08:33:4885]: perl -p -e 's/(cn_exp\s*=\s*)\S+/$1"hz9m"/;' -i namelist_cfg
++ [hres:12s:15:08:33:4890]: [[ 1 -eq 1 ]]
++ [hres:12s:15:08:33:4891]: [[ 1 -eq 1 ]]
++ [hres:12s:15:08:33:4891]: [[ V40 = V40 ]]
++ [hres:12s:15:08:33:4892]: echo 'WARNING: using TEOS10 equation of state in NEMO V40. Input ocean restarts (or climatology and/or SST-relaxation dataset) should be formulated in TEOS10. The model cannot tell whether they are or not - it is up to the user to provide correct ones!'
+WARNING: using TEOS10 equation of state in NEMO V40. Input ocean restarts (or climatology and/or SST-relaxation dataset) should be formulated in TEOS10. The model cannot tell whether they are or not - it is up to the user to provide correct ones!
++ [hres:12s:15:08:33:4893]: perl -p -e 's/(ln_eos80\s*=\s*)\S+/$1 .false./;' -i namelist_cfg
++ [hres:12s:15:08:33:4894]: perl -p -e 's/(ln_teos10\s*=\s*)\S+/$1 .true./;' -i namelist_cfg
++ [hres:12s:15:08:33:4903]: [[ 1 -eq 1 ]]
++ [hres:12s:15:08:33:4903]: [[ V40 = V40 ]]
++ [hres:12s:15:08:33:4904]: [[ undef != \u\n\d\e\f ]]
++ [hres:12s:15:08:33:4917]: [[ yes != \y\e\s ]]
++ [hres:12s:15:08:33:4933]: [[ '' != '' ]]
++ [hres:12s:15:08:33:4943]: mv fort.4.3263396 fort.4
++ [hres:12s:15:08:33:4946]: prettyfi_namelists.pl fort.4
+	Writing fort.4 => fort.4.sorted (178 namelists)
++ [hres:12s:15:08:33:4947]: mv fort.4.sorted fort.4
++ [hres:12s:15:08:33:4951]: env PRETTYFI_SPLIT=1 prettyfi_namelists.pl fort.4.orig
+	Writing fort.4.orig => fort.4.orig.sorted (178 namelists)
++ [hres:12s:15:08:33:4952]: mv fort.4.orig.sorted fort.4.orig
++ [hres:12s:15:08:33:4955]: [[ 0 -eq 1 ]]
++ [hres:12s:15:08:33:4979]: args=
++ [hres:12s:15:08:33:4983]: set +x
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 wam_namelist.orig wam_namelist
+ LSMSSIG_WAM = T,						     |	 LSMSSIG_WAM = F,
+ CPATH    = "/ec/fws5/sb/work/rd/paxp/hz9m/LWDA/2020012000/gfc",     |	 CPATH    = "restart.dir",
+ NPROMA_WAM = 24,						     |	 NPROMA_WAM = 16,
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 namelist_ice_cfg.orig namelist_ice_cfg
+cn_icerst_outdir="/ec/fws5/sb/work/rd/ne1/hv16/2020010100/gfc/",     |	cn_icerst_outdir="./",
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 namelist_cfg.orig namelist_cfg
+cn_exp="hv16",							     |	cn_exp="hz9m"
+nn_itend=768,							     |	nn_itend=1,
+cn_ocerst_outdir="/ec/fws5/sb/work/rd/ne1/hv16/2020010100/gfc/"	     |	cn_ocerst_outdir="./"
+nn_stock=768,							     |	nn_stock=-1
+nn_write=-1,							     |	nn_write=-1
+rn_rdt=3600,							     |	rn_rdt=3600
+ln_eos80=.true.,						     |	ln_eos80= .false.
+ln_teos10=.false.,						     |	ln_teos10= .true.
+jpni=0,								     |	jpni=-1,
+jpnj=0,								     |	jpnj=-1,
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 namnemocoup.in.orig namnemocoup.in
+  cdfile_gauss_to_T='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_ |	  cdfile_gauss_to_T='./remap/remap_79_4_mask_to_eORCA1_Z75_mask_T_L1
+  cdfile_gauss_to_U='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_ |	  cdfile_gauss_to_U='./remap/remap_79_4_mask_to_eORCA1_Z75_mask_U_L1
+  cdfile_gauss_to_V='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_ |	  cdfile_gauss_to_V='./remap/remap_79_4_mask_to_eORCA1_Z75_mask_V_L1
+  cdfile_T_to_gauss='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_ |	  cdfile_T_to_gauss='./remap/remap_eORCA1_Z75_mask_T_L1_to_79_4_mask
+  lparbcast=true						     |	  lparbcast=TRUE
+  cdpathdist='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap_mpp/hz9m/fc/m |	  cdpathdist='./',
+  lreaddist=.true.						     |	  lreaddist=.false.,
+  lwritedist=.true.						     |	  lwritedist=.false.,
+								     >	  lparintmultatm=TRUE,
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 namnemowamcoup.in.orig namnemowamcoup.in
+  cdfile_wam_to_T='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_wa |	  cdfile_wam_to_T='./remap/remap_wam_global150_mask_to_eORCA1_Z75_ma
+  cdfile_wam_to_U='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_wa |	  cdfile_wam_to_U='./remap/remap_wam_global150_mask_to_eORCA1_Z75_ma
+  cdfile_wam_to_V='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_wa |	  cdfile_wam_to_V='./remap/remap_wam_global150_mask_to_eORCA1_Z75_ma
+  cdfile_T_to_wam='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap/remap_OR |	  cdfile_T_to_wam='./remap/remap_eORCA1_Z75_mask_T_L1_to_wam_global1
+  cdpathdist='/ec/fws5/sb/work/rd/paxp/hz9m/data/remap_mpp/hz9m/fc/m |	  cdpathdist='./',
+  lreaddist=.true.						     |	  lreaddist=.false.,
+  lwritedist=.true.						     |	  lwritedist=.false.,
+								     >	  lparintmultwam=TRUE,
++ [hres:12s:15:08:33:4991]: sdiff -WB -s -w 140 fort.4.orig fort.4
+ LEO3CH=true,							     |	 LEO3CH=false,
+ LEOBC=true,							     |	 LEOBC=false,
+								     >	 LREFGEN=false,
+								     >	 LREFOUT=false,
+ NFRCO=2,							     |	 NFRCO=1,
+ NFRHIS=2,							     |	 NFRHIS=1,
+ NFRPOS=2,							     |	 NFRPOS=1,
+ NHISTS=0,							     |	 NHISTS=1,999999,
+ NPOSTS=0,							     |	 NOPT_MEMORY=2,
+ NUNDEFLD=-999999,						     |	 NPOSTS=1,999999,
+								     >	 NUNDEFLD=-99999999,
+								     >	 LMFPEN=true,
+ BDEDDH(1:6,1)=4.0,1.0,0.0,50.0,0.0,49.0,			     <
+ LHDDOP=false,							     <
+ LHDEFD=false,							     <
+ LHDEFZ=false,							     <
+ LHDGLB=true,							     <
+ LHDHKS=true,							     <
+ LHDPRG=true,							     <
+ LHDZON=false,							     <
+ NDHKD=72,							     <
+								     >	 LRPRSLTRJ=false,
+ YO3_NL%LGP=true,						     |	 YO3_NL%LGP=false,
+								     >	 YO3_NL%NREQIN=0,
+ CFRCF='../rcf',						     |	 CFRCF='restart.dir/rcf',
+ CIOSPRF='../srf',						     |	 CIOSPRF='restart.dir/srf',
+ NPROC_IO=2,							     |	 NPROC_IO=0,
+								     >	 N_VMASS=0,
+								     >	 LOPT_RS6K=false,
+								     >	 LOPT_SCALAR=true,
+ NPRNT_STATS=62,						     |	 NPRINTLEV=0,
+ NPROC=62,							     |	 NPRNT_STATS=14,
+								     >	 NPROC=14,
+								     >	 NOUTTYPE=2,
+ NWRTOUT=4,							     |	 NTRANS_SYNC_LEVEL=0,
+								     >	 NWRTOUT=14,
+ CSTOP='h48',							     |	 CSTOP='h1',
+ TSTEP=1800.0,							     |	 TSTEP=3600,
++ [hres:12s:15:08:33:4998]: [[ -n lib:/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib:/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib:/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib:/apps/GPP/FFTW/3.3.10/GCC/IMPI/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../vpl/latest/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../tbb/latest/lib/intel64/gcc4.8:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../itac/latest/slib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ipp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ippcp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dnnl/latest/cpu_dpcpp_gpu_dpcpp/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dal/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ccl/latest/lib/cpu_gpu_dpcpp:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/x64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/emu:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin:/apps/GPP/UCX/1.15.0/INTEL/lib ]]
+++ [hres:12s:15:08:33:4999]: readlink -f /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/..
++ [hres:12s:15:08:33:4999]: LD_LIBRARY_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/raps:lib:/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib:/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib:/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib:/apps/GPP/FFTW/3.3.10/GCC/IMPI/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../vpl/latest/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../tbb/latest/lib/intel64/gcc4.8:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../itac/latest/slib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ipp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ippcp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dnnl/latest/cpu_dpcpp_gpu_dpcpp/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dal/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ccl/latest/lib/cpu_gpu_dpcpp:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/x64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/emu:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin:/apps/GPP/UCX/1.15.0/INTEL/lib
++ [hres:12s:15:08:33:5000]: echo 'LD_LIBRARY_PATH ='
+LD_LIBRARY_PATH =
++ [hres:12s:15:08:33:5001]: echo /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/raps:lib:/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib:/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib:/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib:/apps/GPP/FFTW/3.3.10/GCC/IMPI/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../vpl/latest/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../tbb/latest/lib/intel64/gcc4.8:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../itac/latest/slib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ipp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ippcp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dnnl/latest/cpu_dpcpp_gpu_dpcpp/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dal/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ccl/latest/lib/cpu_gpu_dpcpp:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/x64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/emu:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin:/apps/GPP/UCX/1.15.0/INTEL/lib
++ [hres:12s:15:08:33:5001]: perl -pe 's/:/\n/g'
++ [hres:12s:15:08:33:5001]: cat -n
+     1	/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/raps
+     2	lib
+     3	/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib
+     4	/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib
+     5	/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib
+     6	/apps/GPP/FFTW/3.3.10/GCC/IMPI/lib
+     7	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64
+     8	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/lib
+     9	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib
+    10	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release
+    11	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../vpl/latest/lib
+    12	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../tbb/latest/lib/intel64/gcc4.8
+    13	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../itac/latest/slib
+    14	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ipp/latest/lib/intel64
+    15	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ippcp/latest/lib/intel64
+    16	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dnnl/latest/cpu_dpcpp_gpu_dpcpp/lib
+    17	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dal/latest/lib/intel64
+    18	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ccl/latest/lib/cpu_gpu_dpcpp
+    19	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/x64
+    20	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib
+    21	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/emu
+    22	/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin
+    23	/apps/GPP/UCX/1.15.0/INTEL/lib
++ [hres:12s:15:08:33:5004]: [[ /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127 != \u\n\d\e\f ]]
++ [hres:12s:15:08:33:5005]: LD_LIBRARY_PATH=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib:/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/ifs_sp:/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/raps:lib:/apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib:/apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib:/apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib:/apps/GPP/FFTW/3.3.10/GCC/IMPI/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../vpl/latest/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../tbb/latest/lib/intel64/gcc4.8:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../itac/latest/slib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ipp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ippcp/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dnnl/latest/cpu_dpcpp_gpu_dpcpp/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../dal/latest/lib/intel64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/../../ccl/latest/lib/cpu_gpu_dpcpp:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/x64:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/lib/emu:/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin:/apps/GPP/UCX/1.15.0/INTEL/lib
++ [hres:12s:15:08:33:5008]: [[ intelmpi = \n\e\c\m\p\i ]]
++ [hres:12s:15:08:33:5015]: exe=./ifsMASTER
++ [hres:12s:15:08:33:5016]: ls -ltrL /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/bin/ifsMASTER.SP
+-rwxr-xr-x 1 bsc631248 bsc32 1973216 Jul 30 13:42 /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/bin/ifsMASTER.SP
++ [hres:12s:15:08:33:5017]: ln -s /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/bin/ifsMASTER.SP ./ifsMASTER
++ [hres:12s:15:08:33:5018]: ldd ./ifsMASTER
+	linux-vdso.so.1 (0x00007ffd5abc5000)
+	libarpifs.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libarpifs.SP.so (0x000014610882d000)
+	libblackcompiler.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libblackcompiler.SP.so (0x00001461087de000)
+	libblack.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libblack.so (0x00001461087d7000)
+	libsatrad.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libsatrad.SP.so (0x0000146100aca000)
+	libhdf5_fortran.so.310 => /apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib/libhdf5_fortran.so.310 (0x0000146100a65000)
+	libhdf5.so.310 => /apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib/libhdf5.so.310 (0x000014610052c000)
+	libz.so.1 => /lib64/libz.so.1 (0x0000146100503000)
+	libhdf5hl_fortran.so.310 => /apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib/libhdf5hl_fortran.so.310 (0x00001461004dc000)
+	libhdf5_hl.so.310 => /apps/GPP/HDF5/1.14.1-2/INTEL/IMPI/lib/libhdf5_hl.so.310 (0x00001461004b2000)
+	libsurf.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libsurf.SP.so (0x000014610018c000)
+	libtrans_sp.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libtrans_sp.so (0x000014610002f000)
+	libfftw3.so.3 => /apps/GPP/FFTW/3.3.10/GCC/IMPI/lib/libfftw3.so.3 (0x00001460ffc90000)
+	libfftw3f.so.3 => /apps/GPP/FFTW/3.3.10/GCC/IMPI/lib/libfftw3f.so.3 (0x00001460ff8b0000)
+	libscat.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libscat.SP.so (0x00001460fd483000)
+	libalgor.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libalgor.SP.so (0x00001460fd42e000)
+	libwamassi.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libwamassi.SP.so (0x00001460fca94000)
+	libwam.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libwam.SP.so (0x00001460fc6ff000)
+	libifsobs.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libifsobs.so (0x00001460fc2ed000)
+	libodb.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libodb.so (0x00001460fb018000)
+	libnemogcmcoup.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libnemogcmcoup.SP.so (0x00001460fafca000)
+	libnemovar_DEV.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libnemovar_DEV.SP.so (0x00001460f94eb000)
+	libnemo_V40.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libnemo_V40.SP.so (0x00001460f70a5000)
+	libioipsl_V40.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libioipsl_V40.SP.so (0x00001460f034b000)
+	libnetcdff.so.7 => /apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib/libnetcdff.so.7 (0x00001460eff72000)
+	libdwarf_mpdata.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libdwarf_mpdata.SP.so (0x00001460efeda000)
+	libdwarf_sladv.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libdwarf_sladv.SP.so (0x00001460efe72000)
+	libatlas_f.so.0.37 => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libatlas_f.so.0.37 (0x00001460efc41000)
+	libdwarf_util.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libdwarf_util.so (0x00001460efc3c000)
+	libifsaux.SP.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libifsaux.SP.so (0x00001460ec5ad000)
+	libeccodes_f90.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeccodes_f90.so (0x00001460ec577000)
+	libmultio-fapi.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-fapi.so (0x00001460ec566000)
+	libmultio-api.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-api.so (0x00001460ec4e0000)
+	libmultio-action-aggregate.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-aggregate.so (0x00001460ec4c9000)
+	libmultio-action-encode.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-encode.so (0x00001460ec40e000)
+	libmultio-action-mask.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-mask.so (0x00001460ec3f9000)
+	libmultio-action-metadata-mapping.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-metadata-mapping.so (0x00001460ec3f0000)
+	libmultio-action-null.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-null.so (0x00001460ec3e8000)
+	libmultio-action-print.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-print.so (0x00001460ec3e0000)
+	libmultio-action-select.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-select.so (0x00001460ec3d3000)
+	libmultio-action-single-field-sink.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-single-field-sink.so (0x00001460ec3c4000)
+	libmultio-action-sink.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-sink.so (0x00001460ec3b1000)
+	libmultio-fdb5.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-fdb5.so (0x00001460ec3a8000)
+	libfdb5.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libfdb5.so (0x00001460ec0cf000)
+	libmultio-action-statistics.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-statistics.so (0x00001460ebfdd000)
+	libmultio-action-transport.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-transport.so (0x00001460ebfc0000)
+	libmultio-action-renumber-healpix.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-renumber-healpix.so (0x00001460ebfa2000)
+	libmultio-action-interpolate-fesom.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-interpolate-fesom.so (0x00001460ebf53000)
+	libmultio-action-scale.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-scale.so (0x00001460ebf38000)
+	libmultio-action-interpolate.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio-action-interpolate.so (0x00001460ebebf000)
+	libmir.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmir.so (0x00001460eb7f2000)
+	libatlas.so.0.37 => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libatlas.so.0.37 (0x00001460eac7f000)
+	libeckit_maths.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_maths.so (0x00001460eac78000)
+	libatlas_io.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libatlas_io.so (0x00001460eac71000)
+	libeckit_codec.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_codec.so (0x00001460eac00000)
+	libeckit_geometry.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_geometry.so (0x00001460eabcf000)
+	libeckit_linalg.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_linalg.so (0x00001460eab9c000)
+	libmultio.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmultio.so (0x00001460eaa0c000)
+	libmetkit.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libmetkit.so (0x00001460ea8e3000)
+	libeccodes.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeccodes.so (0x00001460ea432000)
+	libeckit_option.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_option.so (0x00001460ea41c000)
+	libfiat.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libfiat.so (0x00001460ea158000)
+	libfckit.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libfckit.so (0x00001460ea01d000)
+	libeckit_mpi.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit_mpi.so (0x00001460e9fdc000)
+	libeckit.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libeckit.so (0x00001460e9c51000)
+	libm.so.6 => /lib64/libm.so.6 (0x00001460e9b76000)
+	libmpifort.so.12 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/libmpifort.so.12 (0x00001460e97c4000)
+	libmpi.so.12 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/release/libmpi.so.12 (0x00001460e7cf1000)
+	libparkind_sp.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libparkind_sp.so (0x00001460e7cec000)
+	libbufrdc_emoslib.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libbufrdc_emoslib.so (0x00001460a770c000)
+	libifsdummy.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/libifsdummy.so (0x00001460a76ea000)
+	libiomp5.so => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libiomp5.so (0x00001460a72a8000)
+	libc.so.6 => /lib64/libc.so.6 (0x00001460a709f000)
+	libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00001460a7082000)
+	libmkl_intel_lp64.so.2 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64/libmkl_intel_lp64.so.2 (0x00001460a5b86000)
+	libmkl_sequential.so.2 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64/libmkl_sequential.so.2 (0x00001460a4204000)
+	libmkl_core.so.2 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mkl/2023.2.0/lib/intel64/libmkl_core.so.2 (0x000014609fe8c000)
+	libifport.so.5 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libifport.so.5 (0x000014609fe62000)
+	libifcoremt.so.5 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libifcoremt.so.5 (0x000014609fce6000)
+	libimf.so => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libimf.so (0x000014609f8fc000)
+	libsvml.so => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libsvml.so (0x000014609e2cd000)
+	libintlc.so.5 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libintlc.so.5 (0x000014609e255000)
+	libirng.so => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libirng.so (0x000014609df3c000)
+	libcilkrts.so.5 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libcilkrts.so.5 (0x000014609dcff000)
+	libstdc++.so.6 => /lib64/libstdc++.so.6 (0x000014609dad8000)
+	libnetcdf.so.19 => /apps/GPP/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1_hdf5-1.14.1-2_pnetcdf-1.12.3/INTEL/IMPI/lib/libnetcdf.so.19 (0x000014609d707000)
+	libpnetcdf.so.4 => /apps/GPP/PNETCDF/1.12.3/INTEL/IMPI/lib/libpnetcdf.so.4 (0x000014609cd95000)
+	libirc.so => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/libirc.so (0x000014609cd1d000)
+	libbz2.so.1 => /lib64/libbz2.so.1 (0x000014609cd08000)
+	libxml2.so.2 => /lib64/libxml2.so.2 (0x000014609cb7f000)
+	libcurl.so.4 => /lib64/libcurl.so.4 (0x000014609cade000)
+	/lib64/ld-linux-x86-64.so.2 (0x000014614c17c000)
+	libeccodes_memfs.so => /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/lib/../lib/libeccodes_memfs.so (0x000014609b03a000)
+	libaec.so.0 => /apps/GPP/AEC/1.1.2/INTEL/lib/libaec.so.0 (0x000014609b02c000)
+	liblz4.so.1 => /lib64/liblz4.so.1 (0x000014609b008000)
+	librt.so.1 => /lib64/librt.so.1 (0x000014609b003000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x000014609affc000)
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x000014609aff7000)
+	libmpicxx.so.12 => /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/lib/libmpicxx.so.12 (0x000014609add6000)
+	liblzma.so.5 => /lib64/liblzma.so.5 (0x000014609adaa000)
+	libnghttp2.so.14 => /lib64/libnghttp2.so.14 (0x000014609ad7e000)
+	libidn2.so.0 => /lib64/libidn2.so.0 (0x000014609ad5d000)
+	libssh.so.4 => /lib64/libssh.so.4 (0x000014609ace9000)
+	libpsl.so.5 => /lib64/libpsl.so.5 (0x000014609acd5000)
+	libssl.so.3 => /lib64/libssl.so.3 (0x000014609ac2f000)
+	libcrypto.so.3 => /lib64/libcrypto.so.3 (0x000014609a7fe000)
+	libgssapi_krb5.so.2 => /lib64/libgssapi_krb5.so.2 (0x000014609a7a5000)
+	libkrb5.so.3 => /lib64/libkrb5.so.3 (0x000014609a6ca000)
+	libk5crypto.so.3 => /lib64/libk5crypto.so.3 (0x000014609a6b1000)
+	libcom_err.so.2 => /lib64/libcom_err.so.2 (0x000014609a6aa000)
+	libldap.so.2 => /lib64/libldap.so.2 (0x000014609a643000)
+	liblber.so.2 => /lib64/liblber.so.2 (0x000014609a631000)
+	libbrotlidec.so.1 => /lib64/libbrotlidec.so.1 (0x000014609a621000)
+	libunistring.so.2 => /lib64/libunistring.so.2 (0x000014609a49c000)
+	libkrb5support.so.0 => /lib64/libkrb5support.so.0 (0x000014609a48b000)
+	libkeyutils.so.1 => /lib64/libkeyutils.so.1 (0x000014609a484000)
+	libresolv.so.2 => /lib64/libresolv.so.2 (0x000014609a470000)
+	libevent-2.1.so.7 => /lib64/libevent-2.1.so.7 (0x000014609a415000)
+	libsasl2.so.3 => /lib64/libsasl2.so.3 (0x000014609a3f5000)
+	libbrotlicommon.so.1 => /lib64/libbrotlicommon.so.1 (0x000014609a3d2000)
+	libselinux.so.1 => /lib64/libselinux.so.1 (0x000014609a3a5000)
+	libcrypt.so.2 => /lib64/libcrypt.so.2 (0x000014609a36b000)
+	libpcre2-8.so.0 => /lib64/libpcre2-8.so.0 (0x000014609a2cd000)
+++ [hres:14s:15:08:35:5020]: readlink -f ./ifsMASTER
++ [hres:14s:15:08:35:5020]: exe=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP
++ [hres:14s:15:08:35:5023]: chrpath -kl /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP: RPATH=$ORIGIN/../lib
++ [hres:14s:15:08:35:5029]: unset rcstr
++ [hres:14s:15:08:35:5032]: unset SMSNAME
++ [hres:14s:15:08:35:5033]: unset ECF_NAME
++ [hres:14s:15:08:35:5036]: mkdir -p restart.dir
++ [hres:14s:15:08:35:5038]: [[ -n '' ]]
++ [hres:14s:15:08:35:5043]: [[ 0 != \0 ]]
++ [hres:14s:15:08:35:5054]: /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/OST_info . /gpfs/projects/bsc32/DestinE/inputs restart.dir
++ [hres:14s:15:08:35:5056]: [[ -n '' ]]
++ [hres:14s:15:08:35:5056]: [[ -n '' ]]
++ [hres:14s:15:08:35:5062]: fw=mpirun
++ [hres:14s:15:08:35:5063]: [[ mpirun = srun ]]
++ [hres:14s:15:08:35:5063]: [[ X0 != X0 ]]
++ [hres:14s:15:08:35:5080]: [[ intelmpi == intelmpi* ]]
++ [hres:14s:15:08:35:5081]: impi_info -a
+++ [hres:14s:15:08:35:5089]: which ucx_info
++ [hres:14s:15:08:35:5089]: ucx_info=/apps/GPP/UCX/1.15.0/INTEL/bin/ucx_info
++ [hres:14s:15:08:35:5090]: [[ /apps/GPP/UCX/1.15.0/INTEL/bin/ucx_info = '' ]]
++ [hres:14s:15:08:35:5090]: /apps/GPP/UCX/1.15.0/INTEL/bin/ucx_info -abcdfvy
+++ [hres:15s:15:08:36:5092]: which fi_info
++ [hres:15s:15:08:36:5092]: fi_info=/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/bin/fi_info
++ [hres:15s:15:08:36:5093]: [[ /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/bin/fi_info = '' ]]
++ [hres:15s:15:08:36:5093]: /gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/mpi/2021.10.0/libfabric/bin/fi_info -p efa -t FI_EP_RDM
++ [hres:15s:15:08:36:5093]: rm -f fi_info.txt
++ [hres:15s:15:08:36:5095]: [[ -n gs02r1b17 ]]
++ [hres:15s:15:08:36:5096]: scontrol show config
++ [hres:15s:15:08:36:5099]: unset LAUNCHCMD
++ [hres:15s:15:08:36:5100]: ((  nproc_io_nodes + ocean_io_nodes > 0  ))
++ [hres:15s:15:08:36:5103]: first_blk_nproc=14
++ [hres:15s:15:08:36:5105]: iorun=
++ [hres:15s:15:08:36:5106]: [[ -n mpirun -ppn 14 --errfile-pattern=err.25036127.%r --outfile-pattern=out.25036127.%r -np ]]
++ [hres:15s:15:08:36:5107]: [[ intelmpi = \c\r\a\y\m\p\i\c\h ]]
++ [hres:15s:15:08:36:5111]: [[ mpirun = srun ]]
++ [hres:15s:15:08:36:5122]: launcher='mpirun -ppn 14 --errfile-pattern=err.25036127.%r --outfile-pattern=out.25036127.%r -np 14 '
++ [hres:15s:15:08:36:5127]: export MODEL_NTASKS=14
++ [hres:15s:15:08:36:5127]: MODEL_NTASKS=14
++ [hres:15s:15:08:36:5128]: export MODEL_IO_NTASKS=0
++ [hres:15s:15:08:36:5128]: MODEL_IO_NTASKS=0
++ [hres:15s:15:08:36:5129]: export OCEAN_IO_NTASKS=0
++ [hres:15s:15:08:36:5129]: OCEAN_IO_NTASKS=0
++ [hres:15s:15:08:36:5130]: export RAPS_BUILD_DIR=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127
++ [hres:15s:15:08:36:5130]: RAPS_BUILD_DIR=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127
++ [hres:15s:15:08:36:5132]: [[ 0 -eq 1 ]]
++ [hres:15s:15:08:36:5184]: [[ mpirun = srun ]]
++ [hres:15s:15:08:36:5198]: [[ mpirun = mpirun ]]
++ [hres:15s:15:08:36:5200]: [[ intelmpi == intelmpi* ]]
++ [hres:15s:15:08:36:5202]: '[' -v I_MPI_PIN_RESPECT_CPUSET ']'
++ [hres:15s:15:08:36:5206]: export I_MPI_PIN_RESPECT_CPUSET=0
++ [hres:15s:15:08:36:5206]: I_MPI_PIN_RESPECT_CPUSET=0
++ [hres:15s:15:08:36:5207]: export I_MPI_PIN_DOMAIN=omp:platform
++ [hres:15s:15:08:36:5207]: I_MPI_PIN_DOMAIN=omp:platform
++ [hres:15s:15:08:36:5208]: export I_MPI_PIN_PROCESSOR_LIST=allcores
++ [hres:15s:15:08:36:5208]: I_MPI_PIN_PROCESSOR_LIST=allcores
++ [hres:15s:15:08:36:5210]: [[ 0 == \0 ]]
++ [hres:15s:15:08:36:5210]: [[ 0 == \1\4 ]]
++ [hres:15s:15:08:36:5210]: [[ 0 == \0 ]]
++ [hres:15s:15:08:36:5210]: [[ 0 == 0 ]]
++ [hres:15s:15:08:36:5211]: [[ -z '' ]]
++ [hres:15s:15:08:36:5212]: LAUNCHCMD='mpirun -ppn 14 --errfile-pattern=err.25036127.%r --outfile-pattern=out.25036127.%r -np 14  /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/runner-script.sh  /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP  '
++ [hres:15s:15:08:36:5327]: [[ 0 -eq 1 ]]
++ [hres:15s:15:08:36:5339]: [[ 0 -eq 1 ]]
++ [hres:15s:15:08:36:5355]: [[ -n '' ]]
++ [hres:15s:15:08:36:5360]: [[ '' != '' ]]
++ [hres:15s:15:08:36:5368]: export EC_MPIWRAP_FILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/mpiwrap.%d
++ [hres:15s:15:08:36:5368]: EC_MPIWRAP_FILE=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/mpiwrap.%d
+++ [hres:15s:15:08:36:5369]: dirname /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/mpiwrap.%d
++ [hres:15s:15:08:36:5369]: mkdir -pv /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:15s:15:08:36:5372]: export EC_MPIWRAP_MPLRANKS=1
++ [hres:15s:15:08:36:5372]: EC_MPIWRAP_MPLRANKS=1
++ [hres:15s:15:08:36:5378]: export EC_MPIWRAP_COLL_SYNC=0
++ [hres:15s:15:08:36:5378]: EC_MPIWRAP_COLL_SYNC=0
++ [hres:15s:15:08:36:5380]: export EC_IOWRAP_IOTRACE_RANK=no
++ [hres:15s:15:08:36:5380]: EC_IOWRAP_IOTRACE_RANK=no
+++ [hres:15s:15:08:36:5383]: echo ''
+++ [hres:15s:15:08:36:5383]: perl -pe 's{[%,/]}{ }g;s/^\s+//;s/\s+/ /g;s/\s+$//;'
++ [hres:16s:15:08:37:5383]: RAPS_unset=
++ [hres:16s:15:08:37:5384]: unset
++ [hres:16s:15:08:37:5385]: printenv
++ [hres:16s:15:08:37:5389]: '[' -f namelist_cfg ']'
++ [hres:16s:15:08:37:5390]: sed -i 's/ln_timing=.*$/&\nln_timing_detail=.true.\nsn_cfctl%l_runstat = .true./' namelist_cfg
++ [hres:16s:15:08:37:5395]: pwd
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:16s:15:08:37:5396]: set +x
+# Job attributes: benchmark=hres expver=hz9m resol=tco79l137 stochastic=0 utstep=3600 verify=0 fclen=h1 target=h240 nstop=1 nemo=1 nfrco=1 wam=1 refdir=hres.nemo.wam.newrad comp=intel nodes=1 ionodes=0 mpi=14 omp=8 depth=8 ht=1 ppn=14 iompi=0 iodepth=0 iohtway=0 ioppn=0 nproma=16 nrproma=0 nproma_wam=16 nwrnode=1 nwrtout=14 gpmodel=heap2 stacksize=164 nhdyn=0 tag=<undef> 
++ [hres:16s:15:08:37:5397]: rc=0
++ [hres:16s:15:08:37:5398]: [[ 0 -eq 0 ]]
++ [hres:16s:15:08:37:5399]: [[ 0 -gt 0 ]]
++ [hres:16s:15:08:37:5404]: cat /dev/null
++ [hres:16s:15:08:37:5405]: cat /dev/null
++ [hres:16s:15:08:37:5413]: date -R
++ [hres:16s:15:08:37:5415]: [[ 0 -eq 1 ]]
++ [hres:30s:15:08:51:5425]: [[ '' != '' ]]
++ [hres:30s:15:08:51:5429]: mv -f running waiting
++ [hres:30s:15:08:51:5438]: [[ 0 -eq 0 ]]
++ [hres:30s:15:08:51:5440]: [[ 0 -gt 0 ]]
++ [hres:30s:15:08:51:5446]: [[ -n '' ]]
++ [hres:30s:15:08:51:5450]: set +eu
++ [hres:30s:15:08:51:5452]: [[ 0 -ne 0 ]]
++ [hres:30s:15:08:51:5462]: retco=0
++ [hres:30s:15:08:51:5463]: bailout=
++ [hres:30s:15:08:51:5464]: [[ -s ifs.stat ]]
++ [hres:30s:15:08:51:5465]: [[ 0 -ne 0 ]]
++ [hres:30s:15:08:51:5476]: [[ 0 -ne 0 ]]
++ [hres:30s:15:08:51:5484]: [[ 0 -eq 0 ]]
++ [hres:30s:15:08:52:5486]: [[ -s drhook.1 ]]
++ [hres:31s:15:08:52:5505]: [[ 0 -eq 1 ]]
++ [hres:31s:15:08:52:5512]: ncsize=0
+++ [hres:31s:15:08:52:5513]: find . -maxdepth 3 -newer fort.4 -name '*.nc' -type f -print0
+++ [hres:31s:15:08:52:5513]: xargs -0 -r ls -l
+++ [hres:31s:15:08:52:5513]: awk 'BEGIN {s=0} {s += $(NF-4)} END {print s}'
++ [hres:31s:15:08:52:5513]: ncsize=733464532
++ [hres:31s:15:08:52:5514]: echo 'NetCDF size : 733464532 bytes in /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127'
+NetCDF size : 733464532 bytes in /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:31s:15:08:52:5515]: [[ 1 -eq 0 ]]
++ [hres:31s:15:08:52:5519]: rstsize=0
++ [hres:31s:15:08:52:5520]: [[ undef = @(od|rst) ]]
++ [hres:31s:15:08:52:5528]: [[ 0 -eq 1 ]]
+++ [hres:31s:15:08:52:5534]: wc -l
+++ [hres:31s:15:08:52:5534]: ls -1 'restart.dir/MPP*'
++ [hres:31s:15:08:52:5534]: MPPcount=0
++ [hres:31s:15:08:52:5535]: echo 'MPPcount is' 0
+MPPcount is 0
++ [hres:31s:15:08:52:5536]: [[ undef = \n\e\x\t\g\e\m\s ]]
++ [hres:31s:15:08:52:5536]: [[ undef = \e\e\r\i\e ]]
++ [hres:31s:15:08:52:5543]: [[ 0 -eq 0 ]]
++ [hres:31s:15:08:52:5544]: rm -f DHFDLhz9m
++ [hres:31s:15:08:52:5545]: rm -rf restart.dir
++ [hres:31s:15:08:52:5549]: [[ 0 -eq 1 ]]
++ [hres:31s:15:08:52:5565]: [[ 0 -ne 1 ]]
++ [hres:31s:15:08:52:5563]: /usr/bin/cat
++ [hres:31s:15:08:52:5563]: perl -pe 's/^\s*\[\d+\]\s+//'
++ [hres:31s:15:08:52:5565]: [[ 0 -eq 0 ]]
++ [hres:31s:15:08:52:5566]: fdbsize=0
++ [hres:31s:15:08:52:5567]: [[ 0 -gt 0 ]]
++ [hres:31s:15:08:52:5567]: [[ undef = @(od|rd) ]]
++ [hres:31s:15:08:52:5592]: perl -pe 's/^\s*\[\d+\]\s+//'
++ [hres:31s:15:08:52:5600]: craycti=cray_cti-bsc631248
++ [hres:31s:15:08:52:5592]: /usr/bin/cat
++ [hres:31s:15:08:52:5601]: [[ -d cray_cti-bsc631248 ]]
++ [hres:31s:15:08:52:5606]: wait
++ [hres:31s:15:08:52:5608]: [[ -s powerdata.txt ]]
++ [hres:31s:15:08:52:5612]: echo ' '
++ [hres:31s:15:08:52:5613]: mv -f ifs.out.3263396 ifs.out
++ [hres:31s:15:08:52:5614]: mv -f ifs.err.3263396 ifs.err
++ [hres:31s:15:08:52:5616]: pwd
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:31s:15:08:52:5618]: hostname
+gs02r1b17
++ [hres:31s:15:08:52:5619]: cat ifs.hw
+cat: ifs.hw: No such file or directory
++ [hres:31s:15:08:52:5620]: cat ifs.stream
+cat: ifs.stream: No such file or directory
++ [hres:31s:15:08:52:5621]: id
+uid=4216(bsc631248) gid=50000(bsc) groups=50000(bsc),565(earth),902(acc_mn5),3100(bsc32),50360(ehpc01)
++ [hres:31s:15:08:52:5622]: cat ifs.out
+ 
++ [hres:31s:15:08:52:5623]: [[ -f drhook.txt ]]
++ [hres:31s:15:08:52:5624]: [[ -f drhook.1 ]]
++ [hres:31s:15:08:52:5625]: [[ -f drhook.2 ]]
++ [hres:31s:15:08:52:5626]: [[ 0 -gt 0 ]]
++ [hres:31s:15:08:52:5636]: [[ ! -d drhook.dir ]]
++ [hres:31s:15:08:52:5638]: rm -rf io_serv.xml.d
++ [hres:31s:15:08:52:5641]: wait
++ [hres:31s:15:08:52:5643]: cat compinfo.txt
+cat: compinfo.txt: No such file or directory
++ [hres:31s:15:08:52:5644]: cat ifs.err
++ [hres:16s:15:08:37:5421]: read -ra _prune_vars
+++ [hres:16s:15:08:37:5421]: printenv
+++ [hres:16s:15:08:37:5421]: egrep '^[a-z]'
+++ [hres:16s:15:08:37:5421]: egrep -v '^(bash)'
+++ [hres:16s:15:08:37:5421]: grep =
+++ [hres:16s:15:08:37:5421]: cut -f1 -d=
+++ [hres:16s:15:08:37:5421]: date +%s.%N
++ [hres:16s:15:08:37:5421]: unset nemoyproc MPI_EPOCH=1753880917.330128816
++ [hres:16s:15:08:37:5422]: export MPI_EPOCH
++ [hres:16s:15:08:37:5422]: set -eu
++ [hres:16s:15:08:37:5422]: mpirun -ppn 14 --errfile-pattern=err.25036127.%r --outfile-pattern=out.25036127.%r -np 14 /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/runner-script.sh /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP
++ [hres:31s:15:08:52:5645]: strings meminfo.txt
+## EC_MEMINFO 
+## EC_MEMINFO : MPI-version 3.1
+## EC_MEMINFO : Start of MPI-library version
+Intel(R) MPI Library 2021.10 for Linux* OS
+## EC_MEMINFO : End of MPI-library version
+## EC_MEMINFO : OpenMP-version 4.5.201611
+## EC_MEMINFO : CPU-model : Intel(R) Xeon(R) Platinum 8480+
+## EC_MEMINFO : Hugepages : 2097152 bytes/page x 0 pages = 0 bytes
+## EC_MEMINFO 
+## EC_MEMINFO 
+## EC_MEMINFO ********************************************************************************
+## EC_MEMINFO *** Mapping of MPI & I/O-tasks to nodes and tasks' thread-to-core affinities ***
+## EC_MEMINFO ********************************************************************************
+## EC_MEMINFO 
+## EC_MEMINFO Running on 1 nodes (2-numa) with 14 compute + 0 I/O-tasks and 8+0 threads
+## EC_MEMINFO 
+## EC_MEMINFO      # NODE#             NODENAME    MPI#  WORLD#  GETPID    I/O#  MASTER    REF#    OMP#  Core affinities
+## EC_MEMINFO      = =====             ========    ====  ======  ======    ====  ======    ====    ====  ===============
+## EC_MEMINFO 
+## EC_MEMINFO      0     0            gs02r1b17       0       0 3265740    [No]     Yes       0       8  {0,1,2,3,4,5,6,7}
+## EC_MEMINFO      1     0            gs02r1b17       1       1 3265737    [No]    [No]       1       8  {8,9,10,11,12,13,14,15}
+## EC_MEMINFO      2     0            gs02r1b17       2       2 3265734    [No]    [No]       2       8  {16,17,18,19,20,21,22,23}
+## EC_MEMINFO      3     0            gs02r1b17       3       3 3265736    [No]    [No]       3       8  {24,25,26,27,28,29,30,31}
+## EC_MEMINFO      4     0            gs02r1b17       4       4 3265739    [No]    [No]       4       8  {32,33,34,35,36,37,38,39}
+## EC_MEMINFO      5     0            gs02r1b17       5       5 3265731    [No]    [No]       5       8  {40,41,42,43,44,45,46,47}
+## EC_MEMINFO      6     0            gs02r1b17       6       6 3265727    [No]    [No]       6       8  {48,49,50,51,52,53,54,55}
+## EC_MEMINFO      7     0            gs02r1b17       7       7 3265728    [No]    [No]       7       8  {56,57,58,59,60,61,62,63}
+## EC_MEMINFO      8     0            gs02r1b17       8       8 3265729    [No]    [No]       8       8  {64,65,66,67,68,69,70,71}
+## EC_MEMINFO      9     0            gs02r1b17       9       9 3265730    [No]    [No]       9       8  {72,73,74,75,76,77,78,79}
+## EC_MEMINFO     10     0            gs02r1b17      10      10 3265733    [No]    [No]      10       8  {80,81,82,83,84,85,86,87}
+## EC_MEMINFO     11     0            gs02r1b17      11      11 3265735    [No]    [No]      11       8  {88,89,90,91,92,93,94,95}
+## EC_MEMINFO     12     0            gs02r1b17      12      12 3265732    [No]    [No]      12       8  {96,97,98,99,100,101,102,103}
+## EC_MEMINFO     13     0            gs02r1b17      13      13 3265738    [No]    [No]      13       8  {104,105,106,107,108,109,110,111}
+## EC_MEMINFO 
+## EC_MEMINFO 
+## EC_MEMINFO Detailed memory information for program /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP -- wall-time :      0.014s
+## EC_MEMINFO Running on 1 nodes (2-numa) with 14 compute + 0 I/O-tasks and 8+0 threads at 15:08:41.770 on 30-Jul-2025
+## EC_MEMINFO The Job Name is ifsnemo-basic-test and the Job ID is 25036127
+## EC_MEMINFO 
+## EC_MEMINFO                           | TC    | MEMORY USED(MB) | MEMORY FREE(MB)  -------------   INCLUDING CACHED|  %USED %HUGE  | Energy  Power Running
+## EC_MEMINFO                           | Malloc| Inc Heap        | Numa region  0 | Numa region  1 |                |               |    (J)    (W)
+## EC_MEMINFO Node Name                 | Heap  | RSS(sum)        | Small  Huge or | Small  Huge or | Total          |
+## EC_MEMINFO                           | (sum) | Small    Huge   |  Only   Small  |  Only   Small  | Memfree+Cached |
+## EC_MEMINFO    0 gs02r1b17              24466    5223       0      8999   97798    10022   96544    214987    4543      2.3   0.0         0      0     112  Sm/p:master:computation
+## EC_MEMINFO 
+## EC_MEMINFO 
+## EC_MEMINFO Detailed memory information for program /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP -- wall-time :      0.030s
+## EC_MEMINFO Running on 1 nodes (2-numa) with 14 compute + 0 I/O-tasks and 8+0 threads at 15:08:41.786 on 30-Jul-2025
+## EC_MEMINFO The Job Name is ifsnemo-basic-test and the Job ID is 25036127
+## EC_MEMINFO 
+## EC_MEMINFO                           | TC    | MEMORY USED(MB) | MEMORY FREE(MB)  -------------   INCLUDING CACHED|  %USED %HUGE  | Energy  Power Running
+## EC_MEMINFO                           | Malloc| Inc Heap        | Numa region  0 | Numa region  1 |                |               |    (J)    (W)
+## EC_MEMINFO Node Name                 | Heap  | RSS(sum)        | Small  Huge or | Small  Huge or | Total          |
+## EC_MEMINFO                           | (sum) | Small    Huge   |  Only   Small  |  Only   Small  | Memfree+Cached |
+## EC_MEMINFO    0 gs02r1b17              24523    5388       0      8978   97774    10001   96520    214899    4546      2.4   0.0         0      0     112  Sm/p:oops:ifs_init
+## EC_MEMINFO 
++ [hres:31s:15:08:52:5647]: for f in papi_comp.txt papi_io.txt
++ [hres:31s:15:08:52:5649]: [[ -f papi_comp.txt ]]
++ [hres:31s:15:08:52:5647]: for f in papi_comp.txt papi_io.txt
++ [hres:31s:15:08:52:5649]: [[ -f papi_io.txt ]]
++ [hres:31s:15:08:52:5653]: cat ifs.stat
+ 15:08:42 000000000 CNT3                -999    2.673    2.673    0.518      0:01      0:00 0.00000000000000E+00    2054MB    6964KB    8431MB      0kJ    0W  2961760kHz
+ 15:08:49 0AAA00AAA STEPO                  0   18.814   18.814    6.939      0:20      0:07 0.12764489838446E-04    3042MB      16MB    9427MB      0kJ    0W  3000000kHz
+ 15:08:49 0AAA00000 STEPO                  1    3.083    3.083    0.405      0:23      0:07 0.12417169273249E-04    3339MB      25MB    9716MB      0kJ    0W  2883786kHz
+ 15:08:51 000000000 CNT0                   1   12.674   12.674    1.919      0:35      0:09 0.12417169273249E-04    3763MB      66MB   10170MB      0kJ    0W  2999867kHz
++ [hres:31s:15:08:52:5654]: [[ false = true ]]
++ [hres:31s:15:08:52:5658]: tee bwinfo.txt
++ [hres:31s:15:08:52:5658]: /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/bwinfo
+
+
+	**** COMMS STATS : file = /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127/NODE.001_01 ****
+
+  NPROC =      14
+  NPRGPNS =       7
+  NPRGPEW =       2
+  NPRTRW =       7
+  NPRTRV =       2
+  NPRTRN =       2
+  NPRTRNS =       7
+ MAXIMUM NUMBER OF THREADS           8
+ CURRENT NUMBER OF THREADS           8
+  NPROC      :           14
+  MTHREADS   :            8
+   !!!!!!!!! REPRODUCIBLE ONLY IF SAME NPROC!
+            MAXIMUM,   NON MISSING POINTS, NPROC
+   !!!!!!!!! REPRODUCIBLE ONLY IF SAME NPROC!
+            MAXIMUM,   NON MISSING POINTS, NPROC
+TOTAL WALLCLOCK TIME       9.728 CPU TIME     35.913 VECTOR TIME      35.913
++ [hres:31s:15:08:52:5659]: awk '/STATS FOR ALL TASKS/,/WALLCLOCK TIME/' NODE.001_01
++ [hres:31s:15:08:52:5660]: /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/pie.pl
++ [hres:31s:15:08:52:5661]: awk '/^#label/,/zzzz/'
+++ [hres:31s:15:08:53:5663]: echo ''
+++ [hres:32s:15:08:53:5663]: tr '[a-z]' '[A-Z]'
++ [hres:32s:15:08:53:5663]: bmup=
++++ [hres:32s:15:08:53:5664]: pwd
+++ [hres:32s:15:08:53:5664]: basename /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:32s:15:08:53:5664]: pietitle=' (hz9m) : ifsnemo_testbed_25036127'
+++ [hres:32s:15:08:53:5665]: cat pie.csv
+++ [hres:32s:15:08:53:5665]: wc -l
++ [hres:32s:15:08:53:5665]: ncolors=9
++ [hres:32s:15:08:53:5666]: /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/plot_gstats_pie.py -c 9 -i pie.csv -o pie.pdf -t ' (hz9m) : ifsnemo_testbed_25036127' -x
+Traceback (most recent call last):
+  File "/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin/plot_gstats_pie.py", line 4, in <module>
+    import matplotlib as mpl
+ModuleNotFoundError: No module named 'matplotlib'
++ [hres:32s:15:08:53:5668]: egrep '(FORECAST DAYS PER DAY|WALLCLOCK|util::Timers::Total)' NODE.001_01
+TOTAL WALLCLOCK TIME       9.728 CPU TIME     35.913 VECTOR TIME      35.913
+FORECAST DAYS PER DAY      804.4
++ [hres:32s:15:08:53:5669]: [[ 0 -eq 1 ]]
++ [hres:32s:15:08:53:5675]: set +x
+ 
+**************************************************************************************************************
+cmd: hres -n 1 -p 14 -t 8 -h 1 -j 25036127 -J ifsnemo-basic-test -d 2020012000 -e hz9m -L LWDA --nemo-grid=eORCA1_Z75 --icmcl=ICMCL_79_2020 -T tco -r 79 -l 137 -f t1 -N 16 -x ifsMASTER.SP -H generic -C intel -w /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/runner-script.sh --experiment=hist --nemo --nemo-ver=V40 --nonemopart -R --deep --keepnetcdf --teos10 --nemo-xproc=-1 --nemo-yproc=-1 --no-ozone --sicoupl=1 --noreferencecheck --realization=1 --inproot-namelists --run-directory=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127 --ifs-bundle-build-dir=/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127 
+host        : gs02r1b17
+cmddir      : /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/raps/bin
+rundir      : /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
+MPI-run     : mpirun -ppn 14 --errfile-pattern=err.25036127.%r --outfile-pattern=out.25036127.%r -np 14  /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/runner-script.sh  /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsMASTER.SP.CPU.GPP/bin/ifsMASTER.SP  
+Precision   : 
+Attributes  : benchmark=hres expver=hz9m resol=tco79l137 stochastic=0 utstep=3600 verify=0 fclen=h1 target=h240 nstop=1 nemo=1 nfrco=1 wam=1 refdir=hres.nemo.wam.newrad comp=intel nodes=1 ionodes=0 mpi=14 omp=8 depth=8 ht=1 ppn=14 iompi=0 iodepth=0 iohtway=0 ioppn=0 nproma=16 nrproma=0 nproma_wam=16 nwrnode=1 nwrtout=14 gpmodel=heap2 stacksize=164 nhdyn=0 tag=<undef> 
+Job started : Wed, 30 Jul 2025 15:08:21 +0200
+Job ended   : Wed, 30 Jul 2025 15:08:53 +0200
+Job total   : 32s
+IFS time    : 9s
+MPI startup : N/A
+Return code : 0
+**************************************************************************************************************
+ 
++ [hres:34s:15:08:55:5722]: set -x
++ [hres:34s:15:08:55:5723]: cat ifs.estim
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Benchmark Resolution     ---- ExpID NEMO  WAM  FLT PHYS MEMBER Compiler Prec  GP/  Host Cores   Nodes   MPI+I/O Tasks NWRT OpenMP HT/ Huge/  TSTEP #STEPS I/O P/P  FDB5  nCDF RSTRT   # of Grid Points     NPROMAs/   FCdays  --Estim. runtime-- -Ovhd  Elapsed    NRJ   VMPEAK  TOTMEM  STACK  FCL   IFS    JOB MPIStart Comm+Imbal+IOtime     MaxERR       Time & date     EpochEnded Jobname      
+                         (km)         ?    ?    ?    ?     #            D/SP model  cut /node   alloc    tasks  /node /OUT        SMT pages  (sec)                 (GB)  (GB)  (GB)  (total) (per MPI)      NRADFR      /day   (sec)  (HH:MM:SS) (sec) sec/step   (kWh)  (Bytes) (Bytes) (MiB)  (h)  (sec)  (sec)   (sec)        (sec)                      at completion
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+HRES/10d  TCO79L137        125 hz9m NEMO  WAM   -- ECPH    N/A       ?P heap2    glo 112_2     1      14     0+14      0    8      1 Sm/p  3600      1     --   0   0     1     0 28480      2035       0               0 9.781000       0 0:00:10 9.781000      0        0    139G     51G     66!      1   10     32  0.000 N/A+N/A+N/A               N/A   15:08:53 2025-07-30 1753880933          0 
++ [hres:34s:15:08:55:5724]: cat ifs.csv
+"#NumNodes","FCdays","MPItasks","OpenMP","H/T","ST","EstTime","FCLEN","IFStime","JOBtime","NodeHours","NSTOP","PerTSTEP","TSTEP","MPIStart","ExpID","Benchmark","FC-resolution","PR","GPmdl","NEMO","WAM","FLT","PHYS","Member","EQUkms","TotGridPNTS","GridMPI","NPROMA","NrPROMA","WAMproma","NRADFR","Host","NumCores","Sock","Cores","CPUFreq","Compiler","Pages","VMPEAK","TOTMEM","STACK","I/O","P/P","FDB5","nCDF","RSTRT","kWhrs","MaximumError","YYYY-MM-DD","HH:MM:SS","EpochEnded","Jobname"
++ [hres:34s:15:08:55:5725]: cat ifs.table
+||#NumNodes||FCdays||MPItasks||OpenMP||H/T||ST||EstTime||FCLEN||IFStime||JOBtime||NodeHours||NSTOP||PerTSTEP||TSTEP||MPIStart||ExpID||Benchmark||FC-resolution||PR||GPmdl||NEMO||WAM||FLT||PHYS||Member||EQUkms||TotGridPNTS||GridMPI||NPROMA||NrPROMA||WAMproma||NRADFR||Host||NumCores||Sock||Cores||CPUFreq||Compiler||Pages||VMPEAK||TOTMEM||STACK||I/O||P/P||FDB5||nCDF||RSTRT||kWhrs||MaximumError||YYYY-MM-DD||HH:MM:SS||EpochEnded||Jobname||
++ [hres:34s:15:08:55:5726]: cat ifs.summary
+#NumNodes FCdays    MPItasks OpenMP H/T ST EstTime FCLEN IFStime JOBtime NodeHours NSTOP PerTSTEP TSTEP MPIStart ExpID Benchmark FC-resolution PR GPmdl NEMO WAM FLT PHYS Member EQUkms TotGridPNTS GridMPI NPROMA NrPROMA WAMproma NRADFR Host    NumCores Sock Cores CPUFreq Compiler Pages VMPEAK TOTMEM STACK   I/O P/P  FDB5 nCDF RSTRT kWhrs MaximumError YYYY-MM-DD HH:MM:SS EpochEnded Jobname
++ [hres:34s:15:08:55:5727]: pwd
+/gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/src/sandbox/ifsnemo_testbed_25036127
++ [hres:34s:15:08:55:5728]: ls -ltrR
+.:
+total 823956
+lrwxrwxrwx 1 bsc631248 bsc32       28 Jul 30 15:08 bin -> ../ifsMASTER.SP.CPU.GPP//bin
+lrwxrwxrwx 1 bsc631248 bsc32        6 Jul 30 15:08 etc -> ../etc
+drwxr-sr-x 2 bsc631248 bsc32     4096 Jul 30 15:08 share
+lrwxrwxrwx 1 bsc631248 bsc32       28 Jul 30 15:08 lib -> ../ifsMASTER.SP.CPU.GPP//lib
+lrwxrwxrwx 1 bsc631248 bsc32       41 Jul 30 15:08 runner-script.sh -> ../ifsMASTER.SP.CPU.GPP//runner-script.sh
+lrwxrwxrwx 1 bsc631248 bsc32       45 Jul 30 15:08 profiling-wrapper.sh -> ../ifsMASTER.SP.CPU.GPP//profiling-wrapper.sh
+lrwxrwxrwx 1 bsc631248 bsc32       22 Jul 30 15:08 ifsnemo-postproc.sh -> ../ifsnemo-postproc.sh
+-rw-r--r-- 1 bsc631248 bsc32    22444 Jul 30 15:08 ENV_BEFORE.25036127
+drwxr-sr-x 3 bsc631248 bsc32     4096 Jul 30 15:08 tco79l137
+-rwxr-xr-x 1 bsc631248 bsc32   224452 Jul 30 15:08 hres
+-rw-r--r-- 1 bsc631248 bsc32       49 Jul 30 15:08 namio.in
+lrwxrwxrwx 1 bsc631248 bsc32       63 Jul 30 15:08 ifsdata -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/data/ifsdata
+lrwxrwxrwx 1 bsc631248 bsc32       75 Jul 30 15:08 79_4 -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/79_4
+lrwxrwxrwx 1 bsc631248 bsc32       76 Jul 30 15:08 ICMBC -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMBC
+lrwxrwxrwx 1 bsc631248 bsc32       86 Jul 30 15:08 ICMCLhz9mINIT.0 -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMCLhz9mINIT.0
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 ICMGGhz9mINIT -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMGGhz9mINIT
+lrwxrwxrwx 1 bsc631248 bsc32       85 Jul 30 15:08 ICMGGhz9mINIUA -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMGGhz9mINIUA
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 ICMSHhz9mINIT -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/ICMSHhz9mINIT
+lrwxrwxrwx 1 bsc631248 bsc32       79 Jul 30 15:08 cdwavein -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/cdwavein
+lrwxrwxrwx 1 bsc631248 bsc32       96 Jul 30 15:08 fesom.2020.ice.restart.in -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.2020.ice.restart.in
+lrwxrwxrwx 1 bsc631248 bsc32       96 Jul 30 15:08 fesom.2020.oce.restart.in -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.2020.oce.restart.in
+lrwxrwxrwx 1 bsc631248 bsc32       92 Jul 30 15:08 fesom.clock.20Jan2020 -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/fesom.clock.20Jan2020
+lrwxrwxrwx 1 bsc631248 bsc32       79 Jul 30 15:08 namelist -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist
+lrwxrwxrwx 1 bsc631248 bsc32       86 Jul 30 15:08 namelist.config -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.config
+lrwxrwxrwx 1 bsc631248 bsc32       87 Jul 30 15:08 namelist.config~ -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.config~
+lrwxrwxrwx 1 bsc631248 bsc32       85 Jul 30 15:08 namelist.cvmix -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.cvmix
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist.dyn -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.dyn
+lrwxrwxrwx 1 bsc631248 bsc32       87 Jul 30 15:08 namelist.forcing -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.forcing
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist.ice -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.ice
+lrwxrwxrwx 1 bsc631248 bsc32       87 Jul 30 15:08 namelist.icepack -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.icepack
+lrwxrwxrwx 1 bsc631248 bsc32       82 Jul 30 15:08 namelist.io -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.io
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist.oce -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce
+lrwxrwxrwx 1 bsc631248 bsc32       86 Jul 30 15:08 namelist.oce.GM -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce.GM
+lrwxrwxrwx 1 bsc631248 bsc32       88 Jul 30 15:08 namelist.oce.noGM -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.oce.noGM
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist.tra -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.tra
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 namelist.tra~ -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist.tra~
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist_ice -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namelist_ice
+lrwxrwxrwx 1 bsc631248 bsc32       86 Jul 30 15:08 namfesomcoup.in -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomcoup.in
+lrwxrwxrwx 1 bsc631248 bsc32       86 Jul 30 15:08 namfesomstep.in -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomstep.in
+lrwxrwxrwx 1 bsc631248 bsc32       89 Jul 30 15:08 namfesomwamcoup.in -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/namfesomwamcoup.in
+lrwxrwxrwx 1 bsc631248 bsc32       80 Jul 30 15:08 sfcwindin -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/sfcwindin
+lrwxrwxrwx 1 bsc631248 bsc32       81 Jul 30 15:08 specwavein -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/specwavein
+lrwxrwxrwx 1 bsc631248 bsc32       78 Jul 30 15:08 uwavein -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/uwavein
+lrwxrwxrwx 1 bsc631248 bsc32       87 Jul 30 15:08 wam_input_gflags -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/gfc/wam_input_gflags
+lrwxrwxrwx 1 bsc631248 bsc32       81 Jul 30 15:08 remap -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/data/remap/nemo/V40/eORCA1_Z75
+lrwxrwxrwx 1 bsc631248 bsc32       74 Jul 30 15:08 K1rowdrg.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/K1rowdrg.nc
+lrwxrwxrwx 1 bsc631248 bsc32       74 Jul 30 15:08 M2rowdrg.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/M2rowdrg.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 ahmcoef.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ahmcoef.nc
+lrwxrwxrwx 1 bsc631248 bsc32       77 Jul 30 15:08 bathy_meter.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bathy_meter.nc
+lrwxrwxrwx 1 bsc631248 bsc32       74 Jul 30 15:08 bfr_coef.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/bfr_coef.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 calving.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/calving.nc
+lrwxrwxrwx 1 bsc631248 bsc32       77 Jul 30 15:08 coordinates.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/coordinates.nc
+lrwxrwxrwx 1 bsc631248 bsc32      102 Jul 30 15:08 data_1m_potential_temperature_nomask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_potential_temperature_nomask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       89 Jul 30 15:08 data_1m_salinity_nomask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/data_1m_salinity_nomask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       76 Jul 30 15:08 domain_cfg.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/domain_cfg.nc
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 eddy_viscosity_3D.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/eddy_viscosity_3D.nc
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 geothermal_heating.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/geothermal_heating.nc
+lrwxrwxrwx 1 bsc631248 bsc32       77 Jul 30 15:08 grace_gz_bp.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/grace_gz_bp.nc
+lrwxrwxrwx 1 bsc631248 bsc32       74 Jul 30 15:08 mask_itf.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mask_itf.nc
+lrwxrwxrwx 1 bsc631248 bsc32       75 Jul 30 15:08 mesh_mask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/mesh_mask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       71 Jul 30 15:08 resto.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/resto.nc
+lrwxrwxrwx 1 bsc631248 bsc32       82 Jul 30 15:08 runoff_1m_nomask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       98 Jul 30 15:08 runoff_1m_nomask_icb_climatology.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_climatology.nc
+lrwxrwxrwx 1 bsc631248 bsc32       98 Jul 30 15:08 runoff_1m_nomask_icb_interannual.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/runoff_1m_nomask_icb_interannual.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 shlat2d.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/shlat2d.nc
+lrwxrwxrwx 1 bsc631248 bsc32       69 Jul 30 15:08 ssh.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/ssh.nc
+lrwxrwxrwx 1 bsc631248 bsc32       72 Jul 30 15:08 sss_1m.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/sss_1m.nc
+lrwxrwxrwx 1 bsc631248 bsc32       75 Jul 30 15:08 subbasins.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/subbasins.nc
+lrwxrwxrwx 1 bsc631248 bsc32       71 Jul 30 15:08 tmask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       76 Jul 30 15:08 tmask_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/tmask_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       71 Jul 30 15:08 umask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       76 Jul 30 15:08 umask_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/umask_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       71 Jul 30 15:08 vmask.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask.nc
+lrwxrwxrwx 1 bsc631248 bsc32       76 Jul 30 15:08 vmask_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/vmask_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 wT_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wT_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 wU_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wU_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       73 Jul 30 15:08 wV_r1x1.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/common/wV_r1x1.nc
+lrwxrwxrwx 1 bsc631248 bsc32       83 Jul 30 15:08 namelist_ice_ref -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ice_ref
+lrwxrwxrwx 1 bsc631248 bsc32       79 Jul 30 15:08 namelist_ref -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelist_ref
+lrwxrwxrwx 1 bsc631248 bsc32       77 Jul 30 15:08 namelistfc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc
+lrwxrwxrwx 1 bsc631248 bsc32       81 Jul 30 15:08 namelistfc.tmp -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 namelistfc.tmp.bc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/namelistfc.tmp.bc
+lrwxrwxrwx 1 bsc631248 bsc32       77 Jul 30 15:08 restart.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart.nc
+lrwxrwxrwx 1 bsc631248 bsc32       84 Jul 30 15:08 restart_ice_in.nc -> /gpfs/projects/bsc32/DestinE/inputs/nemo/V40/eORCA1_Z75/2020012000/restart_ice_in.nc
+lrwxrwxrwx 1 bsc631248 bsc32       88 Jul 30 15:08 ICMCLhz9mINIT -> /gpfs/projects/bsc32/DestinE/inputs/tco79l137/hz9m/LWDA/2020012000/ifsINIT/ICMCL_79_2020
+-rw-r--r-- 1 bsc631248 bsc32     6061 Jul 30 15:08 wam_namelist.orig
+-rw-r--r-- 1 bsc631248 bsc32     2580 Jul 30 15:08 namelist_ice_cfg.orig
+-rw-r--r-- 1 bsc631248 bsc32    14107 Jul 30 15:08 namelist_cfg.orig
+-rw-rw-r-- 1 bsc631248 bsc32     6023 Jul 30 15:08 wam_namelist
+-rw-r--r-- 1 bsc631248 bsc32      618 Jul 30 15:08 namnemocoup.in.orig
+-rw-r--r-- 1 bsc631248 bsc32      600 Jul 30 15:08 namnemowamcoup.in.orig
+-rw-r--r-- 1 bsc631248 bsc32      441 Jul 30 15:08 namnemocoup.in
+-rw-r--r-- 1 bsc631248 bsc32      423 Jul 30 15:08 namnemowamcoup.in
+-rw-rw-r-- 1 bsc631248 bsc32     2538 Jul 30 15:08 namelist_ice_cfg
+-rw-r-x--- 1 bsc631248 bsc32 17137577 Jul 30 15:08 wam_grid_tables
+-rw-r-x--- 1 bsc631248 bsc32  8113896 Jul 30 15:08 wam_subgrid_0
+-rw-r-x--- 1 bsc631248 bsc32 16543880 Jul 30 15:08 wam_subgrid_1
+-rw-r-x--- 1 bsc631248 bsc32 16543864 Jul 30 15:08 wam_subgrid_2
+-rw-r--r-- 1 bsc631248 bsc32     6151 Jul 30 15:08 fort.4.the_very_original
+-rw-r--r-- 1 bsc631248 bsc32     5969 Jul 30 15:08 fort.4
+-rw-r--r-- 1 bsc631248 bsc32     5893 Jul 30 15:08 fort.4.orig
+lrwxrwxrwx 1 bsc631248 bsc32      111 Jul 30 15:08 ifsMASTER -> /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo/ifsnemo_testbed_25036127/bin/ifsMASTER.SP
+-rw-r--r-- 1 bsc631248 bsc32    37992 Jul 30 15:08 impi_info.txt
+-rw-r--r-- 1 bsc631248 bsc32   171602 Jul 30 15:08 ucx_info.txt
+-rw-r--r-- 1 bsc631248 bsc32    10107 Jul 30 15:08 slurm_config.txt
+-rw-r--r-- 1 bsc631248 bsc32    48145 Jul 30 15:08 ifs.env
+-rw-rw-r-- 1 bsc631248 bsc32    14112 Jul 30 15:08 namelist_cfg
+-rw-r--r-- 1 bsc631248 bsc32     5201 Jul 30 15:08 meminfo.txt
+-rw-r--r-- 1 bsc631248 bsc32     1781 Jul 30 15:08 layout.dat
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0011.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0010.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0000.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0004.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0012.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0001.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0009.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0002.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0003.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0007.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0006.nc
+-rw-r--r-- 1 bsc631248 bsc32 52950560 Jul 30 15:08 mesh_mask_0008.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0013.nc
+-rw-r--r-- 1 bsc631248 bsc32 51970104 Jul 30 15:08 mesh_mask_0005.nc
+-rw-r--r-- 1 bsc631248 bsc32     1673 Jul 30 15:08 out.25036127.0
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.1
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.2
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.3
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.4
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.5
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.6
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.7
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.8
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.9
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.10
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.11
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.13
+-rw------- 1 bsc631248 bsc32      324 Jul 30 15:08 out.25036127.12
+-rw-r--r-- 1 bsc631248 bsc32       10 Jul 30 15:08 time.step
+-rw-r--r-- 1 bsc631248 bsc32      340 Jul 30 15:08 run.stat.nc
+-rw-r--r-- 1 bsc631248 bsc32   965770 Jul 30 15:08 output.namelist.dyn
+-rw-r--r-- 1 bsc631248 bsc32    14970 Jul 30 15:08 output.namelist.ice
+-rw------- 1 bsc631248 bsc32    11231 Jul 30 15:08 err.25036127.0
+-rw-r--r-- 1 bsc631248 bsc32    92838 Jul 30 15:08 timing.output
+-rw-r--r-- 1 bsc631248 bsc32      147 Jul 30 15:08 run.stat
+-rw-r--r-- 1 bsc631248 bsc32   110208 Jul 30 15:08 ocean.output
+-rw-r--r-- 1 bsc631248 bsc32      680 Jul 30 15:08 ifs.stat
+-rw-r--r-- 1 bsc631248 bsc32    11149 Jul 30 15:08 gstats.xml
+-rw-r--r-- 1 bsc631248 bsc32   610237 Jul 30 15:08 NODE.001_01
+-rw-r--r-- 1 bsc631248 bsc32      795 Jul 30 15:08 ifs.err
+-rw-r--r-- 1 bsc631248 bsc32        2 Jul 30 15:08 ifs.out
+-rw-r--r-- 1 bsc631248 bsc32     8179 Jul 30 15:08 bwinfo.txt
+-rw-r--r-- 1 bsc631248 bsc32      174 Jul 30 15:08 pie.csv
+-rw-r--r-- 1 bsc631248 bsc32     1927 Jul 30 15:08 ifs.estim
+-rw-r--r-- 1 bsc631248 bsc32      488 Jul 30 15:08 ifs.csv
+-rw-r--r-- 1 bsc631248 bsc32      438 Jul 30 15:08 ifs.table
+-rw-r--r-- 1 bsc631248 bsc32      391 Jul 30 15:08 ifs.summary
+-rw-r--r-- 1 bsc631248 bsc32   128484 Jul 30 15:08 HRES.OUTPUT.25036127
+-rw-r--r-- 1 bsc631248 bsc32   119124 Jul 30 15:08 ifs.log
+
+./share:
+total 1
+lrwxrwxrwx 1 bsc631248 bsc32 19 Jul 30 15:08 eccodes -> ../../share/eccodes
+
+./tco79l137:
+total 1
+drwxr-sr-x 2 bsc631248 bsc32 4096 Jul 30 15:08 hz9m
+
+./tco79l137/hz9m:
+total 0
++ [hres:34s:15:08:55:5729]: du -sh .
+805M	.
++ [hres:34s:15:08:55:5730]: [[ '' = '' ]]
