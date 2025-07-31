@@ -1,17 +1,20 @@
 user:
   remote_username: bscXXXXXX
-  remote_machine_url: 
-  machine_file: 
+  remote_machine_url: glogin4.bsc.es
+  machine_file: dnb-mn5-gpp.yaml
 
 paths:
   local_bin_dir: ~/bin
-  local_build_dir: ~/projects/ifsnemo-build
+  local_build_dir: ~/ifsnemo-build
 
   remote_bin_dir: ~/bin
   remote_project_dir: /gpfs/projects/bsc32/bscXXXXXX
 
 overrides:
-  DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"
+  DNB_SANDBOX_SUBDIR: "ifsFOOBAR.SP.CPU.GPP"
+  DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/~ecmeXXXX"
+  IFS_BUNDLE_IFS_SOURCE_VERSION: "$DNB_IFSNEMO_URL/ifs-source-compare-example.git"
+  ifs_source_git_url: "feature/ifsnemo-compare-test"
 
 psubmit:
   queue_name: ""
@@ -21,4 +24,6 @@ psubmit:
 ifsnemo_compare:
   resolution: tco79-eORCA1
   steps: 1
+  threads: 1
+  ppn: 1
   nodes: 1
