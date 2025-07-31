@@ -115,7 +115,7 @@ nodes = cfg["ifsnemo_compare"]["nodes"]
 ov = cfg["overrides"]
 
 ifs_source_git_url = ov["IFS_BUNDLE_IFS_SOURCE_GIT"].format(**ov)
-dnb_sandbox_subdir = ov['DNB_IFSNEMO_URL']
+dnb_sandbox_subdir = ov['DNB_SANDBOX_SUBDIR']
 
 # Generate overrides.yaml
 (local_path / "overrides.yaml").write_text(f"""---
@@ -141,15 +141,41 @@ run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, v
 # 1.4 Fetch and Package Build Artifacts
 ############################################
 
+# Fetch references if specified
+if "references" in cfg:
+    ref_cfg = cfg["references"]
+    ref_url = ref_cfg["url"]
+    ref_branch = ref_cfg.get("branch", "main")
+    ref_path_in_repo = ref_cfg["path_in_repo"]
+    
+    temp_ref_dir = local_path / "temp_ref"
+    if temp_ref_dir.exists():
+        shutil.rmtree(temp_ref_dir)
+    
+    print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
+    run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
+    
+    source_path = temp_ref_dir / ref_path_in_repo
+    target_path = local_path / "references"
+    
+    if target_path.exists():
+        shutil.rmtree(target_path)
+    
+    print(f"Copying {source_path} to {target_path}")
+    shutil.copytree(source_path, target_path)
+    
+    print(f"Cleaning up {temp_ref_dir}")
+    shutil.rmtree(temp_ref_dir)
+
 # Run './dnb.sh :du' from within local_path
-run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
-
-# Download ifsnemo-compare into the local_path
-subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
-
-# Create tarball
-run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+#run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
+#
+## Download ifsnemo-compare into the local_path
+#subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
+#subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+#
+## Create tarball
+#run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
 ############################################
 # 2.1-2.3 Build and Install on remote
@@ -162,43 +188,49 @@ check_remote_requirements(conn, verbose=True)
 # Upload the tarball
 local_path = Path(local_path)
 remote_path = Path(remote_path)
-upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+#upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+#
+## Build on a compute node
+#sbatch_script = f"""#!/bin/bash
+##SBATCH -A ehpc01
+##SBATCH --qos=gp_debug
+##SBATCH --job-name=dnb_sh_build
+##SBATCH --output=dnb_sh_build_%j.out
+##SBATCH --error=dnb_sh_build_%j.err
+##SBATCH --nodes=1
+##SBATCH --ntasks-per-node=112
+##SBATCH --cpus-per-task=1
+##SBATCH --time=02:00:00
+##SBATCH --exclusive
+#
+#module load cmake/3.30.5
+#
+#cd {remote_path}
+#tar xzvf ifsnemo-build.tar.gz --one-top-level
+#cd ifsnemo-build
+#ln -sf {machine_file} machine.yaml
+#./dnb.sh :b
+#"""
+#
+#Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+#conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+#
+## Run ./dnb.sh :b on compute node with sbatch job
+#job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
+#
+## Wait until completion
+#job_id = job_output.stdout.strip().split()[-1]
+#wait_for_job(conn, job_id)
+#
+## Run ./dnb.sh :i on login node
+#conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
-# Build on a compute node
-sbatch_script = f"""#!/bin/bash
-#SBATCH -A ehpc01
-#SBATCH --qos=gp_debug
-#SBATCH --job-name=dnb_sh_build
-#SBATCH --output=dnb_sh_build_%j.out
-#SBATCH --error=dnb_sh_build_%j.err
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=112
-#SBATCH --cpus-per-task=1
-#SBATCH --time=02:00:00
-#SBATCH --exclusive
+# Move references into the test arena if they exist
+if "references" in cfg:
+    conn.run(f"mv {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
 
-module load cmake/3.30.5
-
-cd {remote_path}
-tar xzvf ifsnemo-build.tar.gz --one-top-level
-cd ifsnemo-build
-ln -sf {machine_file} machine.yaml
-./dnb.sh :b
-"""
-
-Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
-
-# Run ./dnb.sh :b on compute node with sbatch job
-job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
-
-# Wait until completion
-job_id = job_output.stdout.strip().split()[-1]
-wait_for_job(conn, job_id)
-
-# Run ./dnb.sh :i on login node
-conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
-
+# Move the comparison script into the test arena
 conn.run(f"mv {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
-
+print("running python3 compare_norms.py run-tests -t ifsFORKX.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 8 -p 14 -n 1 -s 1 ...")
+conn.run(f"cd {remote_path}/ifsnemo-build/ifsnemo && python3 compare_norms.py run-tests -t {dnb_sandbox_subdir}/ -ot tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}") 
