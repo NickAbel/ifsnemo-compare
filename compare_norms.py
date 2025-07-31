@@ -113,8 +113,8 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
             run_logdir,
             run_logfile
         )
-        if os.path.isfile(run_logfilepath):
-            print(f"[SKIP] {run_logdir} already contains a run log")
+        if os.path.isfile(run_logfilepath) and runtype == "ref":
+            print(f"[SKIP] {run_logdir} already contains a run log and we are running reference creation")
             continue
 
         print(f"Creating {run_logdir}")
