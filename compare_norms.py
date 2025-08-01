@@ -144,7 +144,7 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
     """
     for test in test_subdirs:
         for res, nthreads, ppn, nnodes, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, nsteps):
-            base_ref = os.path.join(ref_root,
+            base_ref = os.path.join(ref_root[0],
                                     ref_subdir,
                                     f"{res}", 
                                     f"nthreads{nthreads}",
@@ -157,16 +157,21 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
             if not os.path.isdir(base_ref):
                 print(f"[WARN] missing reference dir {base_ref}: skipping")
                 continue
-            # Run the test run and capture its jobid
-            print(f"Running test resolution {res} nthreads {nthreads} ppn {ppn} nnodes {nnodes} nsteps {nsteps}")
-            test_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", test]
-            test_jobid, _ = run_and_tee(test_cmd,
-                                        env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
 
-            print(f"[COMPLETED] jobid {test_jobid}: test resolution {res} nthreads {nthreads} ppn {ppn} nnodes {nnodes} nsteps {nsteps}")
+            base_test = os.path.join(test_root[0],
+                                     test,
+                                     f"{res}", 
+                                     f"nthreads{nthreads}",
+                                     f"ppn{ppn}",
+                                     f"nnodes{nnodes}",
+                                     f"nsteps{nsteps}", 
+                                     "results")
 
+            print(f"Expecting test dir at {base_test}")
+            if not os.path.isdir(base_test):
+                print(f"[WARN] missing test dir {base_test}: skipping")
+                continue
 
-            base_test = "results." + str(test_jobid)
             cmp_cmd = ["./cmp.sh", base_ref, base_test]
             compare_cmd = ["./compare.sh", base_ref, base_test]
 
