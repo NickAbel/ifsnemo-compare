@@ -1,4 +1,0 @@
->>> PSUBMIT: PSUBMIT_JOBID=25034605 PSUBMIT_DIRNAME=/gpfs/home/bsc/bsc631248/bin
->>> PSUBMIT: args: -t slurm -n 1 -p 1 -h 1 -g 0 -d /gpfs/home/bsc/bsc631248/bin -s ifsMASTER.SP.CPU.GPP/ -e false -o ifsMASTER.SP.CPU.GPP//psubmit.opt -a 
->>> PSUBMIT: sbatch -J ifsnemo-basic-test --exclusive --time=10 --qos=gp_debug    --account=bsc32   -D /gpfs/projects/bsc32/bsc631248/ifsnc_remote_dir/ifsnemo-build/ifsnemo -N 1 -n 1 /gpfs/home/bsc/bsc631248/bin/psubmit-mpiexec-wrapper.sh -t slurm -n 1 -p 1 -h 1 -g 0 -d /gpfs/home/bsc/bsc631248/bin -s ifsMASTER.SP.CPU.GPP/  -e false -o ifsMASTER.SP.CPU.GPP//psubmit.opt -a "\"\""
-Submitted batch job 25034605
