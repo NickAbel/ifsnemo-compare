@@ -227,10 +227,10 @@ conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
 # Move references into the test arena if they exist
 if "references" in cfg:
-    conn.run(f"mv {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
 
 # Move the comparison script into the test arena
-conn.run(f"mv {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
 print("running tests remotely...")
 conn.run(f"cd {remote_path}/ifsnemo-build/ifsnemo && python3 compare_norms.py run-tests -t {dnb_sandbox_subdir}/ -ot tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}") 
