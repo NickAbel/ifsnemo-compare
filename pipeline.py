@@ -1,4 +1,5 @@
 import yaml
+from shlex import quote
 import subprocess
 from pathlib import Path
 from fabric import Connection
@@ -70,7 +71,6 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {result.remote}")
 
-
 ############################################
 # 1.1 Ensure yq installed on local machine
 ############################################
@@ -82,7 +82,6 @@ if shutil.which("yq") is None:
 ###########################################################################
 """)
 
-
 ############################################
 # 1.2 Ensure netrc file exists
 ############################################
@@ -92,7 +91,6 @@ if not Path.home().joinpath('.netrc').exists():
 # WARNING: '~/.netrc' not found! Some steps may not work. #
 ###########################################################
 """)
-
 
 ############################################
 # 1.3 Write ifsnemo-build config files
@@ -232,8 +230,23 @@ if "references" in cfg:
 # Move the comparison script into the test arena
 conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
-print("running tests remotely...")
-conn.run(f"cd {remote_path}/ifsnemo-build/ifsnemo && python3 compare_norms.py run-tests -t {dnb_sandbox_subdir}/ -ot tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}") 
+for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+    cmd_run = (
+        f"cd {quote(remote_path)}/ifsnemo-build/ifsnemo && "
+        f"python3 compare_norms.py run-tests "
+        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
+        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+    )
+    conn.run(cmd_run)
 
-print("comparing tests remotely...")
-conn.run(f"cd {remote_path}/ifsnemo-build/ifsnemo && python3 compare_norms.py compare -t {dnb_sandbox_subdir}/ -ot tests -g ifsMASTER.SP.CPU.GPP/ -og references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}")
+    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+    cmd_cmp = (
+        f"cd {quote(remote_path)}/ifsnemo-build/ifsnemo && "
+        f"python3 compare_norms.py compare "
+        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
+        f"-g ifsMASTER.SP.CPU.GPP/ -og references "
+        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+    )
+    conn.run(cmd_cmp)
+
