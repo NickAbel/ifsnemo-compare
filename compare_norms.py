@@ -83,7 +83,7 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
     :param nthreads:     list of ints
     :param ppn:          list of ints
     :param nnodes:       list of ints
-    :param nsteps:       list of ints
+    :param nsteps:       list of ints or strings
     :param runtype:      "ref" or "test"
     """
     if runtype not in ("ref", "test"):
@@ -207,8 +207,8 @@ def parse_args():
                     help="Number of processes per node")
     p1.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
                     help="Number of nodes")
-    p1.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
-                    help="Number of steps")
+    p1.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
+                    help="Number of steps (can be string, e.g., 'd1')")
     p1.set_defaults(func=lambda args: create_runs(
         args.ref_subdirs, args.output_refdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="ref"
     ))
@@ -226,8 +226,8 @@ def parse_args():
                     help="Number of processes per node")
     p2.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
                     help="Number of nodes")
-    p2.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
-                    help="Number of steps")
+    p2.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
+                    help="Number of steps (can be string, e.g., 'd1')")
 
     p2.set_defaults(func=lambda args: create_runs(
         args.test_subdirs, args.output_testdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="test"
@@ -250,8 +250,8 @@ def parse_args():
                     help="Number of processes per node")
     p3.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1],
                     help="Number of nodes")
-    p3.add_argument("-s", "--nsteps", nargs="+", type=int, default=[1],
-                    help="Number of steps")
+    p3.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
+                    help="Number of steps (can be string, e.g., 'd1')")
     p3.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
         args.output_refdir, args.output_testdir,
