@@ -233,20 +233,22 @@ conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {r
 for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
     print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
     cmd_run = (
-        f"cd {quote(remote_path)}/ifsnemo-build/ifsnemo && "
+        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
         f"python3 compare_norms.py run-tests "
         f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
         f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
     )
+    print(cmd_run)
     conn.run(cmd_run)
 
     print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
     cmd_cmp = (
-        f"cd {quote(remote_path)}/ifsnemo-build/ifsnemo && "
+        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
         f"python3 compare_norms.py compare "
         f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
         f"-g ifsMASTER.SP.CPU.GPP/ -og references "
         f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
     )
+    print(cmd_run)
     conn.run(cmd_cmp)
 
