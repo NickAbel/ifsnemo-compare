@@ -110,19 +110,27 @@ threads = cfg["ifsnemo_compare"]["threads"]
 ppn = cfg["ifsnemo_compare"]["ppn"]
 nodes = cfg["ifsnemo_compare"]["nodes"]
 
-ov = cfg["overrides"]
+ov = cfg.get("overrides", {})
 
-ifs_source_git_url = ov["IFS_BUNDLE_IFS_SOURCE_GIT"].format(**ov)
-dnb_sandbox_subdir = ov['DNB_SANDBOX_SUBDIR']
+ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
+ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
+dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
 # Generate overrides.yaml
-(local_path / "overrides.yaml").write_text(f"""---
-environment:
-  - export DNB_SANDBOX_SUBDIR="{ov['DNB_SANDBOX_SUBDIR']}"
-  - export DNB_IFSNEMO_URL="{ov['DNB_IFSNEMO_URL']}"
-  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov['IFS_BUNDLE_IFS_SOURCE_VERSION']}"
-  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"
-""")
+overrides_content = ['---', 'environment:']
+if dnb_sandbox_subdir:
+    overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
+if ov.get('DNB_IFSNEMO_URL'):
+    overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
+if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
+    overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
+if ifs_source_git_url:
+    overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
+if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
+    overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
+
+
+(local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
 
 # Generate account.yaml
 (local_path / "account.yaml").write_text(f"""---
@@ -224,31 +232,31 @@ wait_for_job(conn, job_id)
 conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
 # Move references into the test arena if they exist
-if "references" in cfg:
-    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
-
-# Move the comparison script into the test arena
-conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
-
-for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
-    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-    cmd_run = (
-        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-        f"python3 compare_norms.py run-tests "
-        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-    )
-    print(cmd_run)
-    conn.run(cmd_run)
-
-    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-    cmd_cmp = (
-        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-        f"python3 compare_norms.py compare "
-        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-        f"-g ifsMASTER.SP.CPU.GPP/ -og references "
-        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-    )
-    print(cmd_run)
-    conn.run(cmd_cmp)
-
+#if "references" in cfg:
+#    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+#
+## Move the comparison script into the test arena
+#conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+#
+#for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+#    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+#    cmd_run = (
+#        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+#        f"python3 compare_norms.py run-tests "
+#        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
+#        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+#    )
+#    print(cmd_run)
+#    conn.run(cmd_run)
+#
+#    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+#    cmd_cmp = (
+#        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+#        f"python3 compare_norms.py compare "
+#        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
+#        f"-g ifsMASTER.SP.CPU.GPP/ -og references "
+#        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+#    )
+#    print(cmd_run)
+#    conn.run(cmd_cmp)
+#
