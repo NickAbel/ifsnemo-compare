@@ -48,30 +48,28 @@ machine earth.bsc.es
 
 ### Configure ECMWF Bitbucket Access on your local machine
 
-Log in to your ECMWF account and access your account management page here:
-https://git.ecmwf.int/account
+1. Log in to your ECMWF account and navigate to your account management page:  
+   https://git.ecmwf.int/account
 
-Go to "HTTP access tokens -> Create token"
+2. Under "HTTP access tokens," click **Create token**.  
+   You can give the token any name you like; the default options are sufficient.
 
-You may choose any name you like and the default options as below are acceptable
+   ![ECMWF Token Creation](https://github.com/user-attachments/assets/ce1a17c2-4e3a-407c-8980-7755a5cecbab)
 
-<img width="617" height="586" alt="image" src="https://github.com/user-attachments/assets/ce1a17c2-4e3a-407c-8980-7755a5cecbab" />
+3. After the token is created, you will see a message:  
+   "New access token created. You'll not be able to view this token again."
+   Copy the token.
 
-On the following page, you will see "New access token created
-You'll not be able to view this token again."
+4. Add your new token to your `~/.netrc` file, using the following format:
+    ```
+    machine git.ecmwf.int
+      login YOUR_ECMWF_USERNAME
+      password YOUR_NEW_ACCESS_TOKEN
+    ```
+    - You can find your ECMWF username at https://git.ecmwf.int/profile  
+      For example, it might look like `ecme0874`.
+      ![ECMWF Username Example](https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9)
 
-Add to the ~/.netrc:
-
-```
-machine git.ecmwf.int
-login XXXXXX
-password XXXXXXXXXXXXXXXX
-```
-
-where you may see your login name at https://git.ecmwf.int/profile
-for instance
-mine is `ecme0874`
-<img width="324" height="130" alt="image" src="https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9" />
 
 
 ### Clone and Configure `ifsnemo-build` on your local machine
@@ -104,11 +102,18 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 > **Tip:** `yq` and `psubmit` do not necessarily have to be placed in `~/bin`, this is shown for example only. The `dnb.sh` script and `ifsnemo-compare` tools expect `yq` and `psubmit` to be in the PATH.
 
+
 ### Create your pipeline.yaml
 
-`pipeline.yaml.example` is a template, but I can explain anything else
+Use `pipeline.yaml.example` as a starting point for your configuration.  
+Feel free to ask if you need clarification on any options or additional guidance.
+
+---
 
 ### Run the pipeline on your local machine
 
-From the command line, run
-`python3 pipeline.py`
+From the command line, simply run:
+```bash
+python3 pipeline.py
+```
+This will execute the pipeline according to your configuration.
