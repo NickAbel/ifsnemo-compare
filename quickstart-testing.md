@@ -1,9 +1,3 @@
-# ifsnemo-compare quickstart (for testing purposes only)
-
-> **Beware:** This version only checks out the latest version of IFS-NEMO from the `master` branch, and uses a symbolic link to it as a testing binary. It does not explain how to add a different branch or fork of IFS, RAPS, or ifs-bundle for comparison. See [this guide](./quickstart.md) for the full quick‑start steps.
-
----
-
 ## Prerequisites
 
 1. **ifsnemo-build** access. Full setup instructions:
@@ -12,13 +6,13 @@
 
    [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg)
    
+2. `pyyaml` and `fabric` Python packages.
+
 3. **MN5 and ECMWF Bitbucket**  access.
 
 ---
 
-## 1. Setup on Your Local Machine
-
-### 1.1 Install `yq`
+### Install `yq` on your local machine
 
 ```bash
 mkdir -p ~/bin
@@ -32,7 +26,7 @@ source ~/.bashrc
 
 > **Tip:** `yq` doesn't have to be placed in `~/bin`, this is shown for example only. The `dnb.sh` script run below expects `yq` to be in the PATH.
 
-### 1.2 Configure GitLab Access (for `generic-hpc-scripts`)
+### Configure GitLab Access (for `generic-hpc-scripts`) on your local machine
 
 Generate a token under **Profile → Personal Access Tokens** on [earth.bsc.es](https://earth.bsc.es/gitlab/-/profile/personal_access_tokens). 
 
@@ -52,7 +46,35 @@ machine earth.bsc.es
   password YOUR_NEW_PERSONAL_ACCESS_TOKEN
 ```
 
-### 1.3 Clone and Configure `ifsnemo-build`
+### Configure ECMWF Bitbucket Access on your local machine
+
+Log in to your ECMWF account and access your account management page here:
+https://git.ecmwf.int/account
+
+Go to "HTTP access tokens -> Create token"
+
+You may choose any name you like and the default options as below are acceptable
+
+<img width="617" height="586" alt="image" src="https://github.com/user-attachments/assets/ce1a17c2-4e3a-407c-8980-7755a5cecbab" />
+
+On the following page, you will see "New access token created
+You'll not be able to view this token again."
+
+Add to the ~/.netrc:
+
+```
+machine git.ecmwf.int
+login XXXXXX
+password XXXXXXXXXXXXXXXX
+```
+
+where you may see your login name at https://git.ecmwf.int/profile
+for instance
+mine is `ecme0874`
+<img width="324" height="130" alt="image" src="https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9" />
+
+
+### Clone and Configure `ifsnemo-build` on your local machine
 
 ```bash
 git clone --recursive https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git
@@ -62,48 +84,7 @@ cd ifsnemo-build
 ln -s dnb-generic.yaml machine.yaml
 ```
 
-Create these two files in `ifsnemo-build/`:
-
-> **Notice:** For instructions on testing other branches and forks of IFS, NEMO, IFS-Bundle, and RAPS, populate your `overrides.yaml` according to [this guide](./quickstart.md) instead.  
-
-- `overrides.yaml`
-
-  ```yaml
-  ---
-  environment:
-    - export DNB_SANDBOX_SUBDIR="ifsMASTER.SP.CPU.GPP"
-  ```
-
-- `account.yaml`
-
-  ```yaml
-  ---
-  psubmit:
-    queue_name: ""
-    account:     bsc32
-    node_type:   gp_debug
-  ```
-
-### 1.4 Fetch and Package Build Artifacts
-
-```bash
-# Download required archives
-./dnb.sh :du
-
-# Create a compressed tarball for MN5 transfer
-tar czvf ../ifsnemo-build.tar.gz .
-
-# Copy to your projects dir on MN5 login node (adjust XXXXXX)
-scp ../ifsnemo-build.tar.gz bscXXXXXX@glogin4.bsc.es:/gpfs/projects/bsc32/bscXXXXXX/
-```
-
-> **Beware:** The `tar czvf` command may take a few minutes. So will the `scp` command, but it will show you a progress bar.
-
----
-
-## 2. Build on MN5 GPP
-
-### 2.1 Prepare Utilities on Login Node
+### Prepare Utilities on your Login Node
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es
@@ -123,95 +104,11 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 > **Tip:** `yq` and `psubmit` do not necessarily have to be placed in `~/bin`, this is shown for example only. The `dnb.sh` script and `ifsnemo-compare` tools expect `yq` and `psubmit` to be in the PATH.
 
-### 2.2 Request an Interactive Node
+### Create your pipeline.yaml
 
-```bash
-salloc --qos=gp_debug --partition=standard -A ehpc01 \
-       -c 112 --nodes=1 -t 02:00:00 --exclusive
-```
+`pipeline.yaml.example` is a template, but I can explain anything else
 
-### 2.3 Untar, Build and Install
+### Run the pipeline on your local machine
 
-```bash
-cd /gpfs/projects/bsc32/bscXXXXXX/
-tar xzvf ifsnemo-build.tar.gz --one-top-level
-cd ifsnemo-build
-
-# Set machine file to MN5-GPP
-ln -sf dnb-mn5-gpp.yaml machine.yaml
-
-# Ensure cmake is loaded
-module load cmake/3.30.5
-
-# Build on the compute node
-./dnb.sh :b
-
-# Exit allocation at this point!! (by pressing Ctrl+D) and ensure you are in the ifsnemo-build dir
-cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build
-
-# Install - on the glogin4 node!!
-./dnb.sh :i
-```
-
-> **Beware:** The `tar xzvf`, `./dnb.sh :b` and `./dnb.sh :i` commands may take a few minutes.
-
----
-
-## 3. Run a Quick psubmit Test
-
-From your `ifsnemo-build/ifsnemo` testbed directory, verify that `psubmit` works:
-
-```bash
-cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build/ifsnemo
-psubmit.sh -n 1 -u ifsMASTER.SP.CPU.GPP
-```
-
-Which should complete without complaint.
-
----
-
-## 4. Install and Use `ifsnemo-compare`
-
-```bash
-# Clone into your ifsnemo testbed directory
-cd /gpfs/projects/bsc32/bscXXXXXX/ifsnemo-build/ifsnemo
-git clone https://github.com/NickAbel/ifsnemo-compare.git compare-tmp
-mv compare-tmp/* .
-rm -rf compare-tmp
-```
-
-### 4.1 Create Reference Outputs
-
-```bash
-python3 compare_norms.py create-refs \
-  -g ifsMASTER.SP.CPU.GPP/ \
-  -r tco79-eORCA1 \
-  -s 1 -n 1
-```
-
-This submits a gold-standard run and stores outputs under:
-
-```
-compare_norms_refs_out/ifsMASTER.SP.CPU.GPP/tco79-eORCA1/nsteps1/nnodes1/
-```
-
-### 4.2 Compare Against a "Lite" Binary
-
-We don't actually have a `ifsLITE.SP.CPU.GPP` binary to compare, so we will fake one:
-
-```bash
-ln -sf ifsMASTER.SP.CPU.GPP/ ifsLITE.SP.CPU.GPP
-```
-
-Then run:
-
-```bash
-python3 compare_norms.py compare \
-  -g ifsMASTER.SP.CPU.GPP/ \
-  -t ifsLITE.SP.CPU.GPP/ \
-  -r tco79-eORCA1 -s 1 -n 1
-```
-
-Results will flag any non-zero differences in the two binaries' output L2 norms, or missing/extra timesteps.
-
-Since the two binaries are the same, we expect no differences.
+From the command line, run
+`python3 pipeline.py`
