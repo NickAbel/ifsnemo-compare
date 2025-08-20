@@ -122,7 +122,7 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
 
         ## (A) Run the reference job
         print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} nsteps={nsteps}\n")
-        psubmit_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", subdir]
+        psubmit_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", subdir, "-l", "time="+str(120)]
         run_jobid, ref_out = run_and_tee(psubmit_cmd,
                                          env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
         
