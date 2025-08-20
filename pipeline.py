@@ -10,11 +10,16 @@ verbose = True
 
 def wait_for_job(conn, job_id, poll_interval=30):
     while True:
-        result = conn.run(f"squeue -j {job_id}", hide=True, warn=True)
-        if job_id not in result.stdout:
-            break
-        print(f"Waiting for SLURM job {job_id} to complete...")
-        time.sleep(poll_interval)
+        try:
+            result = conn.run(f"squeue -j {job_id}", hide=True, warn=True)
+            if job_id not in result.stdout:
+                break
+            print(f"Waiting for SLURM job {job_id} to complete...")
+            time.sleep(poll_interval)
+        except EOFError:
+            print("Connection dropped, attempting to reconnect...")
+            conn.close()
+            time.sleep(5)  # Wait a bit before retrying
 
     print(f"SLURM job {job_id} completed.")
 
@@ -109,6 +114,7 @@ steps = cfg["ifsnemo_compare"]["steps"]
 threads = cfg["ifsnemo_compare"]["threads"]
 ppn = cfg["ifsnemo_compare"]["ppn"]
 nodes = cfg["ifsnemo_compare"]["nodes"]
+gold_standard_tag = cfg["ifsnemo_compare"]["gold_standard_tag"]
 
 ov = cfg.get("overrides", {})
 
@@ -232,31 +238,31 @@ wait_for_job(conn, job_id)
 conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
 # Move references into the test arena if they exist
-#if "references" in cfg:
-#    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
-#
-## Move the comparison script into the test arena
-#conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
-#
-#for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
-#    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-#    cmd_run = (
-#        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-#        f"python3 compare_norms.py run-tests "
-#        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-#        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-#    )
-#    print(cmd_run)
-#    conn.run(cmd_run)
-#
-#    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-#    cmd_cmp = (
-#        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-#        f"python3 compare_norms.py compare "
-#        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-#        f"-g ifsMASTER.SP.CPU.GPP/ -og references "
-#        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-#    )
-#    print(cmd_run)
-#    conn.run(cmd_cmp)
-#
+if "references" in cfg:
+    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+
+# Move the comparison script into the test arena
+conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+
+for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+    cmd_run = (
+        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+        f"python3 compare_norms.py run-tests "
+        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
+        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+    )
+    print(cmd_run)
+    conn.run(cmd_run)
+
+    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+    cmd_cmp = (
+        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+        f"python3 compare_norms.py compare "
+        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
+        f"-g {quote(gold_standard_tag)}/ -og references "
+        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+    )
+    print(cmd_run)
+    conn.run(cmd_cmp)
+
