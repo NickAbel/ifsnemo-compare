@@ -22,6 +22,7 @@ psubmit:
   node_type: gp_ehpc
 
 ifsnemo_compare:
+  gold_standard_tag: ifsMASTER.SP.CPU.GPP
   resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]
   steps:   [d1,  d1,  d1,  d1 ]
   threads: [4,   4,   8,   14 ]
