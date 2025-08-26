@@ -5,6 +5,7 @@ from pathlib import Path
 from fabric import Connection
 import shutil
 import time
+import sys
 
 verbose = True
 
@@ -39,6 +40,8 @@ def check_remote_requirements(conn, verbose=False):
 #######################################################
 """
         print(warning)
+        # Treat missing remote requirements as fatal
+        raise RuntimeError(f"Missing remote requirements: {', '.join(missing)}")
     elif verbose:
         print("All remote requirements are present.")
 
@@ -76,134 +79,136 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {result.remote}")
 
-############################################
-# 1.1 Ensure yq installed on local machine
-############################################
-if shutil.which("yq") is None:
-    print("""
+def main():
+    ############################################
+    # 1.1 Ensure yq installed on local machine
+    ############################################
+    if shutil.which("yq") is None:
+        print("""
 ###########################################################################
 #      WARNING: 'yq' not found in PATH! Some steps may not work.          #
 # https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 #
 ###########################################################################
 """)
 
-############################################
-# 1.2 Ensure netrc file exists
-############################################
-if not Path.home().joinpath('.netrc').exists():
-    print("""
+    ############################################
+    # 1.2 Ensure netrc file exists
+    ############################################
+    if not Path.home().joinpath('.netrc').exists():
+        print("""
 ###########################################################
 # WARNING: '~/.netrc' not found! Some steps may not work. #
 ###########################################################
 """)
 
-############################################
-# 1.3 Write ifsnemo-build config files
-############################################
-with open("pipeline.yaml", "r") as f:
-    cfg = yaml.safe_load(f)
+    ############################################
+    # 1.3 Write ifsnemo-build config files
+    ############################################
+    with open("pipeline.yaml", "r") as f:
+        cfg = yaml.safe_load(f)
 
-remote_username = cfg["user"]["remote_username"]
-remote_machine = cfg["user"]["remote_machine_url"]
-machine_file = cfg["user"]["machine_file"]
-remote_path = cfg["paths"]["remote_project_dir"]
-local_path = Path(cfg["paths"]["local_build_dir"])
+    remote_username = cfg["user"]["remote_username"]
+    remote_machine = cfg["user"]["remote_machine_url"]
+    machine_file = cfg["user"]["machine_file"]
+    remote_path = cfg["paths"]["remote_project_dir"]
+    local_path = Path(cfg["paths"]["local_build_dir"])
 
-resolution = cfg["ifsnemo_compare"]["resolution"]
-steps = cfg["ifsnemo_compare"]["steps"]
-threads = cfg["ifsnemo_compare"]["threads"]
-ppn = cfg["ifsnemo_compare"]["ppn"]
-nodes = cfg["ifsnemo_compare"]["nodes"]
-gold_standard_tag = cfg["ifsnemo_compare"]["gold_standard_tag"]
+    resolution = cfg["ifsnemo_compare"]["resolution"]
+    steps = cfg["ifsnemo_compare"]["steps"]
+    threads = cfg["ifsnemo_compare"]["threads"]
+    ppn = cfg["ifsnemo_compare"]["ppn"]
+    nodes = cfg["ifsnemo_compare"]["nodes"]
+    gold_standard_tag = cfg["ifsnemo_compare"]["gold_standard_tag"]
 
-ov = cfg.get("overrides", {})
+    ov = cfg.get("overrides", {})
 
-ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
-ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
-dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
+    ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
+    ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
+    dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
-# Generate overrides.yaml
-overrides_content = ['---', 'environment:']
-if dnb_sandbox_subdir:
-    overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
-if ov.get('DNB_IFSNEMO_URL'):
-    overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
-if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
-    overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
-if ifs_source_git_url:
-    overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
-if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
-    overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
+    # Generate overrides.yaml
+    overrides_content = ['---', 'environment:']
+    if dnb_sandbox_subdir:
+        overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
+    if ov.get('DNB_IFSNEMO_URL'):
+        overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
+    if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
+        overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
+    if ifs_source_git_url:
+        overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
+    if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
+        overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
 
 
-(local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
+    (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
 
-# Generate account.yaml
-(local_path / "account.yaml").write_text(f"""---
+    # Generate account.yaml
+    (local_path / "account.yaml").write_text(f"""---
 psubmit:
   queue_name: "{cfg['psubmit']['queue_name']}"
   account:     {cfg['psubmit']['account']}
   node_type:   {cfg['psubmit']['node_type']}
 """)
 
-# Link to generic machine config
-run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
+    # Link to generic machine config
+    run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
 
-############################################
-# 1.4 Fetch and Package Build Artifacts
-############################################
+    ############################################
+    # 1.4 Fetch and Package Build Artifacts
+    ############################################
 
-# Fetch references if specified
-if "references" in cfg:
-    ref_cfg = cfg["references"]
-    ref_url = ref_cfg["url"]
-    ref_branch = ref_cfg.get("branch", "main")
-    ref_path_in_repo = ref_cfg["path_in_repo"]
-    
-    temp_ref_dir = local_path / "temp_ref"
-    if temp_ref_dir.exists():
+    # Fetch references if specified
+    if "references" in cfg:
+        ref_cfg = cfg["references"]
+        ref_url = ref_cfg["url"]
+        ref_branch = ref_cfg.get("branch", "main")
+        ref_path_in_repo = ref_cfg["path_in_repo"]
+        
+        temp_ref_dir = local_path / "temp_ref"
+        if temp_ref_dir.exists():
+            shutil.rmtree(temp_ref_dir)
+        
+        print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
+        run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
+        
+        source_path = temp_ref_dir / ref_path_in_repo
+        target_path = local_path / "references"
+        
+        if target_path.exists():
+            shutil.rmtree(target_path)
+        
+        print(f"Copying {source_path} to {target_path}")
+        shutil.copytree(source_path, target_path)
+        
+        print(f"Cleaning up {temp_ref_dir}")
         shutil.rmtree(temp_ref_dir)
-    
-    print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
-    run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
-    
-    source_path = temp_ref_dir / ref_path_in_repo
-    target_path = local_path / "references"
-    
-    if target_path.exists():
-        shutil.rmtree(target_path)
-    
-    print(f"Copying {source_path} to {target_path}")
-    shutil.copytree(source_path, target_path)
-    
-    print(f"Cleaning up {temp_ref_dir}")
-    shutil.rmtree(temp_ref_dir)
 
-# Run './dnb.sh :du' from within local_path
-run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
+    # Run './dnb.sh :du' from within local_path
+    run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
-# Download ifsnemo-compare into the local_path
-subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+    # Download ifsnemo-compare into the local_path
+    subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
+    subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
 
-# Create tarball
-run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+    # Create tarball
+    run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
-############################################
-# 2.1-2.3 Build and Install on remote
-############################################
+    ############################################
+    # 2.1-2.3 Build and Install on remote
+    ############################################
 
-# Establish connection to remote
-conn = Connection(f"{remote_username}@{remote_machine}")
-check_remote_requirements(conn, verbose=True)
+    # Establish connection to remote
+    conn = Connection(f"{remote_username}@{remote_machine}")
+    # This will raise if remote requirements are missing
+    check_remote_requirements(conn, verbose=True)
 
-# Upload the tarball
-local_path = Path(local_path)
-remote_path = Path(remote_path)
-upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+    # Upload the tarball
+    local_path = Path(local_path)
+    remote_path = Path(remote_path)
+    upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
 
-# Build on a compute node
-sbatch_script = f"""#!/bin/bash
+    # Build on a compute node
+    sbatch_script = f"""#!/bin/bash
 #SBATCH -A ehpc01
 #SBATCH --qos=gp_debug
 #SBATCH --job-name=dnb_sh_build
@@ -223,46 +228,57 @@ cd ifsnemo-build
 ln -sf {machine_file} machine.yaml
 ./dnb.sh :b
 """
+    
+    Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+    conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
-Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+    # Run ./dnb.sh :b on compute node with sbatch job
+    job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
-# Run ./dnb.sh :b on compute node with sbatch job
-job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
+    # Wait until completion
+    job_id = job_output.stdout.strip().split()[-1]
+    wait_for_job(conn, job_id)
 
-# Wait until completion
-job_id = job_output.stdout.strip().split()[-1]
-wait_for_job(conn, job_id)
+    # Run ./dnb.sh :i on login node
+    conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
-# Run ./dnb.sh :i on login node
-conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
+    # Move references into the test arena if they exist
+    if "references" in cfg:
+        conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
 
-# Move references into the test arena if they exist
-if "references" in cfg:
-    conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+    # Move the comparison script into the test arena
+    conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
-# Move the comparison script into the test arena
-conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+    for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+        print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+        cmd_run = (
+            f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+            f"python3 compare_norms.py run-tests "
+            f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
+            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+        )
+        print(cmd_run)
+        conn.run(cmd_run)
 
-for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
-    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-    cmd_run = (
-        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-        f"python3 compare_norms.py run-tests "
-        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-        f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-    )
-    print(cmd_run)
-    conn.run(cmd_run)
+        print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+        cmd_cmp = (
+            f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+            f"python3 compare_norms.py compare "
+            f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
+            f"-g {quote(gold_standard_tag)}/ -og references "
+            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+        )
+        print(cmd_run)
+        conn.run(cmd_cmp)
 
-    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-    cmd_cmp = (
-        f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-        f"python3 compare_norms.py compare "
-        f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-        f"-g {quote(gold_standard_tag)}/ -og references "
-        f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-    )
-    print(cmd_run)
-    conn.run(cmd_cmp)
-
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print("ERROR:", e)
+        # Print traceback for easier debugging
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+    else:
+        sys.exit(0)
