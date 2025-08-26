@@ -6,6 +6,7 @@ from fabric import Connection
 import shutil
 import time
 import sys
+import argparse
 
 verbose = True
 
@@ -79,7 +80,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {result.remote}")
 
-def main():
+def main(pipeline_yaml_path: str):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -104,7 +105,7 @@ def main():
     ############################################
     # 1.3 Write ifsnemo-build config files
     ############################################
-    with open("pipeline.yaml", "r") as f:
+    with open(pipeline_yaml_path, "r") as f:
         cfg = yaml.safe_load(f)
 
     remote_username = cfg["user"]["remote_username"]
@@ -272,8 +273,17 @@ ln -sf {machine_file} machine.yaml
         conn.run(cmd_cmp)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Build and run ifsnemo comparison pipeline.")
+    parser.add_argument(
+        "-y", "--yaml",
+        dest="pipeline_yaml",
+        default="pipeline.yaml",
+        help="Path to pipeline YAML file (default: pipeline.yaml)"
+    )
+    args = parser.parse_args()
+
     try:
-        main()
+        main(args.pipeline_yaml)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
