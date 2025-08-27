@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-import os
+import os, time
 import shutil
 import sys
 import argparse
 import itertools
 import subprocess
+import tempfile
 
 #Section 1: File+Dir Utilities
 
@@ -62,7 +63,7 @@ def run_and_tee(cmd, env=None):
             jobid = line.split(" ", 1)[1].split()[1]
 
     proc.wait()
- 
+
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode, cmd)
     if not jobid:
@@ -78,7 +79,7 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
       1) submits the job via run_and_tee()
       2) moves results.<jobid> into the right spot under 'root'
 
-    :param subdirs:      list of test names 
+    :param subdirs:      list of test names
     :param resolutions:  list of resolution strings
     :param nthreads:     list of ints
     :param ppn:          list of ints
@@ -88,13 +89,13 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
     """
     if runtype not in ("ref", "test"):
         raise ValueError("runtype must be 'ref' or 'test'")
-    
+
     for subdir, res, nthreads, ppn, nnodes, nsteps in itertools.product(
         subdirs,
         resolutions,
         nthreads,
         ppn,
-        nnodes, 
+        nnodes,
         nsteps
     ):
 
@@ -122,10 +123,17 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
 
         ## (A) Run the reference job
         print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} nsteps={nsteps}\n")
-        psubmit_cmd = ["psubmit.sh", "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes), "-u", subdir, "-l", "time="+str(120)]
+                # when building psubmit_cmd in compare_norms.py
+        psubmit_cmd = [
+            "psubmit.sh",
+            "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes),
+            "-u", subdir,
+            "-l", f"time={120}",
+        ]
+
         run_jobid, ref_out = run_and_tee(psubmit_cmd,
                                          env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
-        
+
         ## Log ref output
         print(f"Creating {run_logfilepath}")
         with open(run_logfilepath, "w") as f:
@@ -134,6 +142,8 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
 
         ## Copy psubmit results to the run_logdir folder
         copy_results(run_jobid, run_logdir)
+
+
 
 def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps):
     """
@@ -146,11 +156,11 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
         for res, nthreads, ppn, nnodes, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, nsteps):
             base_ref = os.path.join(ref_root[0],
                                     ref_subdir,
-                                    f"{res}", 
+                                    f"{res}",
                                     f"nthreads{nthreads}",
                                     f"ppn{ppn}",
                                     f"nnodes{nnodes}",
-                                    f"nsteps{nsteps}", 
+                                    f"nsteps{nsteps}",
                                     "results")
 
             print(f"Expecting reference dir at {base_ref}")
@@ -160,11 +170,11 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
 
             base_test = os.path.join(test_root[0],
                                      test,
-                                     f"{res}", 
+                                     f"{res}",
                                      f"nthreads{nthreads}",
                                      f"ppn{ppn}",
                                      f"nnodes{nnodes}",
-                                     f"nsteps{nsteps}", 
+                                     f"nsteps{nsteps}",
                                      "results")
 
             print(f"Expecting test dir at {base_test}")
