@@ -7,6 +7,7 @@ import shutil
 import time
 import sys
 import argparse
+import json
 
 verbose = True
 
@@ -46,23 +47,30 @@ def check_remote_requirements(conn, verbose=False):
     elif verbose:
         print("All remote requirements are present.")
 
-def run_command(cmd, cwd=None, verbose=False):
+def run_command(cmd, cwd=None, verbose=False, capture_output=False):
     if verbose:
         print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
     # Use subprocess with output shown live
     process = subprocess.Popen(
         cmd,
         cwd=cwd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE if capture_output else subprocess.PIPE,
+        stderr=subprocess.STDOUT if capture_output else subprocess.STDOUT,
         text=True,
         bufsize=1,
     )
+    output_lines = []
     for line in process.stdout:
         print(line, end='')  # print output live
+        if capture_output:
+            output_lines.append(line)
     process.wait()
     if process.returncode != 0:
         raise subprocess.CalledProcessError(process.returncode, cmd)
+    if capture_output:
+        return process.returncode, "".join(output_lines)
+    else:
+        return process.returncode, None
 
 def upload_file(conn, local_path, remote_path, verbose=False):
     local_str = str(local_path)
@@ -250,27 +258,45 @@ ln -sf {machine_file} machine.yaml
     # Move the comparison script into the test arena
     conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
+    test_results = {}
+    results_file = "test_results.json"
+
     for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+        test_results[test_id] = {}
+
         print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+        run_output_file = f"run_tests_{test_id}.log"
         cmd_run = (
             f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
             f"python3 compare_norms.py run-tests "
             f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)} "
+            f"> {run_output_file} 2>&1"
         )
         print(cmd_run)
-        conn.run(cmd_run)
+        return_code = conn.run(cmd_run, warn=True).return_code
+        test_results[test_id]["run_tests_passed"] = return_code == 0
+        test_results[test_id]["run_tests_output"] = run_output_file
 
         print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+        compare_output_file = f"compare_{test_id}.log"
         cmd_cmp = (
             f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
             f"python3 compare_norms.py compare "
             f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
             f"-g {quote(gold_standard_tag)}/ -og references "
-            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)} "
+            f"> {compare_output_file} 2>&1"
         )
         print(cmd_run)
-        conn.run(cmd_cmp)
+        return_code = conn.run(cmd_cmp, warn=True).return_code
+        test_results[test_id]["compare_passed"] = return_code == 0
+        test_results[test_id]["compare_output"] = compare_output_file
+
+    # Write the results to a JSON file
+    conn.run(f"echo '{json.dumps(test_results)}' > {remote_path}/ifsnemo-build/ifsnemo/{results_file}")
+    print(f"Test results written to {results_file}")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build and run ifsnemo comparison pipeline.")
