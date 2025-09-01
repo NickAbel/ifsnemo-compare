@@ -139,7 +139,16 @@ def main(pipeline_yaml_path: str, skip_build: bool):
     conn = Connection(f"{remote_username}@{remote_machine}")
     # This will raise if remote requirements are missing
     check_remote_requirements(conn, verbose=True)
-    
+
+    if skip_build:
+        # If we skip the build, the remote tests directory will not be empty.
+        # We want to delete any subdirectory in there that corresponds to the
+        # test configuration we are running.
+        if dnb_sandbox_subdir:
+            remote_tests_dir = f"{remote_path}/ifsnemo-build/ifsnemo/tests/{dnb_sandbox_subdir}"
+            print(f"Deleting remote tests directory: {remote_tests_dir}")
+            conn.run(f"rm -rf {remote_tests_dir}")
+
     if not skip_build:
         # Generate overrides.yaml
         overrides_content = ['---', 'environment:']
@@ -272,12 +281,15 @@ ln -sf {machine_file} machine.yaml
             f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
             f"python3 compare_norms.py run-tests "
             f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)} "
-            f"> {run_output_file} 2>&1"
+            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
         )
         print(cmd_run)
-        return_code = conn.run(cmd_run, warn=True).return_code
-        test_results[test_id]["run_tests_passed"] = return_code == 0
+        result = conn.run(cmd_run, warn=True, pty=True)
+        with open(run_output_file, "w") as f:
+            f.write(result.stdout)
+        if verbose:
+            print(f"Output of run-tests saved to local file {run_output_file}")
+        test_results[test_id]["run_tests_passed"] = result.return_code == 0
         test_results[test_id]["run_tests_output"] = run_output_file
 
         print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
@@ -287,17 +299,21 @@ ln -sf {machine_file} machine.yaml
             f"python3 compare_norms.py compare "
             f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
             f"-g {quote(gold_standard_tag)}/ -og references "
-            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)} "
-            f"> {compare_output_file} 2>&1"
+            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
         )
         print(cmd_cmp)
-        return_code = conn.run(cmd_cmp, warn=True).return_code
-        test_results[test_id]["compare_passed"] = return_code == 0
+        result = conn.run(cmd_cmp, warn=True, pty=True)
+        with open(compare_output_file, "w") as f:
+            f.write(result.stdout)
+        if verbose:
+            print(f"Output of compare saved to local file {compare_output_file}")
+        test_results[test_id]["compare_passed"] = result.return_code == 0
         test_results[test_id]["compare_output"] = compare_output_file
 
     # Write the results to a JSON file
-    conn.run(f"echo '{json.dumps(test_results)}' > {remote_path}/ifsnemo-build/ifsnemo/{results_file}")
-    print(f"Test results written to {results_file}")
+    with open(results_file, "w") as f:
+        json.dump(test_results, f, indent=4)
+    print(f"Test results written to {results_file} on the local machine.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build and run ifs-nemo comparison pipeline.")
