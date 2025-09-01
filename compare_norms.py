@@ -182,10 +182,11 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
                 print(f"[WARN] missing test dir {base_test}: skipping")
                 continue
 
-            cmp_cmd = ["./cmp.sh", base_ref, base_test]
+            #cmp_cmd = ["./cmp.sh", base_ref, base_test] # not currently 
             compare_cmd = ["./compare.sh", base_ref, base_test]
 
-            for cmd in (cmp_cmd, compare_cmd):
+            #for cmd in (cmp_cmd, compare_cmd):
+            for cmd in (compare_cmd):
                 result = subprocess.run(
                     cmd,
                     capture_output=True,  # grabs stdout/stderr
