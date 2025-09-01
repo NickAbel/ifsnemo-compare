@@ -184,18 +184,14 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
 
             #cmp_cmd = ["./cmp.sh", base_ref, base_test] # not currently 
             compare_cmd = ["./compare.sh", base_ref, base_test]
-
-            #for cmd in (cmp_cmd, compare_cmd):
-            for cmd in (compare_cmd):
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,  # grabs stdout/stderr
-                    text=True             # returns strings not bytes
-                )
-                print(f"\n>>> {cmd[0]} exited {result.returncode}")
-                print("stdout:", result.stdout)
-                print("stderr:", result.stderr)
-
+            result = subprocess.run(
+                compare_cmd,
+                capture_output=True,
+                text=True
+            )            
+            print(f"\n>>> {compare_cmd[0]} exited {result.returncode}")
+            print("stdout:", result.stdout)
+            print("stderr:", result.stderr)
 
 #Section 4: CLI Glue
 
