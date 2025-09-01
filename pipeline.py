@@ -134,71 +134,70 @@ def main(pipeline_yaml_path: str, skip_build: bool):
     ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
     ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
+    
+    # Establish connection to remote
+    conn = Connection(f"{remote_username}@{remote_machine}")
+    # This will raise if remote requirements are missing
+    check_remote_requirements(conn, verbose=True)
+    
+    if not skip_build:
+        # Generate overrides.yaml
+        overrides_content = ['---', 'environment:']
+        if dnb_sandbox_subdir:
+            overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
+        if ov.get('DNB_IFSNEMO_URL'):
+            overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
+        if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
+            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
+        if ifs_source_git_url:
+            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
+        if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
+            overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
+    
+    
+        (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
 
-    # Generate overrides.yaml
-    overrides_content = ['---', 'environment:']
-    if dnb_sandbox_subdir:
-        overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
-    if ov.get('DNB_IFSNEMO_URL'):
-        overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
-    if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
-        overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
-    if ifs_source_git_url:
-        overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
-    if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
-        overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
-
-
-    (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
-
-    # Generate account.yaml
-    (local_path / "account.yaml").write_text(f"""---
+        # Generate account.yaml
+        (local_path / "account.yaml").write_text(f"""---
 psubmit:
   queue_name: "{cfg['psubmit']['queue_name']}"
   account:     {cfg['psubmit']['account']}
   node_type:   {cfg['psubmit']['node_type']}
 """)
+    
+        # Link to generic machine config
+        run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
 
-    # Link to generic machine config
-    run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
-
-    ############################################
-    # 1.4 Fetch and Package Build Artifacts
-    ############################################
-
-    # Fetch references if specified
-    if "references" in cfg:
-        ref_cfg = cfg["references"]
-        ref_url = ref_cfg["url"]
-        ref_branch = ref_cfg.get("branch", "main")
-        ref_path_in_repo = ref_cfg["path_in_repo"]
-        
-        temp_ref_dir = local_path / "temp_ref"
-        if temp_ref_dir.exists():
+        ############################################
+        # 1.4 Fetch and Package Build Artifacts
+        ############################################
+    
+        # Fetch references if specified
+        if "references" in cfg:
+            ref_cfg = cfg["references"]
+            ref_url = ref_cfg["url"]
+            ref_branch = ref_cfg.get("branch", "main")
+            ref_path_in_repo = ref_cfg["path_in_repo"]
+            
+            temp_ref_dir = local_path / "temp_ref"
+            if temp_ref_dir.exists():
+                shutil.rmtree(temp_ref_dir)
+            
+            print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
+            run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
+            
+            source_path = temp_ref_dir / ref_path_in_repo
+            target_path = local_path / "references"
+            
+            if target_path.exists():
+                shutil.rmtree(target_path)
+            
+            print(f"Copying {source_path} to {target_path}")
+            shutil.copytree(source_path, target_path)
+            
+            print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
-        
-        print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
-        run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
-        
-        source_path = temp_ref_dir / ref_path_in_repo
-        target_path = local_path / "references"
-        
-        if target_path.exists():
-            shutil.rmtree(target_path)
-        
-        print(f"Copying {source_path} to {target_path}")
-        shutil.copytree(source_path, target_path)
-        
-        print(f"Cleaning up {temp_ref_dir}")
-        shutil.rmtree(temp_ref_dir)
 
-    # Establish connection to remote
-    conn = Connection(f"{remote_username}@{remote_machine}")
-
-    # This will raise if remote requirements are missing
-    check_remote_requirements(conn, verbose=True)
-
-    if not skip_build:
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
