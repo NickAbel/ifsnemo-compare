@@ -88,7 +88,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {result.remote}")
 
-def main(pipeline_yaml_path: str):
+def main(pipeline_yaml_path: str, skip_build: bool):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -192,32 +192,34 @@ psubmit:
         print(f"Cleaning up {temp_ref_dir}")
         shutil.rmtree(temp_ref_dir)
 
-    # Run './dnb.sh :du' from within local_path
-    run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
-
-    # Download ifsnemo-compare into the local_path
-    subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-    subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
-
-    # Create tarball
-    run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
-
-    ############################################
-    # 2.1-2.3 Build and Install on remote
-    ############################################
-
     # Establish connection to remote
     conn = Connection(f"{remote_username}@{remote_machine}")
+
     # This will raise if remote requirements are missing
     check_remote_requirements(conn, verbose=True)
 
-    # Upload the tarball
-    local_path = Path(local_path)
-    remote_path = Path(remote_path)
-    upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+    if not skip_build:
+        # Run './dnb.sh :du' from within local_path
+        run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
-    # Build on a compute node
-    sbatch_script = f"""#!/bin/bash
+        # Download ifsnemo-compare into the local_path
+        subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
+        subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+
+        # Create tarball
+        run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+
+        ############################################
+        # 2.1-2.3 Build and Install on remote
+        ############################################
+
+        # Upload the tarball
+        local_path = Path(local_path)
+        remote_path = Path(remote_path)
+        upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+
+        # Build on a compute node
+        sbatch_script = f"""#!/bin/bash
 #SBATCH -A ehpc01
 #SBATCH --qos=gp_debug
 #SBATCH --job-name=dnb_sh_build
@@ -237,26 +239,26 @@ cd ifsnemo-build
 ln -sf {machine_file} machine.yaml
 ./dnb.sh :b
 """
-    
-    Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-    conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+        
+        Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+        conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
-    # Run ./dnb.sh :b on compute node with sbatch job
-    job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
+        # Run ./dnb.sh :b on compute node with sbatch job
+        job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
-    # Wait until completion
-    job_id = job_output.stdout.strip().split()[-1]
-    wait_for_job(conn, job_id)
+        # Wait until completion
+        job_id = job_output.stdout.strip().split()[-1]
+        wait_for_job(conn, job_id)
 
-    # Run ./dnb.sh :i on login node
-    conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
+        # Run ./dnb.sh :i on login node
+        conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
-    # Move references into the test arena if they exist
-    if "references" in cfg:
-        conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+        # Move references into the test arena if they exist
+        if "references" in cfg:
+            conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
 
-    # Move the comparison script into the test arena
-    conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+        # Move the comparison script into the test arena
+        conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
 
     test_results = {}
     results_file = "test_results.json"
@@ -289,7 +291,7 @@ ln -sf {machine_file} machine.yaml
             f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)} "
             f"> {compare_output_file} 2>&1"
         )
-        print(cmd_run)
+        print(cmd_cmp)
         return_code = conn.run(cmd_cmp, warn=True).return_code
         test_results[test_id]["compare_passed"] = return_code == 0
         test_results[test_id]["compare_output"] = compare_output_file
@@ -299,17 +301,23 @@ ln -sf {machine_file} machine.yaml
     print(f"Test results written to {results_file}")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Build and run ifsnemo comparison pipeline.")
+    parser = argparse.ArgumentParser(description="Build and run ifs-nemo comparison pipeline.")
     parser.add_argument(
         "-y", "--yaml",
         dest="pipeline_yaml",
         default="pipeline.yaml",
         help="Path to pipeline YAML file (default: pipeline.yaml)"
     )
+    parser.add_argument(
+        "-s", "--skip-build",
+        dest="skip_build",
+        action="store_true",
+        help="Skip the build and install steps, only run tests and compare"
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml)
+        main(args.pipeline_yaml, args.skip_build)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
