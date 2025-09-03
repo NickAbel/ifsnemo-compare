@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import yaml
 from shlex import quote
 import subprocess
@@ -88,7 +89,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {result.remote}")
 
-def main(pipeline_yaml_path: str, skip_build: bool):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -114,27 +115,29 @@ def main(pipeline_yaml_path: str, skip_build: bool):
     # 1.3 Write ifsnemo-build config files
     ############################################
     with open(pipeline_yaml_path, "r") as f:
-        cfg = yaml.safe_load(f)
+        cfg = yaml.safe_load(f) or {}
 
-    remote_username = cfg["user"]["remote_username"]
-    remote_machine = cfg["user"]["remote_machine_url"]
-    machine_file = cfg["user"]["machine_file"]
-    remote_path = cfg["paths"]["remote_project_dir"]
-    local_path = Path(cfg["paths"]["local_build_dir"])
+    remote_username = cfg.get("user", {}).get("remote_username")
+    remote_machine = cfg.get("user", {}).get("remote_machine_url")
+    machine_file = cfg.get("user", {}).get("machine_file")
+    remote_path = cfg.get("paths", {}).get("remote_project_dir")
+    local_path = Path(cfg.get("paths", {}).get("local_build_dir", "."))
 
-    resolution = cfg["ifsnemo_compare"]["resolution"]
-    steps = cfg["ifsnemo_compare"]["steps"]
-    threads = cfg["ifsnemo_compare"]["threads"]
-    ppn = cfg["ifsnemo_compare"]["ppn"]
-    nodes = cfg["ifsnemo_compare"]["nodes"]
-    gold_standard_tag = cfg["ifsnemo_compare"]["gold_standard_tag"]
+    # Use safe defaults and guard missing keys
+    ifs_cfg = cfg.get("ifsnemo_compare", {})
+    resolution = ifs_cfg.get("resolution", [])
+    steps = ifs_cfg.get("steps", [])
+    threads = ifs_cfg.get("threads", [])
+    ppn = ifs_cfg.get("ppn", [])
+    nodes = ifs_cfg.get("nodes", [])
+    gold_standard_tag = ifs_cfg.get("gold_standard_tag", "")
 
     ov = cfg.get("overrides", {})
 
     ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
     ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
-    
+
     # Establish connection to remote
     conn = Connection(f"{remote_username}@{remote_machine}")
     # This will raise if remote requirements are missing
@@ -162,48 +165,48 @@ def main(pipeline_yaml_path: str, skip_build: bool):
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
-    
-    
+
+
         (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
 
         # Generate account.yaml
         (local_path / "account.yaml").write_text(f"""---
 psubmit:
-  queue_name: "{cfg['psubmit']['queue_name']}"
-  account:     {cfg['psubmit']['account']}
-  node_type:   {cfg['psubmit']['node_type']}
+  queue_name: "{cfg.get('psubmit', {}).get('queue_name', '')}"
+  account:     {cfg.get('psubmit', {}).get('account', '')}
+  node_type:   {cfg.get('psubmit', {}).get('node_type', '')}
 """)
-    
+
         # Link to generic machine config
         run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
 
         ############################################
         # 1.4 Fetch and Package Build Artifacts
         ############################################
-    
+
         # Fetch references if specified
         if "references" in cfg:
             ref_cfg = cfg["references"]
             ref_url = ref_cfg["url"]
             ref_branch = ref_cfg.get("branch", "main")
             ref_path_in_repo = ref_cfg["path_in_repo"]
-            
+
             temp_ref_dir = local_path / "temp_ref"
             if temp_ref_dir.exists():
                 shutil.rmtree(temp_ref_dir)
-            
+
             print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
             run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
-            
+
             source_path = temp_ref_dir / ref_path_in_repo
             target_path = local_path / "references"
-            
+
             if target_path.exists():
                 shutil.rmtree(target_path)
-            
+
             print(f"Copying {source_path} to {target_path}")
             shutil.copytree(source_path, target_path)
-            
+
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
 
@@ -247,7 +250,7 @@ cd ifsnemo-build
 ln -sf {machine_file} machine.yaml
 ./dnb.sh :b
 """
-        
+
         Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
         conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
@@ -271,44 +274,52 @@ ln -sf {machine_file} machine.yaml
     test_results = {}
     results_file = "test_results.json"
 
-    for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
-        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
-        test_results[test_id] = {}
+    # Explicitly handle the case where the user asked to skip run/compare
+    if no_run:
+        print("Skipping run and compare stages (--no-run).")
+    else:
+        # If any of the test-parameter lists are empty, there are no tests to run.
+        if not (resolution and steps and threads and ppn and nodes):
+            print("No test configurations found; skipping run and compare stages.")
+        else:
+            for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
+                test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+                test_results[test_id] = {}
 
-        print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-        run_output_file = f"run_tests_{test_id}.log"
-        cmd_run = (
-            f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-            f"python3 compare_norms.py run-tests "
-            f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-            f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-        )
-        print(cmd_run)
-        result = conn.run(cmd_run, warn=True, pty=True)
-        with open(run_output_file, "w") as f:
-            f.write(result.stdout)
-        if verbose:
-            print(f"Output of run-tests saved to local file {run_output_file}")
-        test_results[test_id]["run_tests_passed"] = result.return_code == 0
-        test_results[test_id]["run_tests_output"] = run_output_file
+                print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+                run_output_file = f"run_tests_{test_id}.log"
+                cmd_run = (
+                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+                    f"python3 compare_norms.py run-tests "
+                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
+                    f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+                )
+                print(cmd_run)
+                result = conn.run(cmd_run, warn=True, pty=True)
+                with open(run_output_file, "w") as f:
+                    f.write(result.stdout)
+                if verbose:
+                    print(f"Output of run-tests saved to local file {run_output_file}")
+                test_results[test_id]["run_tests_passed"] = result.return_code == 0
+                test_results[test_id]["run_tests_output"] = run_output_file
 
-        print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-        compare_output_file = f"compare_{test_id}.log"
-        cmd_cmp = (
-            f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-            f"python3 compare_norms.py compare "
-            f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-            f"-g {quote(gold_standard_tag)}/ -og references "
-            f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
-        )
-        print(cmd_cmp)
-        result = conn.run(cmd_cmp, warn=True, pty=True)
-        with open(compare_output_file, "w") as f:
-            f.write(result.stdout)
-        if verbose:
-            print(f"Output of compare saved to local file {compare_output_file}")
-        test_results[test_id]["compare_passed"] = result.return_code == 0
-        test_results[test_id]["compare_output"] = compare_output_file
+                print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+                compare_output_file = f"compare_{test_id}.log"
+                cmd_cmp = (
+                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
+                    f"python3 compare_norms.py compare "
+                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
+                    f"-g {quote(gold_standard_tag)}/ -og references "
+                    f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+                )
+                print(cmd_cmp)
+                result = conn.run(cmd_cmp, warn=True, pty=True)
+                with open(compare_output_file, "w") as f:
+                    f.write(result.stdout)
+                if verbose:
+                    print(f"Output of compare saved to local file {compare_output_file}")
+                test_results[test_id]["compare_passed"] = result.return_code == 0
+                test_results[test_id]["compare_output"] = compare_output_file
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
@@ -329,10 +340,16 @@ if __name__ == '__main__':
         action="store_true",
         help="Skip the build and install steps, only run tests and compare"
     )
+    parser.add_argument(
+        "--no-run",
+        dest="no_run",
+        action="store_true",
+        help="Do the build/install but skip the run and compare stages (produce no test runs)"
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build)
+        main(args.pipeline_yaml, args.skip_build, args.no_run)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
