@@ -133,4 +133,18 @@ From the command line:
 python3 pipeline.py
 ```
 
-This will execute the pipeline using your configuration.
+This will execute the pipeline using the configuration specified in `pipeline.yaml` by default.
+
+## 6. Pipeline Options (Note: Advanced/Custom Use Only)
+
+The pipeline script (`pipeline.py`) accepts several optional arguments:
+
+- `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: pipeline.yaml)
+- `-s, --skip-build`: Skip the build and install steps, only run tests and compare
+- `--no-run`: Do the build/install but skip the run and compare stages
+
+Example usage:
+```bash
+python3 pipeline.py --yaml custom-pipeline.yaml  # Use a custom config file
+python3 pipeline.py --skip-build                # Skip build steps, only run tests
+python3 pipeline.py --no-run                    # Only do build/install, no tests
