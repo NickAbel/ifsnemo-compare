@@ -91,6 +91,10 @@ git checkout nabel-main-patch-75101
 ln -s dnb-generic.yaml machine.yaml
 ```
 
+### 2.5. Clone ifsnemo-compare
+```bash
+git clone https://github.com/NickAbel/ifsnemo-compare.git
+
 ---
 
 ## 3. Login Node Setup
@@ -120,10 +124,57 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 ## 4. Create your pipeline.yaml
 
 - By default, `pipeline.py` expects a YAML file, `pipeline.yaml`, in the main directory.
-- Use `pipeline.yaml.example` as a starting point.
-- Customize options as needed; ask if you want help with any setting.
+- Use `pipeline.yaml.example` as a starting point for creating your own.
+- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username is in there, so you will have to change the directories and usernames to yours.
+- For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket)
+- Customize options as needed; ask if you want help with any setting. A running list of all possible options below.
+
+```yaml
+# User configuration
+user:
+  remote_username: string          # Your username on the remote machine (e.g., bscXXXXXX)
+  remote_machine_url: string      # Remote machine address (e.g., glogin4.bsc.es)
+  machine_file: string           # Machine configuration file to use (e.g., dnb-mn5-gpp.yaml)
+
+# Path configuration
+paths:
+  local_bin_dir: string          # Path to local binary directory
+  local_build_dir: string        # Path to local build directory
+  remote_bin_dir: string         # Path to remote binary directory
+  remote_project_dir: string     # Path to remote project directory
+
+# Override settings
+overrides:
+  DNB_SANDBOX_SUBDIR: string     # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP")
+  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX")
+  IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable)
+  IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use
+  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification
+
+# SLURM submission settings
+psubmit:
+  queue_name: string             # Queue name (can be empty string)
+  account: string               # Account name (e.g., ehpc01)
+  node_type: string            # Node type (e.g., gp_ehpc)
+
+# IFS-NEMO comparison settings
+ifsnemo_compare:
+  gold_standard_tag: string     # Reference tag (e.g., "ifsMASTER.SP.CPU.GPP")
+  # Test configuration arrays (must have matching lengths)
+  resolution: []               # Array of resolutions (e.g., ["tco79-eORCA1", "tco399-eORCA025"])
+  steps: []                   # Array of steps (e.g., ["d1", "d1"])
+  threads: []                 # Array of thread counts (e.g., [4, 4])
+  ppn: []                    # Array of processes per node (e.g., [28, 28])
+  nodes: []                  # Array of node counts (e.g., [1, 16])
+
+# Reference configuration (optional)
+references:
+  url: string                 # Git URL for references repository
+  branch: string             # Branch to use (defaults to "main" if not specified)
+  path_in_repo: string       # Path within the repository where references are located
 
 ---
+```
 
 ## 5. Run the pipeline on your local machine
 
