@@ -1,0 +1,44 @@
+user:
+  remote_username: bsc631248
+  remote_machine_url: glogin2.bsc.es
+  machine_file: dnb-mn5-gpp.yaml
+
+paths:
+  local_bin_dir: /home/nabel/bin
+  local_build_dir: /home/nabel/ifsnemo-build
+
+  remote_bin_dir: /home/bsc/bsc631248/bin
+  remote_project_dir: /gpfs/scratch/bsc32/bsc631248/ifs-nemo-rst-reproducibility
+
+overrides:
+  DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"
+  DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/de"
+  IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"
+  IFS_BUNDLE_IFS_SOURCE_VERSION: "DE_CY48R1.0_climateDT_develop"
+
+psubmit:
+  queue_name: ""
+  account: ehpc01
+  node_type: gp_ehpc
+
+ifsnemo_compare:
+  gold_standard_tag: ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP
+
+  ## Only TCO79
+  resolution: [tco79-eORCA1]
+  steps:   [d1]
+  threads: [4]
+  ppn:     [28]
+  nodes:   [1]
+
+  ## All resolutions
+  #  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]
+  #  steps:   [d1,  d1,  d1,  d1 ]
+  #  threads: [4,   4,   8,   14 ]
+  #  ppn:     [28,  28,  14,  8  ]
+  #  nodes:   [1,   16,  125, 260]
+
+references:
+  url: https://github.com/kellekai/bsc-ndse.git
+  branch: main
+  path_in_repo: references
