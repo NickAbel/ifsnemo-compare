@@ -9,7 +9,7 @@ Before you begin, ensure you have:
   - [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build)
   - [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg)
 
-### 1.2. Required Python packages
+### 1.2. Required Python packages (installed on local machine)
 - pyyaml
 - fabric
 
@@ -80,11 +80,12 @@ machine git.ecmwf.int
 
    ![ECMWF Username Example](https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9)
 
-### 2.4. Clone and Configure `ifsnemo-build`
+### 2.4. Clone and Configure `ifsnemo-build`, Check Out nabel-main-patch-75101
 
 ```bash
 git clone --recursive https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git
 cd ifsnemo-build
+git checkout nabel-main-patch-75101
 
 # Link to generic machine config
 ln -s dnb-generic.yaml machine.yaml
@@ -118,6 +119,7 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 ## 4. Create your pipeline.yaml
 
+- By default, `pipeline.py` expects a YAML file, `pipeline.yaml`, in the main directory.
 - Use `pipeline.yaml.example` as a starting point.
 - Customize options as needed; ask if you want help with any setting.
 
