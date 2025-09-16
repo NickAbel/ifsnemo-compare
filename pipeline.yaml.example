@@ -23,11 +23,18 @@ psubmit:
 
 ifsnemo_compare:
   gold_standard_tag: ifsMASTER.SP.CPU.GPP
-  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]
-  steps:   [d1,  d1,  d1,  d1 ]
-  threads: [4,   4,   8,   14 ]
-  ppn:     [28,  28,  14,  8  ]
-  nodes:   [1,   16,  125, 260]
+  resolution: [tco79-eORCA1]
+  steps:   [d1]
+  threads: [4]
+  ppn:     [28]
+  nodes:   [1]
+
+#  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]
+#  steps:   [d1,  d1,  d1,  d1 ]
+#  threads: [4,   4,   8,   14 ]
+#  ppn:     [28,  28,  14,  8  ]
+#  nodes:   [1,   16,  125, 260]
+
 
 references:
   url: https://github.com/kellekai/bsc-ndse.git
