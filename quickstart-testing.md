@@ -10,8 +10,20 @@ Before you begin, ensure you have:
   - [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg)
 
 ### 1.2. Required Python packages (installed on local machine)
-- pyyaml
-- fabric
+We recommend creating a dedicated Python virtual environment for this project:
+```bash
+# Create environment
+python3 -m venv ifsnemo-compare
+
+# Activate environment
+source ifsnemo-compare/bin/activate
+
+# Install required packages
+pip3 install fabric pyyaml
+
+# Deactivate environment (when needed)
+deactivate
+```
 
 ### 1.3. Access to required platforms
 - MN5
@@ -20,6 +32,13 @@ Before you begin, ensure you have:
 ---
 
 ## 2. Local Machine Setup
+
+First, create a dedicated project directory to organize all the components:
+```bash
+mkdir ifsnemo-compare-project
+cd ifsnemo-compare-project
+# All subsequent clone operations will be performed in this directory
+```
 
 ### 2.1. Install `yq`
 
@@ -93,7 +112,8 @@ machine git.ecmwf.int
 
    ![ECMWF Username Example](https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9)
 
-### 2.4. Clone and Configure `ifsnemo-build`, Check Out nabel-main-patch-75101
+### 2.4. Clone and Configure ifsnemo-build
+In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
 
 ```bash
 git clone --recursive https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git
@@ -105,7 +125,10 @@ ln -s dnb-generic.yaml machine.yaml
 ```
 
 ### 2.5. Clone ifsnemo-compare
+Now we'll clone the main comparison tool repository:
+
 ```bash
+cd ..  # Return to project root directory
 git clone https://github.com/NickAbel/ifsnemo-compare.git
 ```
 
@@ -113,9 +136,7 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 ## 3. Login Node Setup
 
-> Note: This step assumes the availability and existence of an internet-connected login node. If this is not the case, download `yq` and `psubmit` and use `scp`, etc. as needed.
-
-SSH into your internet-connected login node (in this case, `glogin4`) and prepare utilities:
+SSH into your login node and prepare utilities:
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es
@@ -139,11 +160,19 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 ## 4. Create your pipeline.yaml
 
-- By default, `pipeline.py` expects a YAML file, `pipeline.yaml`, in the main directory.
-- Use `pipeline.yaml.example` as a starting point for creating your own.
-- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username and directories are in this file and must be updated to reflect yours. But, the settings to ECMWF Bitbucket point to the latest develop branch and may be used as-is.
-- For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket)
-- Customize options as needed; ask if you want help with any setting. A running list of all possible options below.
+The pipeline configuration file `pipeline.yaml` should be created in the `ifsnemo-compare` directory. Follow these steps:
+
+1. Navigate to the ifsnemo-compare directory:
+   ```bash
+   cd ifsnemo-compare
+   ```
+
+2. Copy the example configuration file:
+   ```bash
+   cp pipeline.yaml.example pipeline.yaml
+   ```
+
+3. Edit `pipeline.yaml` with your specific settings. Below is a complete list of available options:
 
 ```yaml
 # User configuration
@@ -156,8 +185,8 @@ user:
 paths:
   local_bin_dir: string          # (DEPRECATED) Path to local binary directory 
   local_build_dir: string        # Path to ifsnemo-build directory on local machine. (Step 2.4)
-  remote_bin_dir: string         # (DEPRECATED)  Path to remote binary directory
-  remote_project_dir: string     # Path to remote project directory. Typically a subdirectory of your scratch or project space.
+  remote_bin_dir: string         # (DEPRECATED) Path to remote binary directory
+  remote_project_dir: string     # Path to remote project directory. Will be created if it doesn't exist.
 
 # Override settings
 overrides:
@@ -187,20 +216,26 @@ ifsnemo_compare:
 references:
   url: string                 # Git URL for references repository (e.g https://github.com/kellekai/bsc-ndse/) (see pipeline-20250521-nabel.yaml for guidance)
   branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-20250521-nabel.yaml for guidance)
-  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references and pipeline-20250521-nabe[...]
+  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
 ```
+
+For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket).
 
 ---
 
 ## 5. Run the pipeline on your local machine
 
-From the command line:
+Ensure your Python virtual environment is activated:
+```bash
+source ~/ifsnemo-compare/bin/activate
+```
 
+Then run the pipeline:
 ```bash
 python3 pipeline.py
 ```
 
-This will execute the pipeline using the configuration specified in `pipeline.yaml` by default.
+This will execute the pipeline using the configuration specified in `pipeline.yaml`.
 
 ## 6. Pipeline Options (Note: Advanced/Custom Use Only)
 
