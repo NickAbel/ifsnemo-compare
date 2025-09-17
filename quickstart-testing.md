@@ -274,7 +274,7 @@ python3 compare_norms.py <command> [options...]
 Commands and important options:
 
 1) `create-refs`
-- Purpose: submit jobs to create and store reference results
+- Purpose: submit jobs to create and store reference results. **NOTE** Unless you are working on CI/CD and know what you are doing, you do not need this option.
 - Key options:
   - `-g, --ref-subdirs` which reference binary to compare against (single string; required) (following the pipeline, may choose from any directory within the `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references` directory
   - `-og, --output-refdir` directory in which the references created are to be stored (required; single value) (following the pipeline, `references/`)
@@ -294,6 +294,17 @@ python3 compare_norms.py create-refs \
   -n 1 \
   -s d1
 ```
+- Pipeline-Following Example (To create references for `ifsMASTER.SP.CPU.GPP`) **NOTE** Unless you know what you are doing, you don't need to worry about this.
+```bash
+#TCO79 1day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
+```
 - Behavior: for each combination of the supplied arrays, this will call `psubmit.sh` (expecting it in PATH), capture "Job ID <id>" from the submission output, write a run log file, and copy `results.<jobid>` into the organized output directory structure.
 
 2) `run-tests`
@@ -305,13 +316,24 @@ python3 compare_norms.py create-refs \
 - Example:
 ```bash
 python3 compare_norms.py run-tests \
-  -t <overrides:DNB_SANDBOX_SUBDIR>/ \
-  -ot tests/ \
+  -t  /path/to/test/bin/dir \
+  -ot /path/to/output_tests \
   -r tco79-eORCA1 \
   -nt 4 \
   -p 28 \
   -n 1 \
   -s d1
+```
+- Pipeline-Following Example (If Using `pipeline-20250521-nabel.yaml`):
+```bash
+#TCO79 1day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599-eORCA12 -nt 14 -p 8 -n 260 -s d1      
 ```
 - Behavior: similar to create-refs, but labels logs as test runs and stores `results.<jobid>` under the test output directory.
 
@@ -335,6 +357,17 @@ python3 compare_norms.py compare \
   -p 28 \
   -n 1 \
   -s d1
+```
+- Pipeline-Following Example (If Using `pipeline-20250521-nabel.yaml`):
+```bash
+#TCO79 1day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
 ```
 - Behavior: for each parameter combination, the tool looks for the reference results directory and the test results directory and then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
 
