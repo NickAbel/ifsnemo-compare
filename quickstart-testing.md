@@ -185,9 +185,7 @@ user:
 
 # Path configuration
 paths:
-  local_bin_dir: string          # (DEPRECATED) Path to local binary directory 
   local_build_dir: string        # Path to ifsnemo-build directory on local machine. (Step 2.4)
-  remote_bin_dir: string         # (DEPRECATED) Path to remote binary directory
   remote_project_dir: string     # Path to remote project directory. Will be created if it doesn't exist.
 
 # Override settings
