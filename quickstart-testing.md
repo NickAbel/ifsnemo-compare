@@ -113,7 +113,9 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 ## 3. Login Node Setup
 
-SSH into your login node and prepare utilities:
+> Note: This step assumes the availability and existence of an internet-connected login node. If this is not the case, download `yq` and `psubmit` and use `scp`, etc. as needed.
+
+SSH into your internet-connected login node (in this case, `glogin4`) and prepare utilities:
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es
@@ -139,7 +141,7 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 - By default, `pipeline.py` expects a YAML file, `pipeline.yaml`, in the main directory.
 - Use `pipeline.yaml.example` as a starting point for creating your own.
-- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username is i[...]
+- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username and directories are in this file and must be updated to reflect yours. But, the settings to ECMWF Bitbucket point to the latest develop branch and may be used as-is.
 - For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket)
 - Customize options as needed; ask if you want help with any setting. A running list of all possible options below.
 
