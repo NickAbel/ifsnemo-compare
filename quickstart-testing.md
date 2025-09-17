@@ -15,7 +15,7 @@ Before you begin, ensure you have:
 
 ### 1.3. Access to required platforms
 - MN5
-- ECMWF Bitbucket
+- ECMWF Bitbucket (see section 2.3 for detailed access requirements)
 
 ---
 
@@ -60,6 +60,19 @@ machine earth.bsc.es
 
 ### 2.3. Configure ECMWF Bitbucket Access
 
+Important: Before proceeding with Bitbucket access setup, you must first:
+
+1. Have an ECMWF account (https://ecmwf.int)
+2. Request Bitbucket access:
+   - Visit the [IFS Access Request Form](https://wiki.eduuni.fi/pages/viewpage.action?pageId=343558915&spaceKey=cscRDIcollaboration&title=IFS%2Baccess)
+   - Fill out the form with the following details:
+     - For "Group leader support/explanation": write "model development and integration testing"
+     - For "Specific access needed to": write "Bitbucket (IFS-Sources/RAPS)"
+   - Note: This is a monthly process and you will receive a confirmation email that you must acknowledge
+   - Important: By requesting access, you agree to the terms, particularly that IFS source code must not be made publicly available
+
+Once you have Bitbucket access:
+
 1. Create an HTTP access token:
    - Log in to ECMWF: https://git.ecmwf.int/account
    - Under "HTTP access tokens" click **Create token** (default options are sufficient)
@@ -94,6 +107,7 @@ ln -s dnb-generic.yaml machine.yaml
 ### 2.5. Clone ifsnemo-compare
 ```bash
 git clone https://github.com/NickAbel/ifsnemo-compare.git
+```
 
 ---
 
@@ -125,7 +139,7 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 
 - By default, `pipeline.py` expects a YAML file, `pipeline.yaml`, in the main directory.
 - Use `pipeline.yaml.example` as a starting point for creating your own.
-- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username is in there, so you will have to change the directories and usernames to yours. **If you are beta testing the tool and reading this, you want to do this!!!**
+- For my own personal pipeline YAML used to run the latest develop commit, [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml) is provided. Note that my username is i[...]
 - For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket)
 - Customize options as needed; ask if you want help with any setting. A running list of all possible options below.
 
@@ -171,10 +185,10 @@ ifsnemo_compare:
 references:
   url: string                 # Git URL for references repository (e.g https://github.com/kellekai/bsc-ndse/) (see pipeline-20250521-nabel.yaml for guidance)
   branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-20250521-nabel.yaml for guidance)
-  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references and pipeline-20250521-nabel.yaml for guidance)
+  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references and pipeline-20250521-nabe[...]
+```
 
 ---
-```
 
 ## 5. Run the pipeline on your local machine
 
@@ -199,3 +213,4 @@ Example usage:
 python3 pipeline.py --yaml custom-pipeline.yaml  # Use a custom config file
 python3 pipeline.py --skip-build                # Skip build steps, only run tests
 python3 pipeline.py --no-run                    # Only do build/install, no tests
+```
