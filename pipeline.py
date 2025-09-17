@@ -210,6 +210,9 @@ psubmit:
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
 
+        # Create src folder for dnb.sh :du
+        (local_path / "src").mkdir(exist_ok=True, parents=True)
+
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
