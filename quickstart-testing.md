@@ -136,7 +136,9 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 ## 3. Login Node Setup
 
-SSH into your login node and prepare utilities:
+> Note: This step assumes the availability and existence of an internet-connected login node. If this is not the case, download `yq` and `psubmit` and use `scp`, etc. as needed.
+
+SSH into your internet-connected login node (in this case, `glogin4`) and prepare utilities:
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es
