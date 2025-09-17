@@ -4,10 +4,7 @@ user:
   machine_file: dnb-mn5-gpp.yaml
 
 paths:
-  local_bin_dir: /home/nabel/bin
   local_build_dir: /home/nabel/ifsnemo-build
-
-  remote_bin_dir: /home/bsc/bsc631248/bin
   remote_project_dir: /gpfs/scratch/bsc32/bsc631248/ifs-nemo-rst-reproducibility
 
 overrides:
