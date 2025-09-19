@@ -219,7 +219,7 @@ references:
   path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
 ```
 
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [How to create a fork](./quickstart.md#how-to-create-a-fork-of-ifssource-on-ecmwf-bitbucket).
+For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testi[...]
 
 ---
 
@@ -237,9 +237,13 @@ python3 pipeline.py
 
 This will execute the pipeline using the configuration specified in `pipeline.yaml`.
 
-## 6. Pipeline Options (Note: Advanced/Custom Use Only)
+## 6. Advanced Topics
 
-The pipeline script (`pipeline.py`) accepts several optional arguments:
+This section groups a couple of advanced or alternative ways to operate the project: (1) pipeline command-line options for pipeline.py, and (2) how to invoke compare_norms.py directly on the remote/login node when you want more direct control.
+
+### 6.1 Pipeline Options
+
+The pipeline script (`pipeline.py`) accepts several optional arguments to change its behavior:
 
 - `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: pipeline.yaml)
 - `-s, --skip-build`: Skip the build and install steps, only run tests and compare
@@ -251,3 +255,124 @@ python3 pipeline.py --yaml custom-pipeline.yaml  # Use a custom config file
 python3 pipeline.py --skip-build                # Skip build steps, only run tests
 python3 pipeline.py --no-run                    # Only do build/install, no tests
 ```
+
+Notes:
+- `--skip-build` is useful when you have already built and installed artifacts on the remote and want to re-run tests only (the script will clean remote test directories for the configured sandbox).
+- `--no-run` is useful for producing the build/install artifacts and uploading them without executing test runs; the output JSON (test_results.json) will reflect that no runs were executed.
+
+### 6.2 Using `compare_norms.py` tool directly at the command line
+
+The `compare_norms.py` helper provides three subcommands to manage reference creation, test runs, and comparisons. This tool is useful on the remote/login node where `psubmit.sh` (or `psubmit`) and `yq` are available.
+
+After running the install portion of the pipeline, the `compare_norms.py` will have automatically located into `<paths:remote_project_dir>/ifsnemo-build/src/sandbox` on the remote node, in the same directory as the `references` directory, and the `cmp.sh` and `compare.sh` tools.
+
+General usage:
+```bash
+python3 compare_norms.py <command> [options...]
+```
+
+Commands and important options:
+
+1) `create-refs`
+- Purpose: submit jobs to create and store reference results. **NOTE** Unless you are working on CI/CD and know what you are doing, you do not need this option.
+- Key options:
+  - `-g, --ref-subdirs` which reference binary to compare against (single string; required) (following the pipeline, may choose from any directory within the `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references` directory
+  - `-og, --output-refdir` directory in which the references created are to be stored (required; single value) (following the pipeline, `references/`)
+  - `-r, --resolutions` list of resolution names (default: tco79-eORCA1)
+  - `-nt, --nthreads` number of threads (list)
+  - `-p, --ppn` processes per node (list)
+  - `-n, --nnodes` number of nodes (list)
+  - `-s, --nsteps` number of steps (list; can be strings like "d1")
+- Example:
+```bash
+python3 compare_norms.py create-refs \
+  -g /path/to/ref/bin/dir \
+  -og /path/to/output_refs \
+  -r tco79-eORCA1 \
+  -nt 4 \
+  -p 28 \
+  -n 1 \
+  -s d1
+```
+- Pipeline-Following Example (To create references for `ifsMASTER.SP.CPU.GPP`) **NOTE** Unless you know what you are doing, you don't need to worry about this.
+```bash
+#TCO79 1day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
+```
+- Behavior: for each combination of the supplied arrays, this will call `psubmit.sh` (expecting it in PATH), capture "Job ID <id>" from the submission output, write a run log file, and copy `results.<jobid>` into the organized output directory structure.
+
+2) `run-tests`
+- Purpose: submit jobs for test binaries (same parameterization as create-refs)
+- Key options:
+  - `-t, --test-subdirs` one or more test binary directories (required) (following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary)
+  - `-ot, --output-testdir` directory to store test outputs (required; single value) (following the pipeline, `tests/`)
+  - parameters: `-r`, `-nt`, `-p`, `-n`, `-s` (same meaning as above)
+- Example:
+```bash
+python3 compare_norms.py run-tests \
+  -t  /path/to/test/bin/dir \
+  -ot /path/to/output_tests \
+  -r tco79-eORCA1 \
+  -nt 4 \
+  -p 28 \
+  -n 1 \
+  -s d1
+```
+- Pipeline-Following Example (If Using `pipeline-20250521-nabel.yaml`):
+```bash
+#TCO79 1day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599-eORCA12 -nt 14 -p 8 -n 260 -s d1      
+```
+- Behavior: similar to create-refs, but labels logs as test runs and stores `results.<jobid>` under the test output directory.
+
+3) `compare`
+- Purpose: compare stored reference results against test results using the repository's compare.sh
+- Key options:
+  - `-g, --ref-subdir` which reference binary to compare against (single string; required) (following the pipeline, may choose from any directory within the `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references` directory
+  - `-t, --test-subdirs` one or more test binary directories (required) (following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary)
+  - `-og, --output-refdir` directory in which references are stored (required; single value) (following the pipeline, `references/`)
+  - `-ot, --output-testdir` directory in which test outputs are stored (required; single value) (following the pipeline, `tests/`)
+  - `-r, -nt, -p, -n, -s` as above to iterate parameter combinations
+- Example:
+```bash
+python3 compare_norms.py compare \
+  -g /path/to/ref/bin/dir \
+  -t /path/to/test/bin/dir \
+  -og /path/to/output_refs \
+  -ot /path/to/output_tests \
+  -r tco79-eORCA1 \
+  -nt 4 \
+  -p 28 \
+  -n 1 \
+  -s d1
+```
+- Pipeline-Following Example (If Using `pipeline-20250521-nabel.yaml`):
+```bash
+#TCO79 1day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day  
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day 
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
+```
+- Behavior: for each parameter combination, the tool looks for the reference results directory and the test results directory and then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
+
+Notes and tips:
+- `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
+- The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
+- Ensure `compare.sh` (or equivalent comparison scripts) are present and executable where `compare_norms.py` runs.
+- Use the tools interactively on the remote/login node if you want step-by-step control, or use `pipeline.py` to automate the full build/upload/run/compare flow from your local machine.
