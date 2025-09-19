@@ -166,11 +166,11 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
         if ov.get('DNB_IFSNEMO_WITH_GPU'):
-            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU="{ov.get("DNB_IFSNEMO_WITH_GPU")}"')
+            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU={ov.get("DNB_IFSNEMO_WITH_GPU")}')
         if ov.get('DNB_IFSNEMO_WITH_GPU_EXTRA'):
-            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU_EXTRA="{ov.get("DNB_IFSNEMO_WITH_GPU_EXTRA")}"')
+            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU_EXTRA={ov.get("DNB_IFSNEMO_WITH_GPU_EXTRA")}')
         if ov.get('DNB_IFSNEMO_WITH_STATIC_LINKING'):
-            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_STATIC_LINKING="{ov.get("DNB_IFSNEMO_WITH_STATIC_LINKING")}"')
+            overrides_content.append(f'  - export DNB_IFSNEMO_WITH_STATIC_LINKING={ov.get("DNB_IFSNEMO_WITH_STATIC_LINKING")}')
 
 
         (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
@@ -238,10 +238,13 @@ psubmit:
         remote_path = Path(remote_path)
         upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
 
+        psubmit_account = cfg.get('psubmit', {}).get('account', '')
+        psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
+
         # Build on a compute node
         sbatch_script = f"""#!/bin/bash
-#SBATCH -A ehpc01
-#SBATCH --qos=gp_debug
+#SBATCH -A {psubmit_account}
+#SBATCH --qos={psubmit_node_type}
 #SBATCH --job-name=dnb_sh_build
 #SBATCH --output=dnb_sh_build_%j.out
 #SBATCH --error=dnb_sh_build_%j.err
