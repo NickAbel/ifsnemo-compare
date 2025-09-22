@@ -241,6 +241,25 @@ psubmit:
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
 
+        # Read ppn and nth from machine_file to calculate ntasks-per-node for SBATCH
+        ntasks_per_node = 80  # Default value
+        machine_config_path = local_path / machine_file
+        if machine_config_path.is_file():
+            with open(machine_config_path, 'r') as f:
+                machine_config = yaml.safe_load(f) or {}
+            psubmit_config = machine_config.get('psubmit', {})
+            ppn = psubmit_config.get('ppn')
+            nth = psubmit_config.get('nth')
+            if ppn and nth:
+                try:
+                    ntasks_per_node = int(ppn) * int(nth)
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not calculate ntasks-per-node from ppn='{ppn}' and nth='{nth}'. Using default {ntasks_per_node}.")
+            else:
+                print(f"Warning: 'ppn' or 'nth' not found in {machine_config_path}. Using default ntasks-per-node={ntasks_per_node}.")
+        else:
+            print(f"Warning: machine_file '{machine_config_path}' not found. Using default ntasks-per-node={ntasks_per_node}.")
+
         # Build on a compute node
         sbatch_script = f"""#!/bin/bash
 #SBATCH -A {psubmit_account}
@@ -249,7 +268,7 @@ psubmit:
 #SBATCH --output=dnb_sh_build_%j.out
 #SBATCH --error=dnb_sh_build_%j.err
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=112
+#SBATCH --ntasks-per-node={ntasks_per_node}
 #SBATCH --cpus-per-task=1
 #SBATCH --time=02:00:00
 #SBATCH --exclusive
