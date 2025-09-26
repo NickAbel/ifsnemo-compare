@@ -73,7 +73,7 @@ def run_and_tee(cmd, env=None):
 
 #Section 3: Task Loops
 
-def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runtype):
+def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, gpus, runtype):
     """
     For each combination of subdir, res, nsteps, nnodes:
       1) submits the job via run_and_tee()
@@ -85,17 +85,19 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
     :param ppn:          list of ints
     :param nnodes:       list of ints
     :param nsteps:       list of ints or strings
+    :param gpus:         list of ints
     :param runtype:      "ref" or "test"
     """
     if runtype not in ("ref", "test"):
         raise ValueError("runtype must be 'ref' or 'test'")
     
-    for subdir, res, nthreads, ppn, nnodes, nsteps in itertools.product(
+    for subdir, res, nthreads, ppn, nnodes, gpus, nsteps in itertools.product(
         subdirs,
         resolutions,
         nthreads,
         ppn,
         nnodes, 
+        gpus,
         nsteps
     ):
 
@@ -106,9 +108,10 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
                 "nthreads"+str(nthreads),
                 "ppn"+str(ppn),
                 "nnodes"+str(nnodes),
+                "gpus"+str(gpus),
                 "nsteps"+str(nsteps))
 
-        run_logfile = f"{runtype}.res={res}_nt={nthreads}_ppn={ppn}_nn={nnodes}_nst={nsteps}.log"
+        run_logfile = f"{runtype}.res={res}_nt={nthreads}_ppn={ppn}_nn={nnodes}_g={gpus}_nst={nsteps}.log"
 
         run_logfilepath = os.path.join(
             run_logdir,
@@ -122,13 +125,13 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
         ensure_dir(run_logdir)
 
         ## (A) Run the reference job
-        print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} nsteps={nsteps}\n")
+        print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} gpus={gpus} nsteps={nsteps}\n")
                 # when building psubmit_cmd in compare_norms.py
         psubmit_cmd = [
             "psubmit.sh",
             "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes),
             "-u", subdir,
-            "-l", f"time={120}",
+            "-l", f"time={120}:ngpus={gpus}",
         ]
         
         run_jobid, ref_out = run_and_tee(psubmit_cmd,
@@ -145,7 +148,7 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, runty
 
 
 
-def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps):
+def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps, gpus):
     """
     Iterating over the parameters:
     - Run the reference branch test
@@ -153,13 +156,14 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
     - Compare norms with the reference results in `<root>/<ref_subdir>/...`
     """
     for test in test_subdirs:
-        for res, nthreads, ppn, nnodes, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, nsteps):
+        for res, nthreads, ppn, nnodes, gpus, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, gpus, nsteps):
             base_ref = os.path.join(ref_root[0],
                                     ref_subdir,
                                     f"{res}", 
                                     f"nthreads{nthreads}",
                                     f"ppn{ppn}",
                                     f"nnodes{nnodes}",
+                                    f"gpus{gpus}",
                                     f"nsteps{nsteps}", 
                                     "results")
 
@@ -174,6 +178,7 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
                                      f"nthreads{nthreads}",
                                      f"ppn{ppn}",
                                      f"nnodes{nnodes}",
+                                     f"gpus{gpus}",
                                      f"nsteps{nsteps}", 
                                      "results")
 
@@ -192,6 +197,7 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
             print(f"\n>>> {compare_cmd[0]} exited {result.returncode}")
             print("stdout:", result.stdout)
             print("stderr:", result.stderr)
+
 
 #Section 4: CLI Glue
 
@@ -216,8 +222,10 @@ def parse_args():
                     help="Number of nodes")
     p1.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
                     help="Number of steps (can be string, e.g., 'd1')")
+    p1.add_argument("--gpus", nargs="+", type=int, default=[0],
+                    help="Number of gpus")
     p1.set_defaults(func=lambda args: create_runs(
-        args.ref_subdirs, args.output_refdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="ref"
+        args.ref_subdirs, args.output_refdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus, runtype="ref"
     ))
 
     # run tests
@@ -235,9 +243,11 @@ def parse_args():
                     help="Number of nodes")
     p2.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
                     help="Number of steps (can be string, e.g., 'd1')")
+    p2.add_argument("--gpus", nargs="+", type=int, default=[0],
+                    help="Number of gpus")
 
     p2.set_defaults(func=lambda args: create_runs(
-        args.test_subdirs, args.output_testdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, runtype="test"
+        args.test_subdirs, args.output_testdir, args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus, runtype="test"
     ))
 
     # compare
@@ -259,10 +269,12 @@ def parse_args():
                     help="Number of nodes")
     p3.add_argument("-s", "--nsteps", nargs="+", default=["d1"],
                     help="Number of steps (can be string, e.g., 'd1')")
+    p3.add_argument("--gpus", nargs="+", type=int, default=[0],
+                    help="Number of gpus")
     p3.set_defaults(func=lambda args: compare(
         args.ref_subdir, args.test_subdirs,
         args.output_refdir, args.output_testdir,
-        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps
+        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus
     ))
 
     return p.parse_args()

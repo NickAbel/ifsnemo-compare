@@ -130,6 +130,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
     threads = ifs_cfg.get("threads", [])
     ppn = ifs_cfg.get("ppn", [])
     nodes = ifs_cfg.get("nodes", [])
+    gpus = ifs_cfg.get("gpus", [])
     gold_standard_tag = ifs_cfg.get("gold_standard_tag", "")
 
     ov = cfg.get("overrides", {})
@@ -313,17 +314,34 @@ ln -sf {machine_file} machine.yaml
         if not (resolution and steps and threads and ppn and nodes):
             print("No test configurations found; skipping run and compare stages.")
         else:
-            for r, s, t, p, n in zip(resolution, steps, threads, ppn, nodes):
-                test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+            use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
+            loop_items = [resolution, steps, threads, ppn, nodes]
+            if use_gpu:
+                loop_items.append(gpus)
+
+            # Ensure all elements are lists for zip
+            loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
+
+            for items in zip(*loop_items):
+                if use_gpu:
+                    r, s, t, p, n, g = items
+                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
+                    gpu_flag = f" --gpus {quote(str(g))}"
+                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
+                else:
+                    r, s, t, p, n = items
+                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+                    gpu_flag = ""
+                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+
                 test_results[test_id] = {}
 
-                print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
                 run_output_file = f"run_tests_{test_id}.log"
                 cmd_run = (
                     f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
                     f"python3 compare_norms.py run-tests "
                     f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-                    f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+                    f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
                 )
                 print(cmd_run)
                 result = conn.run(cmd_run, warn=True, pty=True)
@@ -334,14 +352,17 @@ ln -sf {machine_file} machine.yaml
                 test_results[test_id]["run_tests_passed"] = result.return_code == 0
                 test_results[test_id]["run_tests_output"] = run_output_file
 
-                print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+                if use_gpu:
+                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
+                else:
+                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
                 compare_output_file = f"compare_{test_id}.log"
                 cmd_cmp = (
                     f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
                     f"python3 compare_norms.py compare "
                     f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
                     f"-g {quote(gold_standard_tag)}/ -og references "
-                    f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}"
+                    f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
                 )
                 print(cmd_cmp)
                 result = conn.run(cmd_cmp, warn=True, pty=True)
