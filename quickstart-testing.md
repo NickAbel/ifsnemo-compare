@@ -204,6 +204,12 @@ overrides:
   IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable) (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
   IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
   DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-20250521-nabel.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_WITH_GPU: string         # Enable GPU support (e.g., "TRUE" or "FALSE")
+  DNB_IFSNEMO_WITH_GPU_EXTRA: string   # Enable extra GPU support (e.g., "TRUE" or "FALSE")
+  DNB_IFSNEMO_WITH_STATIC_LINKING: string # Enable static linking (e.g., "TRUE" or "FALSE")
 
 # SLURM submission settings
 psubmit:
@@ -236,7 +242,7 @@ For guidance on specific values, refer to [a personal pipeline.yaml to test the 
 
 Ensure your Python virtual environment is activated:
 ```bash
-source ~/ifsnemo-compare/bin/activate
+source ifsnemo-compare/bin/activate
 ```
 
 Then run the pipeline:
@@ -254,7 +260,7 @@ This section groups a couple of advanced or alternative ways to operate the proj
 
 The pipeline script (`pipeline.py`) accepts several optional arguments to change its behavior:
 
-- `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: pipeline.yaml)
+- `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: `pipeline.yaml`)
 - `-s, --skip-build`: Skip the build and install steps, only run tests and compare
 - `--no-run`: Do the build/install but skip the run and compare stages
 
@@ -385,3 +391,40 @@ Notes and tips:
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
 - Ensure `compare.sh` (or equivalent comparison scripts) are present and executable where `compare_norms.py` runs.
 - Use the tools interactively on the remote/login node if you want step-by-step control, or use `pipeline.py` to automate the full build/upload/run/compare flow from your local machine.
+
+## 7. Interpreting the Results
+
+After the pipeline successfully completes, you will find several new files in your `ifsnemo-compare` directory. This section explains what these files are and how to interpret them.
+
+### 7.1. Output Files
+
+The primary outputs of the pipeline are:
+
+-   **`test_results.json`**: This file contains a summary of the test execution. For each test case, it indicates whether the `run-tests` and `compare` steps passed or failed.
+-   **`run_tests_*.log`**: These are the log files generated during the execution of the tests on the remote machine. There will be one for each test configuration.
+-   **`compare_*.log`**: These log files contain the output of the comparison between your test results and the gold standard.
+
+### 7.2. Analyzing `test_results.json`
+
+The `test_results.json` file provides a high-level overview of the test outcomes. A `true` value for `run_tests_passed` and `compare_passed` indicates a successful run and comparison for that specific test configuration. If any of these are `false`, it signifies a failure that requires further investigation.
+
+Example `test_results.json` entry:
+```json
+{
+    "r_tco79-eORCA1_s_d1_t_4_p_28_n_1": {
+        "run_tests_passed": true,
+        "run_tests_output": "run_tests_r_tco79-eORCA1_s_d1_t_4_p_28_n_1.log",
+        "compare_passed": true,
+        "compare_output": "compare_r_tco79-eORCA1_s_d1_t_4_p_28_n_1.log"
+    }
+}
+```
+
+### 7.3. Inspecting Log Files
+
+For any failed steps, the corresponding `.log` files are essential for debugging.
+
+-   **`run_tests_*.log`**: Check this file for errors related to the model execution itself. Search for error messages or stack traces that could indicate what went wrong during the simulation.
+-   **`compare_*.log`**: This file contains the `diff` output from the comparison script. It will show the specific differences between the output of your test run and the gold standard. This is the key to understanding why the regression test failed.
+
+By examining these files, you can diagnose the root cause of any test failures and determine the next steps for your development work.
