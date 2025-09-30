@@ -1,5 +1,9 @@
 # Getting Started Guide
 
+## 0. Introduction
+
+This document describes how to use the `ifsnemo-compare` tool to run regression tests for the IFS-NEMO model. The tool automates the process of building the model, running a set of predefined tests, and comparing the results against a set of gold standards.
+
 ## 1. Prerequisites
 
 Before you begin, ensure you have:
@@ -10,6 +14,9 @@ Before you begin, ensure you have:
   - [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg)
 
 ### 1.2. Required Python packages (installed on local machine)
+[fabric](https://github.com/fabric/fabric) is a remote execution package used by ifsnemo-compare's ´pipeline.py´ for automating commands on remote nodes.
+[pyyaml](https://github.com/yaml/pyyaml) is a YAML parser used to read the `pipeline.yaml` input files that drive ifsnemo-compare's `pipeline.py`.
+Both are dependencies of ifsnemo-compare and must be installed.
 We recommend creating a dedicated Python virtual environment for this project:
 ```bash
 # Create environment
@@ -26,8 +33,8 @@ deactivate
 ```
 
 ### 1.3. Access to required platforms
-- MN5
-- ECMWF Bitbucket (see section 2.3 for detailed access requirements)
+- [MareNostrum5](https://www.bsc.es/marenostrum/marenostrum-5) (if you do not have access, please contact your supervisor)
+- [ECMWF Bitbucket](https://git.ecmwf.int/) (see section 2.3 for detailed access requirements)
 
 ---
 
@@ -41,6 +48,8 @@ cd ifsnemo-compare-project
 ```
 
 ### 2.1. Install `yq`
+
+[yq](https://github.com/mikefarah/yq) is a portable command-line YAML, JSON, XML, CSV, TOML and properties processor. It is a dependency of [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build).
 
 ```bash
 mkdir -p ~/bin
@@ -137,7 +146,7 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 ## 3. Login Node Setup
 
 > Note: This step assumes the availability and existence of an internet-connected login node. If this is not the case, download `yq` and `psubmit` and use `scp`, etc. as needed.
-
+[psubmit](https://github.com/a-v-medvedev/psubmit) is a software package for automated, generalized submission of batch jobs on a number of HPC systems. It is a dependency of both [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build) and ifsnemo-compare, and must be installed and in `PATH` on the target system where jobs will be submitted. This step performs this automatically.
 SSH into your internet-connected login node (in this case, `glogin4`) and prepare utilities:
 
 ```bash
