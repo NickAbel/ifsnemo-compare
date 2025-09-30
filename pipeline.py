@@ -166,6 +166,12 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
+        if ov.get('DNB_IFSNEMO_BUNDLE_GIT'):
+            overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_GIT="{ov.get("DNB_IFSNEMO_BUNDLE_GIT")}"')
+        if ov.get('IFS_BUNDLE_RAPS_GIT'):
+            overrides_content.append(f'  - export IFS_BUNDLE_RAPS_GIT="{ov.get("IFS_BUNDLE_RAPS_GIT")}"')
+        if ov.get('IFS_BUNDLE_RAPS_VERSION'):
+            overrides_content.append(f'  - export IFS_BUNDLE_RAPS_VERSION="{ov.get("IFS_BUNDLE_RAPS_VERSION")}"')
         if ov.get('DNB_IFSNEMO_WITH_GPU'):
             overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU={ov.get("DNB_IFSNEMO_WITH_GPU")}')
         if ov.get('DNB_IFSNEMO_WITH_GPU_EXTRA'):
