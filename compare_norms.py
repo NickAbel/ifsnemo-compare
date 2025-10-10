@@ -38,11 +38,11 @@ def copy_results(jobid, ref_dir):
 
 def run_and_tee(cmd, env=None):
     """
-    Launch subprocess(cmd), capture all output, print it to console,
+    Launch subprocess(cmd), stream all output to console,
     detect 'Job ID <id>' line, and return (jobid, full_output).
-    This implementation uses communicate() to avoid deadlocks, so the
-    output is printed only after the subprocess completes.
-    Raises on nonzero exit.
+    This implementation streams output to avoid deadlocks.
+    It warns on non-zero exit from the subprocess but does not raise an exception,
+    as some submission scripts may exit non-zero on success.
     """
     full_env = os.environ.copy()
     if env:
@@ -54,23 +54,33 @@ def run_and_tee(cmd, env=None):
         stderr=subprocess.STDOUT,
         text=True,
         env=full_env,
+        bufsize=1, # line-buffered
     )
 
-    stdout, _ = proc.communicate()
+    stdout_lines = []
+    for line in proc.stdout:
+        sys.stdout.write(line)
+        stdout_lines.append(line)
 
-    sys.stdout.write(stdout)
+    proc.wait()
+    full_output = "".join(stdout_lines)
 
     jobid = None
-    for line in stdout.splitlines():
+    for line in full_output.splitlines():
         if line.startswith("Job ID"):
-            jobid = line.split(" ", 1)[1].split()[1]
+            try:
+                jobid = line.split(" ", 1)[1].split()[1]
+                break
+            except IndexError:
+                pass # Ignore malformed "Job ID" lines
 
     if proc.returncode != 0:
-        raise subprocess.CalledProcessError(proc.returncode, cmd)
+        print(f"\nWarning: '{' '.join(cmd)}' exited with status {proc.returncode}", file=sys.stderr)
+
     if not jobid:
         raise RuntimeError("Could not find Job ID in psubmit output")
 
-    return [jobid, stdout]
+    return [jobid, full_output]
 
 #Section 3: Task Loops
 
@@ -130,6 +140,7 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, gpus,
                 # when building psubmit_cmd in compare_norms.py
         psubmit_cmd = [
             "psubmit.sh",
+            "-x",
             "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes),
             "-u", subdir,
             "-l", f"time={120}:ngpus={gpus}",
