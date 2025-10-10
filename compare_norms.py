@@ -140,14 +140,13 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, gpus,
                 # when building psubmit_cmd in compare_norms.py
         psubmit_cmd = [
             "psubmit.sh",
-            "-x",
             "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes),
             "-u", subdir,
             "-l", f"time={120}:ngpus={gpus}",
         ]
         
         run_jobid, ref_out = run_and_tee(psubmit_cmd,
-                                         env={"RESOLUTION":res, "NSTEPS":str(nsteps)})
+                                         env={"RESOLUTION":res, "NSTEPS":str(nsteps), "PSUBMIT_OMIT_STACKTRACE_SCAN": "ON"})
         
         ## Log ref output
         print(f"Creating {run_logfilepath}")
