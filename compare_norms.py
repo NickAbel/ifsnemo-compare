@@ -38,8 +38,10 @@ def copy_results(jobid, ref_dir):
 
 def run_and_tee(cmd, env=None):
     """
-    Launch subprocess(cmd), stream stdout to console, capture all output,
+    Launch subprocess(cmd), capture all output, print it to console,
     detect 'Job ID <id>' line, and return (jobid, full_output).
+    This implementation uses communicate() to avoid deadlocks, so the
+    output is printed only after the subprocess completes.
     Raises on nonzero exit.
     """
     full_env = os.environ.copy()
@@ -51,25 +53,24 @@ def run_and_tee(cmd, env=None):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        bufsize=1,
         env=full_env,
     )
 
-    lines = []
-    for line in proc.stdout:
-        sys.stdout.write(line)   # tee
-        lines.append(line)       # capture for later
+    stdout, _ = proc.communicate()
+
+    sys.stdout.write(stdout)
+
+    jobid = None
+    for line in stdout.splitlines():
         if line.startswith("Job ID"):
             jobid = line.split(" ", 1)[1].split()[1]
 
-    proc.wait()
- 
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(proc.returncode, cmd)
     if not jobid:
         raise RuntimeError("Could not find Job ID in psubmit output")
 
-    return [jobid, ''.join(lines)]
+    return [jobid, stdout]
 
 #Section 3: Task Loops
 
