@@ -12,6 +12,7 @@ overrides:
   DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/de" # IFSNEMO URL
   IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"  # IFS source Git URL
   IFS_BUNDLE_IFS_SOURCE_VERSION: "DE_CY48R1.0_climateDT_develop"  # Branch or version to use
+  DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
 
 psubmit:
   queue_name: ""      # Queue name (empty string for default)
