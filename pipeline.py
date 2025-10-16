@@ -18,14 +18,15 @@ def wait_for_job(conn, job_id, poll_interval=30):
             result = conn.run(f"squeue -j {job_id}", hide=True, warn=True)
             if job_id not in result.stdout:
                 break
-            print(f"Waiting for SLURM job {job_id} to complete...")
+            timestamp = time.strftime("%H:%M:%S")
+            print(f"\rWaiting for SLURM job {job_id} to complete... (last checked: {timestamp})", end='', flush=True)
             time.sleep(poll_interval)
         except EOFError:
-            print("Connection dropped, attempting to reconnect...")
+            print("\nConnection dropped, attempting to reconnect...")
             conn.close()
             time.sleep(5)  # Wait a bit before retrying
 
-    print(f"SLURM job {job_id} completed.")
+    print(f"\nSLURM job {job_id} completed.")
 
 def check_remote_requirements(conn, verbose=False):
     # Check for yq and psubmit.sh in remote PATH
