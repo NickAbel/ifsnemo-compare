@@ -75,6 +75,7 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False):
         return process.returncode, None
 
 def upload_file(conn, local_path, remote_path, verbose=False):
+    import os
     local_str = str(local_path)
     remote_str = str(remote_path)
     remote_dir = remote_path.parent
@@ -86,9 +87,25 @@ def upload_file(conn, local_path, remote_path, verbose=False):
 
     if verbose:
         print(f"Uploading {local_path} → {remote_path} ...")
-    result = conn.put(local=local_str, remote=remote_str)
+
+    # Progress callback
+    file_size = os.path.getsize(local_str)
+
+    def progress_callback(transferred, total):
+        percent = (transferred / total) * 100
+        bar_length = 50
+        filled = int(bar_length * transferred // total)
+        bar = '=' * filled + '-' * (bar_length - filled)
+        transferred_mb = transferred / (1024 * 1024)
+        total_mb = total / (1024 * 1024)
+        print(f'\r[{bar}] {percent:.1f}% ({transferred_mb:.1f}/{total_mb:.1f} MB)', end='', flush=True)
+
+    sftp = conn.sftp()
+    sftp.put(local_str, remote_str, callback=progress_callback)
+    print()  # newline after progress bar
+
     if verbose:
-        print(f"Upload complete: {result.remote}")
+        print(f"Upload complete: {remote_str}")
 
 def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
     ############################################
@@ -242,7 +259,7 @@ psubmit:
         subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
 
         # Create tarball
-        run_command(["tar", "czvf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
+        run_command(["tar", "czf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
 
         ############################################
         # 2.1-2.3 Build and Install on remote
