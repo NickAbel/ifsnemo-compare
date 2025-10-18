@@ -280,13 +280,13 @@ psubmit:
             with open(machine_config_path, 'r') as f:
                 machine_config = yaml.safe_load(f) or {}
             psubmit_config = machine_config.get('psubmit', {})
-            ppn = psubmit_config.get('ppn')
-            nth = psubmit_config.get('nth')
-            if ppn and nth:
+            machine_ppn = psubmit_config.get('ppn')
+            machine_nth = psubmit_config.get('nth')
+            if machine_ppn and machine_nth:
                 try:
-                    ntasks_per_node = int(ppn) * int(nth)
+                    ntasks_per_node = int(machine_ppn) * int(machine_nth)
                 except (ValueError, TypeError):
-                    print(f"Warning: Could not calculate ntasks-per-node from ppn='{ppn}' and nth='{nth}'. Using default {ntasks_per_node}.")
+                    print(f"Warning: Could not calculate ntasks-per-node from ppn='{machine_ppn}' and nth='{machine_nth}'. Using default {ntasks_per_node}.")
             else:
                 print(f"Warning: 'ppn' or 'nth' not found in {machine_config_path}. Using default ntasks-per-node={ntasks_per_node}.")
         else:
