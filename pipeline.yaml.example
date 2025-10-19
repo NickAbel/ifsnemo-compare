@@ -12,7 +12,6 @@ overrides:
   DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/~ecmeXXXX"  # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX")
   IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source-compare-example.git"  # IFS source Git URL (can use $DNB_IFSNEMO_URL variable)
   IFS_BUNDLE_IFS_SOURCE_VERSION: "feature/ifsnemo-compare-test"  # Branch or version to use
-  DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
 
 psubmit:
   queue_name: ""      # Queue name (can be empty string)
