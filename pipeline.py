@@ -196,7 +196,14 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
             overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU_EXTRA={ov.get("DNB_IFSNEMO_WITH_GPU_EXTRA")}')
         if ov.get('DNB_IFSNEMO_WITH_STATIC_LINKING'):
             overrides_content.append(f'  - export DNB_IFSNEMO_WITH_STATIC_LINKING={ov.get("DNB_IFSNEMO_WITH_STATIC_LINKING")}')
+        if ov.get('DNB_IFSNEMO_USE_ARCH_AND_RAPS'):
+            overrides_content.append(f'  - export DNB_IFSNEMO_USE_ARCH_AND_RAPS={ov.get("DNB_IFSNEMO_USE_ARCH_AND_RAPS")}')
 
+        # Process miscellaneous environment variables from 'env' key
+        misc_env = ov.get('env', {})
+        if misc_env:
+            for env_key, env_value in misc_env.items():
+                overrides_content.append(f'  - export {env_key}="{env_value}"')
 
         (local_path / "overrides.yaml").write_text('\n'.join(overrides_content) + '\n')
 
