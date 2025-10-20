@@ -112,15 +112,20 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, gpus,
         nsteps
     ):
 
-        run_logdir = os.path.join(
+        # Build path components, include gpus part only when non-zero
+        parts = [
                 root[0],
                 os.path.basename(subdir.rstrip(os.sep)),
                 str(res),
                 "nthreads"+str(nthreads),
                 "ppn"+str(ppn),
                 "nnodes"+str(nnodes),
-                "gpus"+str(gpus),
-                "nsteps"+str(nsteps))
+        ]
+        if gpus != 0:
+            parts.append("gpus"+str(gpus))
+        parts.append("nsteps"+str(nsteps))
+
+        run_logdir = os.path.join(*parts)
 
         run_logfile = f"{runtype}.res={res}_nt={nthreads}_ppn={ppn}_nn={nnodes}_g={gpus}_nst={nsteps}.log"
 
@@ -168,30 +173,38 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
     """
     for test in test_subdirs:
         for res, nthreads, ppn, nnodes, gpus, nsteps in itertools.product(resolutions, nthreads, ppn, nnodes, gpus, nsteps):
-            base_ref = os.path.join(ref_root[0],
-                                    ref_subdir,
-                                    f"{res}", 
-                                    f"nthreads{nthreads}",
-                                    f"ppn{ppn}",
-                                    f"nnodes{nnodes}",
-                                    f"gpus{gpus}",
-                                    f"nsteps{nsteps}", 
-                                    "results")
+            # Build reference path components, include gpus part only when non-zero
+            ref_parts = [
+                ref_root[0],
+                ref_subdir,
+                f"{res}",
+                f"nthreads{nthreads}",
+                f"ppn{ppn}",
+                f"nnodes{nnodes}",
+            ]
+            if gpus != 0:
+                ref_parts.append(f"gpus{gpus}")
+            ref_parts.append(f"nsteps{nsteps}")
+            base_ref = os.path.join(*ref_parts, "results")
 
             print(f"Expecting reference dir at {base_ref}")
             if not os.path.isdir(base_ref):
                 print(f"[WARN] missing reference dir {base_ref}: skipping")
                 continue
 
-            base_test = os.path.join(test_root[0],
-                                     test,
-                                     f"{res}", 
-                                     f"nthreads{nthreads}",
-                                     f"ppn{ppn}",
-                                     f"nnodes{nnodes}",
-                                     f"gpus{gpus}",
-                                     f"nsteps{nsteps}", 
-                                     "results")
+            # Build test path components, include gpus part only when non-zero
+            test_parts = [
+                test_root[0],
+                test,
+                f"{res}",
+                f"nthreads{nthreads}",
+                f"ppn{ppn}",
+                f"nnodes{nnodes}",
+            ]
+            if gpus != 0:
+                test_parts.append(f"gpus{gpus}")
+            test_parts.append(f"nsteps{nsteps}")
+            base_test = os.path.join(*test_parts, "results")
 
             print(f"Expecting test dir at {base_test}")
             if not os.path.isdir(base_test):
