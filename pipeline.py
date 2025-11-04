@@ -258,17 +258,21 @@ psubmit:
         subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
         subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
 
-        # Create tarball
-        run_command(["tar", "czf", "../ifsnemo-build.tar.gz", "."], cwd=local_path, verbose=verbose)
-
         ############################################
         # 2.1-2.3 Build and Install on remote
         ############################################
 
-        # Upload the tarball
+        # Sync files to remote using rsync
         local_path = Path(local_path)
         remote_path = Path(remote_path)
-        upload_file(conn, local_path / "../ifsnemo-build.tar.gz", remote_path / "ifsnemo-build.tar.gz", verbose=verbose)
+
+        print(f"Syncing {local_path}/ to {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ ...")
+        rsync_cmd = [
+            "rsync", "-avz", "--progress",
+            str(local_path) + "/",
+            f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
+        ]
+        run_command(rsync_cmd, verbose=verbose)
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
@@ -307,9 +311,7 @@ psubmit:
 
 module load cmake/3.30.5
 
-cd {remote_path}
-tar xzvf ifsnemo-build.tar.gz --one-top-level
-cd ifsnemo-build
+cd {remote_path}/ifsnemo-build
 ln -sf {machine_file} machine.yaml
 ./dnb.sh :b
 """
