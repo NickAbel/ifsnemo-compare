@@ -4,10 +4,10 @@ Bundle YAML vs CMake Configuration Validation Tool
 
 This tool compares version information and CMake flags between the intended input:
 - bundle.yml configuration file
+- The command line arguments to `ifs-bundle build`, which are then passed into `configure.sh` in build directory
 And the build directory output, consisting of:
 - CMake config-version files in build directory
 - CMakeCache.txt in build directory
-- `ifs-bundle build` command line arguments, passed into `configure.sh` in build directory
 """
 
 import argparse
