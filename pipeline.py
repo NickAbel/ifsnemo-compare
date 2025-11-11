@@ -329,12 +329,12 @@ ln -sf {machine_file} machine.yaml
         # Run ./dnb.sh :i on login node
         conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
-        # Move references into the test arena if they exist
+        # Copy references into the test arena if they exist
         if "references" in cfg:
-            conn.run(f"mv -f {remote_path}/ifsnemo-build/references {remote_path}/ifsnemo-build/ifsnemo")
+            conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
 
-        # Move the comparison script into the test arena
-        conn.run(f"mv -f {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo")
+        # Copy the comparison script into the test arena
+        conn.run(f"rsync -a {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo/")
 
     test_results = {}
     results_file = "test_results.json"
