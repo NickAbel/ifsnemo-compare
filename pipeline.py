@@ -107,7 +107,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -161,6 +161,11 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool):
     conn = Connection(f"{remote_username}@{remote_machine}")
     # This will raise if remote requirements are missing
     check_remote_requirements(conn, verbose=True)
+
+    # Handle flag interactions
+    if skip_build and partial_build:
+        print("Warning: --partial-build is ignored when --skip-build is set")
+        partial_build = False
 
     if skip_build:
         # If we skip the build, the remote tests directory will not be empty.
@@ -266,9 +271,13 @@ psubmit:
         local_path = Path(local_path)
         remote_path = Path(remote_path)
 
+        # Ensure the remote directory exists
+        print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+
         print(f"Syncing {local_path}/ to {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ ...")
         rsync_cmd = [
-            "rsync", "-avz", "--progress",
+            "rsync", "-rlpgoDcvvz", 
             str(local_path) + "/",
             f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
         ]
@@ -296,6 +305,20 @@ psubmit:
         else:
             print(f"Warning: machine_file '{machine_config_path}' not found. Using default ntasks-per-node={ntasks_per_node}.")
 
+        # Determine build command
+        if partial_build:
+            build_cmd = ":r"
+            print("""
+ PARTIAL BUILD MODE
+ Using incremental/partial rebuild instead of full build
+ This is primarily intended for only when source code
+ changes have occurred and re-run of the bundle is not
+ needed.
+ If in doubt, run a full build instead!
+""")
+        else:
+            build_cmd = ":b"
+
         # Build on a compute node
         sbatch_script = f"""#!/bin/bash
 #SBATCH -A {psubmit_account}
@@ -313,13 +336,13 @@ module load cmake/3.30.5
 
 cd {remote_path}/ifsnemo-build
 ln -sf {machine_file} machine.yaml
-./dnb.sh :b
+./dnb.sh {build_cmd}
 """
 
         Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
         conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
-        # Run ./dnb.sh :b on compute node with sbatch job
+        # Run the build on compute node with sbatch job
         job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
         # Wait until completion
@@ -431,10 +454,16 @@ if __name__ == '__main__':
         action="store_true",
         help="Do the build/install but skip the run and compare stages (produce no test runs)"
     )
+    parser.add_argument(
+        "--partial-build",
+        dest="partial_build",
+        action="store_true",
+        help="Use partial build (dnb.sh :r) instead of full build (dnb.sh :b). Intended for quick rebuilds involving small changes in the code, and does not invoke ifs-bundle."
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build, args.no_run)
+        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
