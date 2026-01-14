@@ -1,0 +1,47 @@
+user:
+  remote_username: bscXXXXXX          # Your username on the remote machine (e.g., bscXXXXXX)
+  remote_machine_url: glogin2.bsc.es  # Remote machine address (e.g., glogin4.bsc.es)
+  machine_file: dnb-mn5-gpp.yaml      # Machine configuration file to use (e.g., dnb-mn5-gpp.yaml, dnb-mn5-acc.yaml, ...)
+
+paths:
+  local_build_dir: /home/LOCAL_USER/ifsnemo-build  # Path to ifsnemo-build directory on local machine (Step 2.4)
+  remote_project_dir: /gpfs/projects/bsc32/bscXXXXXX/ifsnc_remote_dir  # Path to remote project directory. Will be created if it doesn't exist.
+
+overrides:  # See the "overrides" section of the ifsnemo-build README for more information
+  DNB_SANDBOX_SUBDIR: "ifsFOOBAR.SP.CPU.GPP"      # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP")
+  DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/~ecmeXXXX"  # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX")
+  IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source-compare-example.git"  # IFS source Git URL (can use $DNB_IFSNEMO_URL variable)
+  IFS_BUNDLE_IFS_SOURCE_VERSION: "feature/ifsnemo-compare-test"  # Branch or version to use
+  #DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE  # Ensures machine-specific env.sh and toolchain.cmake copied from the arch directories and sourced
+  #DNB_IFSNEMO_WITH_GPU: TRUE  # For mn5-acc
+  #DNB_IFSNEMO_WITH_GPU_EXTRA: TRUE  # For mn5-acc
+  #DNB_IFSNEMO_WITH_STATIC_LINKING: TRUE  # For mn5-acc
+  #env:  # Miscellaneous dnb arguments not enumerated in the pipeline.py script may be entered here
+  #  IFS_BUNDLE_SKIP_FESOM: "" # Set to empty for false (ecbundle bug)
+
+
+psubmit:
+  queue_name: ""      # Queue name (can be empty string)
+  account: ehpc01     # Account name (e.g., ehpc01)
+  node_type: gp_ehpc  # Node type (e.g., gp_ehpc)
+
+ifsnemo_compare:
+  gold_standard_tag: ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP  # Reference tag (used for comparison with test results)
+  resolution: [tco79-eORCA1]               # Array of resolutions (e.g., ["tco79-eORCA1", "tco399-eORCA025"])
+  steps:      [d1]                         # Array of steps (e.g., ["d1", "d1"])
+  threads:    [4]                          # Array of thread counts (e.g., [4, 4])
+  ppn:        [28]                         # Array of processes per node (e.g., [28, 28])
+  nodes:      [1]                          # Array of node counts (e.g., [1, 16])
+
+#Example of multi-resolution configuration
+#  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]  
+#  steps:      [d1,  d1,  d1,  d1 ]   # Corresponding steps for each resolution
+#  threads:    [4,   4,   8,   14 ]   # Thread counts per resolution
+#  ppn:        [28,  28,  14,  8  ]   # Processes per node for each resolution
+#  nodes:      [1,   16,  125, 260]   # Node counts for each resolution
+
+#the Git repo where the references are stored
+references:
+  url: https://github.com/kellekai/bsc-ndse.git  # Git URL for references repository
+  branch: main                                   # Branch to use (defaults to "main" if not specified)
+  path_in_repo: references                       # Path within the repository where references are located

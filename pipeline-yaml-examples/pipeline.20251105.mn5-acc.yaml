@@ -1,0 +1,39 @@
+user:
+  remote_username: bsc631248          # Your username on the remote machine
+  remote_machine_url: alogin2.bsc.es  # Remote machine address
+  machine_file: dnb-mn5-acc.yaml      # Machine configuration file to use
+
+paths:
+  local_build_dir: /home/nabel/ifsnemo-build  # Path to ifsnemo-build directory on local machine
+  remote_project_dir: /gpfs/scratch/ehpc01/bsc631248/ifsnc-acc-gpu/ifs-bundle-20251105
+
+overrides:
+  DNB_SANDBOX_SUBDIR: "ifs.DE_CY48R1.0_climateDT_20251105.SP.GPU.ACC"
+  IFS_BUNDLE_IFS_SOURCE_VERSION: "DE_CY48R1.0_climateDT_20250826"
+  DNB_IFSNEMO_BUNDLE_BRANCH: "DE_CY48R1.0_climateDT_20251105"
+  DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
+  IFS_BUNDLE_RAPS_VERSION: "0.1.16"
+  DNB_IFSNEMO_WITH_GPU: TRUE
+  DNB_IFSNEMO_WITH_GPU_EXTRA: TRUE
+  DNB_IFSNEMO_WITH_STATIC_LINKING: TRUE
+  env:
+    IFS_BUNDLE_SKIP_FESOM: "" # Set to empty for false (ecbundle bug)
+
+psubmit:
+  queue_name: ""       # Queue name (empty string for default)
+  account: bsc32      # Account name
+  node_type: acc_bsces  # Node type
+
+ifsnemo_compare:
+  gold_standard_tag: ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP  # Reference tag for comparison
+  resolution: [tco79-eORCA1]  # Single resolution configuration
+  steps:   [d1]                # Steps for this resolution
+  threads: [5]                # Thread count
+  ppn:     [16]                # Processes per node
+  nodes:   [1]                # Number of nodes
+  gpus:    [4]                # Number of GPUs (if applicable)
+
+references:
+  url: https://github.com/kellekai/bsc-ndse.git  # Git URL for references repository
+  branch: main                                   # Branch to use
+  path_in_repo: references                       # Path within the repository
