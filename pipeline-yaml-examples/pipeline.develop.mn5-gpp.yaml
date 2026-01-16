@@ -1,0 +1,44 @@
+user:
+  remote_username: bsc631248          # Your username on the remote machine
+  remote_machine_url: glogin2.bsc.es  # Remote machine address
+  machine_file: dnb-mn5-gpp.yaml      # Machine configuration file to use
+
+paths:
+  local_build_dir: /home/nabel/ifsnemo-build  # Path to ifsnemo-build directory on local machine
+  remote_project_dir: /gpfs/scratch/bsc32/bsc631248/ifs-nemo-rst-reproducibility  # Path to remote project directory
+
+overrides:
+  DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"      # Sandbox subdirectory name
+  DNB_IFSNEMO_URL: "https://git.ecmwf.int/scm/de" # IFSNEMO URL
+  IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"  # IFS source Git URL
+  IFS_BUNDLE_IFS_SOURCE_VERSION: "DE_CY48R1.0_climateDT_develop"  # Branch or version to use
+  #  DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
+  #  env:
+  #    ENABLE_INSTALL_ORCA_DATA: "ON"
+
+psubmit:
+  queue_name: ""      # Queue name (empty string for default)
+  account: ehpc01     # Account name
+  node_type: gp_ehpc  # Node type
+
+ifsnemo_compare:
+  gold_standard_tag: ifs.DE_CY48R1.0_climateDT_20251105.SP.CPU.GPP  # Reference tag for comparison
+
+  ## Only TCO79
+  resolution: [tco79-eORCA1]  # Single resolution configuration
+  steps:   [d1]               # Steps for this resolution
+  threads: [4]                # Thread count
+  ppn:     [28]              # Processes per node
+  nodes:   [1]               # Number of nodes
+
+  ## All resolutions
+  #  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]  # Multi-resolution config
+  #  steps:   [d1,  d1,  d1,  d1 ]   # Steps for each resolution
+  #  threads: [4,   4,   8,   14 ]   # Thread counts per resolution
+  #  ppn:     [28,  28,  14,  8  ]   # Processes per node
+  #  nodes:   [1,   16,  125, 260]   # Node counts per resolution
+
+references:
+  url: https://github.com/kellekai/bsc-ndse.git  # Git URL for references repository
+  branch: main                                   # Branch to use
+  path_in_repo: references                       # Path within the repository
