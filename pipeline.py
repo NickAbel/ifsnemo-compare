@@ -201,8 +201,9 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export DNB_IFSNEMO_WITH_GPU_EXTRA={ov.get("DNB_IFSNEMO_WITH_GPU_EXTRA")}')
         if ov.get('DNB_IFSNEMO_WITH_STATIC_LINKING'):
             overrides_content.append(f'  - export DNB_IFSNEMO_WITH_STATIC_LINKING={ov.get("DNB_IFSNEMO_WITH_STATIC_LINKING")}')
-        if ov.get('DNB_IFSNEMO_USE_ARCH_AND_RAPS'):
-            overrides_content.append(f'  - export DNB_IFSNEMO_USE_ARCH_AND_RAPS={ov.get("DNB_IFSNEMO_USE_ARCH_AND_RAPS")}')
+        # Set DNB_IFSNEMO_USE_ARCH_AND_RAPS to TRUE by default, but allow overriding this value
+        use_arch_and_raps = ov.get('DNB_IFSNEMO_USE_ARCH_AND_RAPS', 'TRUE')
+        overrides_content.append(f'  - export DNB_IFSNEMO_USE_ARCH_AND_RAPS={use_arch_and_raps}')
 
         ## Process miscellaneous environment variables from 'env' key
         misc_env = ov.get('env', {})
