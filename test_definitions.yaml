@@ -1,0 +1,32 @@
+# Test suite definitions for ifsnemo-compare
+#
+# Each suite groups related test commands under a single script.
+# Pipeline YAML must specify which suites to run via:
+#   ifsnemo_compare:
+#     test_suites: [compare_norms]
+
+test_suites:
+  compare_norms:
+    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/compare_norms"
+    script: "python3 compare_norms.py"
+    commands:
+      run-tests:
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        output_prefix: "run_tests"
+      compare:
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        output_prefix: "compare"
+    sequence:
+      - run-tests
+      - compare
+
+# Declare required parameters - pipeline.py validates it provides these
+required_params:
+  - remote_path
+  - test_subdir
+  - gold_standard_tag
+  - resolution
+  - threads
+  - ppn
+  - nodes
+  - steps
