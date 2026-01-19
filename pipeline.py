@@ -9,6 +9,11 @@ import time
 import sys
 import argparse
 import json
+from test_runner import (
+    load_test_definitions,
+    validate_test_definitions,
+    execute_test,
+)
 
 verbose = True
 
@@ -356,9 +361,6 @@ ln -sf {machine_file} machine.yaml
         # Copy references into the test arena if they exist
         if "references" in cfg:
             conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
-
-        # Copy the comparison script into the test arena
-        conn.run(f"rsync -a {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo/")
 
     test_results = {}
     results_file = "test_results.json"
