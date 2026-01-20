@@ -31,7 +31,7 @@ def load_test_definitions(path: str) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def validate_test_definitions(defs: dict, cfg: dict, requested_suites: list) -> None:
+def validate_test_definitions(defs: dict, cfg: dict, requested_suites: list, suite_type: str = 'test_suites') -> None:
     """
     Validate that the test definitions and pipeline config are compatible.
 
@@ -39,27 +39,21 @@ def validate_test_definitions(defs: dict, cfg: dict, requested_suites: list) -> 
         defs: Loaded test definitions
         cfg: Pipeline configuration
         requested_suites: List of suite names requested to run
+        suite_type: Type of suites to validate against ('test_suites' or 'build_suites')
 
     Raises:
         ValueError: If validation fails
     """
-    available_suites = defs.get('test_suites', {})
+    available_suites = defs.get(suite_type, {})
 
     # Check that all requested suites exist in definitions
     for suite_name in requested_suites:
         if suite_name not in available_suites:
             available = list(available_suites.keys())
             raise ValueError(
-                f"Requested test suite '{suite_name}' not found in definitions. "
-                f"Available suites: {available}"
+                f"Requested suite '{suite_name}' not found in {suite_type}. "
+                f"Available: {available}"
             )
-
-    # Check that required parameters are documented (informational)
-    required_params = defs.get('required_params', [])
-    if required_params:
-        # This is informational - the actual parameter availability
-        # is checked at render time
-        pass
 
 
 def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:

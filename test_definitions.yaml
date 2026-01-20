@@ -1,15 +1,38 @@
 # Test suite definitions for ifsnemo-compare
 #
-# Each suite groups related test commands under a single script.
+# Two types of test suites:
+# - build_suites: Run once per build (compile-time checks)
+# - test_suites: Run per configuration (runtime checks, vary by resolution/threads/etc.)
+#
 # Pipeline YAML can override which suites to run via:
 #   ifsnemo_compare:
+#     build_suites: [bundle_validator]
 #     test_suites: [compare_norms]
 
-# Suites to run when pipeline YAML doesn't specify test_suites
-default_suites:
-  - compare_norms
+# Default suites when pipeline YAML doesn't specify
+default_build_suites:
   - bundle_validator
 
+default_test_suites:
+  - compare_norms
+
+# Build suites - run once per build
+build_suites:
+  bundle_validator:
+    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/bundle_validator"
+    script: "python3 bundle_validator.py"
+    commands:
+      run-tests:
+        args: "{bundle_yaml} {build_dir} -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
+        output_prefix: "bundle_validate"
+      compare:
+        args: "-og {remote_path}/ifsnemo-build/ifsnemo/references/bundle_validator -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
+        output_prefix: "bundle_compare"
+    sequence:
+      - run-tests
+      - compare
+
+# Test suites - run per configuration (resolution, threads, ppn, nodes, steps)
 test_suites:
   compare_norms:
     working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/compare_norms"
@@ -25,22 +48,14 @@ test_suites:
       - run-tests
       - compare
 
-  bundle_validator:
-    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/bundle_validator"
-    script: "python3 bundle_validator.py"
-    commands:
-      run-tests:
-        args: "{bundle_yaml} {build_dir} -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
-        output_prefix: "bundle_validate"
-      compare:
-        args: "-og {remote_path}/ifsnemo-build/ifsnemo/references/bundle_validator -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
-        output_prefix: "bundle_compare"
-    sequence:
-      - run-tests
-      - compare
+# Required parameters for build_suites
+build_required_params:
+  - remote_path
+  - bundle_yaml
+  - build_dir
 
-# Declare required parameters - pipeline.py validates it provides these
-required_params:
+# Required parameters for test_suites
+test_required_params:
   - remote_path
   - test_subdir
   - gold_standard_tag
@@ -49,5 +64,3 @@ required_params:
   - ppn
   - nodes
   - steps
-  - bundle_yaml
-  - build_dir

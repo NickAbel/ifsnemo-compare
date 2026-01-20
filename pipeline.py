@@ -369,80 +369,110 @@ ln -sf {machine_file} machine.yaml
     if no_run:
         print("Skipping run and compare stages (--no-run).")
     else:
-        # If any of the test-parameter lists are empty, there are no tests to run.
+        # Load test definitions
+        test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
+        test_defs = load_test_definitions(test_defs_path)
+
+        # === Build suites (run once per build) ===
+        default_build_suites = test_defs.get('default_build_suites', [])
+        requested_build_suites = ifs_cfg.get('build_suites', default_build_suites)
+
+        if requested_build_suites:
+            # Validate build suites exist
+            validate_test_definitions(test_defs, cfg, requested_build_suites, suite_type='build_suites')
+
+            # Build context for build suites
+            build_context = {
+                'remote_path': str(remote_path),
+                'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
+                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+            }
+
+            # Validate build context
+            build_required = test_defs.get('build_required_params', [])
+            missing = [p for p in build_required if p not in build_context]
+            if missing:
+                raise ValueError(f"Build context missing required params: {missing}")
+
+            test_results['build'] = {}
+            for suite_name in requested_build_suites:
+                suite_def = test_defs['build_suites'][suite_name]
+                sequence = suite_def.get('sequence', [])
+
+                for cmd_name in sequence:
+                    print(f"Running build suite {suite_name}:{cmd_name}...")
+                    results = execute_test(
+                        conn, suite_def, cmd_name, build_context,
+                        'build', verbose=verbose
+                    )
+                    test_results['build'].update(results)
+
+        # === Test suites (run per configuration) ===
         if not (resolution and steps and threads and ppn and nodes):
-            print("No test configurations found; skipping run and compare stages.")
+            print("No test configurations found; skipping per-config test suites.")
         else:
-            # Load test definitions
-            test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
-            test_defs = load_test_definitions(test_defs_path)
+            default_test_suites = test_defs.get('default_test_suites', [])
+            requested_test_suites = ifs_cfg.get('test_suites', default_test_suites)
 
-            # Get requested test suites from pipeline config, fall back to defaults
-            default_suites = test_defs.get('default_suites', [])
-            requested_suites = ifs_cfg.get('test_suites', default_suites)
-            if not requested_suites:
-                raise ValueError("No test_suites specified and no default_suites defined")
+            if requested_test_suites:
+                # Validate test suites exist
+                validate_test_definitions(test_defs, cfg, requested_test_suites, suite_type='test_suites')
 
-            # Validate that requested suites exist
-            validate_test_definitions(test_defs, cfg, requested_suites)
-
-            use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
-            loop_items = [resolution, steps, threads, ppn, nodes]
-            if use_gpu:
-                loop_items.append(gpus)
-
-            # Ensure all elements are lists for zip
-            loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
-
-            for items in zip(*loop_items):
-                # Unpack test parameters and build test_id
+                use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
+                loop_items = [resolution, steps, threads, ppn, nodes]
                 if use_gpu:
-                    r, s, t, p, n, g = items
-                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
-                    gpu_flag = f" --gpus {quote(str(g))}"
-                else:
-                    r, s, t, p, n = items
-                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
-                    gpu_flag = ""
+                    loop_items.append(gpus)
 
-                print(f"Processing test config: {test_id}")
-                test_results[test_id] = {}
+                # Ensure all elements are lists for zip
+                loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
 
-                # Build context for template substitution
-                context = {
-                    'remote_path': str(remote_path),
-                    'test_subdir': dnb_sandbox_subdir,
-                    'gold_standard_tag': gold_standard_tag,
-                    'resolution': r,
-                    'steps': s,
-                    'threads': t,
-                    'ppn': p,
-                    'nodes': n,
-                    'gpu_flag': gpu_flag,
-                    'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
-                    'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
-                }
-                if use_gpu:
-                    context['gpus'] = g
+                for items in zip(*loop_items):
+                    # Unpack test parameters and build test_id
+                    if use_gpu:
+                        r, s, t, p, n, g = items
+                        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
+                        gpu_flag = f" --gpus {quote(str(g))}"
+                    else:
+                        r, s, t, p, n = items
+                        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+                        gpu_flag = ""
 
-                # Validate context has all required params
-                required = test_defs.get('required_params', [])
-                missing = [p for p in required if p not in context]
-                if missing:
-                    raise ValueError(f"Context missing required params: {missing}")
+                    print(f"Processing test config: {test_id}")
+                    test_results[test_id] = {}
 
-                # Execute each requested test suite
-                for suite_name in requested_suites:
-                    suite_def = test_defs['test_suites'][suite_name]
-                    sequence = suite_def.get('sequence', [])
+                    # Build context for template substitution
+                    test_context = {
+                        'remote_path': str(remote_path),
+                        'test_subdir': dnb_sandbox_subdir,
+                        'gold_standard_tag': gold_standard_tag,
+                        'resolution': r,
+                        'steps': s,
+                        'threads': t,
+                        'ppn': p,
+                        'nodes': n,
+                        'gpu_flag': gpu_flag,
+                    }
+                    if use_gpu:
+                        test_context['gpus'] = g
 
-                    for cmd_name in sequence:
-                        print(f"Running {suite_name}:{cmd_name}...")
-                        results = execute_test(
-                            conn, suite_def, cmd_name, context,
-                            test_id, verbose=verbose
-                        )
-                        test_results[test_id].update(results)
+                    # Validate test context
+                    test_required = test_defs.get('test_required_params', [])
+                    missing = [p for p in test_required if p not in test_context]
+                    if missing:
+                        raise ValueError(f"Test context missing required params: {missing}")
+
+                    # Execute each requested test suite
+                    for suite_name in requested_test_suites:
+                        suite_def = test_defs['test_suites'][suite_name]
+                        sequence = suite_def.get('sequence', [])
+
+                        for cmd_name in sequence:
+                            print(f"Running {suite_name}:{cmd_name}...")
+                            results = execute_test(
+                                conn, suite_def, cmd_name, test_context,
+                                test_id, verbose=verbose
+                            )
+                            test_results[test_id].update(results)
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
