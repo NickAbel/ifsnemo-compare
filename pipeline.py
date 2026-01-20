@@ -386,6 +386,7 @@ ln -sf {machine_file} machine.yaml
                 'remote_path': str(remote_path),
                 'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
                 'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+                'gold_standard_tag': gold_standard_tag,
             }
 
             # Validate build context

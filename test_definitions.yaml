@@ -26,7 +26,7 @@ build_suites:
         args: "{bundle_yaml} {build_dir} -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
         output_prefix: "bundle_validate"
       compare:
-        args: "-og {remote_path}/ifsnemo-build/ifsnemo/references/bundle_validator -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
+        args: "-og {remote_path}/ifsnemo-build/ifsnemo/references/{gold_standard_tag}/bundle_validator -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
         output_prefix: "bundle_compare"
     sequence:
       - run-tests
@@ -53,6 +53,7 @@ build_required_params:
   - remote_path
   - bundle_yaml
   - build_dir
+  - gold_standard_tag
 
 # Required parameters for test_suites
 test_required_params:
