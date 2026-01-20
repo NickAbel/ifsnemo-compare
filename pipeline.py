@@ -373,6 +373,19 @@ ln -sf {machine_file} machine.yaml
         if not (resolution and steps and threads and ppn and nodes):
             print("No test configurations found; skipping run and compare stages.")
         else:
+            # Load test definitions
+            test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
+            test_defs = load_test_definitions(test_defs_path)
+
+            # Get requested test suites from pipeline config, fall back to defaults
+            default_suites = test_defs.get('default_suites', [])
+            requested_suites = ifs_cfg.get('test_suites', default_suites)
+            if not requested_suites:
+                raise ValueError("No test_suites specified and no default_suites defined")
+
+            # Validate that requested suites exist
+            validate_test_definitions(test_defs, cfg, requested_suites)
+
             use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
             loop_items = [resolution, steps, threads, ppn, nodes]
             if use_gpu:
@@ -382,55 +395,54 @@ ln -sf {machine_file} machine.yaml
             loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
 
             for items in zip(*loop_items):
+                # Unpack test parameters and build test_id
                 if use_gpu:
                     r, s, t, p, n, g = items
                     test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
                     gpu_flag = f" --gpus {quote(str(g))}"
-                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
                 else:
                     r, s, t, p, n = items
                     test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
                     gpu_flag = ""
-                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
 
+                print(f"Processing test config: {test_id}")
                 test_results[test_id] = {}
 
-                run_output_file = f"run_tests_{test_id}.log"
-                cmd_run = (
-                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-                    f"python3 compare_norms.py run-tests "
-                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-                    f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
-                )
-                print(cmd_run)
-                result = conn.run(cmd_run, warn=True, pty=True)
-                with open(run_output_file, "w") as f:
-                    f.write(result.stdout)
-                if verbose:
-                    print(f"Output of run-tests saved to local file {run_output_file}")
-                test_results[test_id]["run_tests_passed"] = result.return_code == 0
-                test_results[test_id]["run_tests_output"] = run_output_file
-
+                # Build context for template substitution
+                context = {
+                    'remote_path': str(remote_path),
+                    'test_subdir': dnb_sandbox_subdir,
+                    'gold_standard_tag': gold_standard_tag,
+                    'resolution': r,
+                    'steps': s,
+                    'threads': t,
+                    'ppn': p,
+                    'nodes': n,
+                    'gpu_flag': gpu_flag,
+                    'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
+                    'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+                }
                 if use_gpu:
-                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
-                else:
-                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-                compare_output_file = f"compare_{test_id}.log"
-                cmd_cmp = (
-                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-                    f"python3 compare_norms.py compare "
-                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-                    f"-g {quote(gold_standard_tag)}/ -og references "
-                    f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
-                )
-                print(cmd_cmp)
-                result = conn.run(cmd_cmp, warn=True, pty=True)
-                with open(compare_output_file, "w") as f:
-                    f.write(result.stdout)
-                if verbose:
-                    print(f"Output of compare saved to local file {compare_output_file}")
-                test_results[test_id]["compare_passed"] = result.return_code == 0
-                test_results[test_id]["compare_output"] = compare_output_file
+                    context['gpus'] = g
+
+                # Validate context has all required params
+                required = test_defs.get('required_params', [])
+                missing = [p for p in required if p not in context]
+                if missing:
+                    raise ValueError(f"Context missing required params: {missing}")
+
+                # Execute each requested test suite
+                for suite_name in requested_suites:
+                    suite_def = test_defs['test_suites'][suite_name]
+                    sequence = suite_def.get('sequence', [])
+
+                    for cmd_name in sequence:
+                        print(f"Running {suite_name}:{cmd_name}...")
+                        results = execute_test(
+                            conn, suite_def, cmd_name, context,
+                            test_id, verbose=verbose
+                        )
+                        test_results[test_id].update(results)
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
