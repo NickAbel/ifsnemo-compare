@@ -489,9 +489,9 @@ def run_validation(bundle_yaml: Path, build_dir: Path) -> Dict[str, Any]:
 
     return {
         'overall_passed': all_passed,
-        'routine1_bundle_version': routine1_result,
-        'routine2_project_versions': routine2_result,
-        'routine3_cmake_flags': routine3_result
+        'bundle_version': routine1_result,
+        'project_versions': routine2_result,
+        'cmake_flags': routine3_result
     }
 
 
@@ -504,8 +504,7 @@ def cmd_validate(args):
         root_path = str(args.build_dir.resolve().parent)
         output = normalize_paths(output, root_path)
 
-    json_kwargs = {'indent': 2} if args.pretty else {}
-    json_output = json.dumps(output, **json_kwargs)
+    json_output = json.dumps(output)
 
     if args.output:
         try:
@@ -532,7 +531,7 @@ def cmd_create_refs(args):
     output_path = Path(args.output_dir) / "bundle_validation.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    json_output = json.dumps(output, indent=2)
+    json_output = json.dumps(output)
     output_path.write_text(json_output)
     print(f"Reference saved to: {output_path}")
 
@@ -549,7 +548,7 @@ def cmd_run_tests(args):
     output_path = Path(args.output_dir) / "bundle_validation.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    json_output = json.dumps(output, indent=2)
+    json_output = json.dumps(output)
     output_path.write_text(json_output)
     print(f"Test result saved to: {output_path}")
 
@@ -600,7 +599,6 @@ def main():
     p_validate.add_argument('bundle_yaml', type=Path, help='Path to bundle.yml file')
     p_validate.add_argument('build_dir', type=Path, help='Path to build directory')
     p_validate.add_argument('-o', '--output', type=Path, help='Output JSON file (default: stdout)')
-    p_validate.add_argument('--pretty', action='store_true', help='Pretty-print JSON output')
     p_validate.add_argument('--normalize', action='store_true', help='Normalize machine-specific paths')
     p_validate.set_defaults(func=cmd_validate)
 
