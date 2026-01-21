@@ -23,6 +23,10 @@ except ImportError:
     print("ERROR: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
+# ANSI formatting
+BOLD = '\033[1m'
+RESET = '\033[0m'
+
 
 class BundleConfig:
     """Configuration constants for the bundle comparer."""
@@ -573,9 +577,9 @@ def cmd_compare(args):
 
     # Compare the two
     if ref_data == test_data:
-        print("MATCH: Test output matches reference")
+        print(f"{BOLD}bundle_validator: MATCH:{RESET} Test output matches reference")
     else:
-        print("DIFF: Test output differs from reference")
+        print(f"{BOLD}bundle_validator: DIFF:{RESET} Test output differs from reference")
         import difflib
         ref_str = json.dumps(ref_data, indent=2, sort_keys=True).splitlines(keepends=True)
         test_str = json.dumps(test_data, indent=2, sort_keys=True).splitlines(keepends=True)
