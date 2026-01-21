@@ -35,8 +35,8 @@ build_suites:
 # Test suites - run per configuration (resolution, threads, ppn, nodes, steps)
 test_suites:
   compare_norms:
-    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/compare_norms"
-    script: "python3 compare_norms.py"
+    working_dir: "{remote_path}/ifsnemo-build/src/sandbox"
+    script: "python3 {remote_path}/ifsnemo-build/ifsnemo-compare/tests/compare_norms/compare_norms.py"
     commands:
       run-tests:
         args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
