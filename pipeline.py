@@ -15,6 +15,10 @@ from test_runner import (
     execute_test,
 )
 
+# ANSI formatting
+BOLD = '\033[1m'
+RESET = '\033[0m'
+
 verbose = True
 
 def wait_for_job(conn, job_id, poll_interval=30):
@@ -407,7 +411,7 @@ ln -sf {machine_file} machine.yaml
                 sequence = suite_def.get('sequence', [])
 
                 for cmd_name in sequence:
-                    print(f"Running build suite {suite_name}:{cmd_name}...")
+                    print(f"{BOLD}Running build suite {suite_name}:{cmd_name}...{RESET}")
                     results = execute_test(
                         conn, suite_def, cmd_name, build_context,
                         'build', verbose=verbose
@@ -444,7 +448,7 @@ ln -sf {machine_file} machine.yaml
                         test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
                         gpu_flag = ""
 
-                    print(f"Processing test config: {test_id}")
+                    print(f"{BOLD}Processing test config: {test_id}{RESET}")
                     test_results[test_id] = {}
 
                     # Build context for template substitution
@@ -474,7 +478,7 @@ ln -sf {machine_file} machine.yaml
                         sequence = suite_def.get('sequence', [])
 
                         for cmd_name in sequence:
-                            print(f"Running {suite_name}:{cmd_name}...")
+                            print(f"{BOLD}Running {suite_name}:{cmd_name}...{RESET}")
                             results = execute_test(
                                 conn, suite_def, cmd_name, test_context,
                                 test_id, verbose=verbose
