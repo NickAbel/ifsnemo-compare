@@ -5,8 +5,33 @@ Test runner module for ifsnemo-compare pipeline.
 Loads test definitions from YAML and executes test suites.
 """
 import yaml
+from datetime import datetime
 from pathlib import Path
 from shlex import quote
+
+# Timestamp for this run (shared across all log files)
+RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Run output directory (initialized by init_run_directory)
+RUN_OUTPUT_DIR = None
+
+
+def init_run_directory(yaml_path: str) -> Path:
+    """
+    Initialize the output directory for this run.
+
+    Args:
+        yaml_path: Path to the pipeline YAML file used
+
+    Returns:
+        Path to the created output directory
+    """
+    global RUN_OUTPUT_DIR
+    yaml_name = Path(yaml_path).stem  # filename without extension
+    dir_name = f"{RUN_TIMESTAMP}__{yaml_name}"
+    RUN_OUTPUT_DIR = Path("results") / dir_name
+    RUN_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return RUN_OUTPUT_DIR
 
 
 def load_test_definitions(path: str) -> dict:
@@ -76,7 +101,7 @@ def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
         raise KeyError(f"Command '{cmd_name}' not found in suite definition")
 
     cmd_def = commands[cmd_name]
-    script = suite_def.get('script', '')
+    script = suite_def.get('script', '').format(**context)
     working_dir = suite_def.get('working_dir', '').format(**context)
     args_template = cmd_def.get('args', '')
 
@@ -98,7 +123,7 @@ def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
     return cmd
 
 
-def get_output_filename(suite_def: dict, cmd_name: str, test_id: str) -> str:
+def get_output_filename(suite_def: dict, cmd_name: str, test_id: str) -> Path:
     """
     Get the output filename for a command execution.
 
@@ -108,12 +133,16 @@ def get_output_filename(suite_def: dict, cmd_name: str, test_id: str) -> str:
         test_id: The test identifier string
 
     Returns:
-        The output filename
+        Path to the output file
     """
     commands = suite_def.get('commands', {})
     cmd_def = commands.get(cmd_name, {})
     output_prefix = cmd_def.get('output_prefix', cmd_name.replace('-', '_'))
-    return f"{output_prefix}_{test_id}.log"
+    filename = f"{output_prefix}_{test_id}.log"
+
+    if RUN_OUTPUT_DIR:
+        return RUN_OUTPUT_DIR / filename
+    return Path(filename)
 
 
 def get_result_keys(suite_def: dict, cmd_name: str) -> tuple:

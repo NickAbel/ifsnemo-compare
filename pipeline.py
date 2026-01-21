@@ -13,6 +13,7 @@ from test_runner import (
     load_test_definitions,
     validate_test_definitions,
     execute_test,
+    init_run_directory,
 )
 
 # ANSI formatting
@@ -144,6 +145,10 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     with open(pipeline_yaml_path, "r") as f:
         cfg = yaml.safe_load(f) or {}
 
+    # Initialize output directory for this run
+    run_dir = init_run_directory(pipeline_yaml_path)
+    print(f"{BOLD}Output directory: {run_dir}{RESET}")
+
     remote_username = cfg.get("user", {}).get("remote_username")
     remote_machine = cfg.get("user", {}).get("remote_machine_url")
     machine_file = cfg.get("user", {}).get("machine_file")
@@ -248,7 +253,7 @@ psubmit:
             if temp_ref_dir.exists():
                 shutil.rmtree(temp_ref_dir)
 
-            print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
+            print(f"{BOLD}Fetching references: {ref_url} (branch: {ref_branch}){RESET}")
             run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
 
             source_path = temp_ref_dir / ref_path_in_repo
@@ -291,7 +296,7 @@ psubmit:
         print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
         conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
 
-        print(f"Syncing {local_path}/ to {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ ...")
+        print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/{RESET}")
         rsync_cmd = [
             "rsync", "-rlpgoDcvvz", 
             str(local_path) + "/",
@@ -359,6 +364,7 @@ ln -sf {machine_file} machine.yaml
         conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
         # Run the build on compute node with sbatch job
+        print(f"{BOLD}Submitting build job to remote...{RESET}")
         job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
         # Wait until completion
@@ -373,13 +379,14 @@ ln -sf {machine_file} machine.yaml
             conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
 
     test_results = {}
-    results_file = "test_results.json"
+    results_file = run_dir / "test_results.json"
 
     # Explicitly handle the case where the user asked to skip run/compare
     if no_run:
-        print("Skipping run and compare stages (--no-run).")
+        print(f"{BOLD}Skipping run and compare stages (--no-run).{RESET}")
     else:
         # Load test definitions
+        print(f"{BOLD}Starting test execution...{RESET}")
         test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
         test_defs = load_test_definitions(test_defs_path)
 
@@ -488,7 +495,7 @@ ln -sf {machine_file} machine.yaml
     # Write the results to a JSON file
     with open(results_file, "w") as f:
         json.dump(test_results, f, indent=4)
-    print(f"Test results written to {results_file} on the local machine.")
+    print(f"{BOLD}Test results written to {results_file}{RESET}")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build and run ifs-nemo comparison pipeline.")
