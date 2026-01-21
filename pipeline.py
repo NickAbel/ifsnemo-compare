@@ -173,8 +173,8 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         partial_build = False
 
     if skip_build:
-        # If we skip the build, the remote tests directory will not be empty.
-        # We want to delete any subdirectory in there that corresponds to the
+        # If we skip the build, the remote tests directory may not be empty.
+        # We'd have to delete any subdirectory in there that corresponds to the
         # test configuration we are running.
         if dnb_sandbox_subdir:
             remote_tests_dir = f"{remote_path}/ifsnemo-build/ifsnemo/tests/{dnb_sandbox_subdir}"
@@ -265,7 +265,7 @@ psubmit:
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
-        # Copy local ifsnemo-compare into the local_path (use local version, not GitHub)
+        # Copy local ifsnemo-compare into the local_path
         script_dir = Path(__file__).resolve().parent
         subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
         rsync_compare_cmd = [
