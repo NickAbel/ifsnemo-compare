@@ -265,9 +265,15 @@ psubmit:
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
-        # Download ifsnemo-compare into the local_path
+        # Copy local ifsnemo-compare into the local_path (use local version, not GitHub)
+        script_dir = Path(__file__).resolve().parent
         subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-        subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+        rsync_compare_cmd = [
+            "rsync", "-a", "--exclude", ".git", "--exclude", "__pycache__", "--exclude", "*.log",
+            str(script_dir) + "/",
+            str(local_path) + "/ifsnemo-compare/"
+        ]
+        run_command(rsync_compare_cmd, verbose=verbose)
 
         ############################################
         # 2.1-2.3 Build and Install on remote
