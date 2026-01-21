@@ -193,5 +193,5 @@ def execute_test(conn, suite_def: dict, cmd_name: str, context: dict,
 
     return {
         passed_key: result.return_code == 0,
-        output_key: output_file,
+        output_key: str(output_file),
     }
