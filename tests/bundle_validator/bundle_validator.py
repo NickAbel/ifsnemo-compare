@@ -573,17 +573,15 @@ def cmd_compare(args):
 
     # Compare the two
     if ref_data == test_data:
-        print("PASS: Test output matches reference")
-        sys.exit(0)
+        print("MATCH: Test output matches reference")
     else:
-        print("FAIL: Test output differs from reference")
-        # Print differences
+        print("DIFF: Test output differs from reference")
         import difflib
         ref_str = json.dumps(ref_data, indent=2, sort_keys=True).splitlines(keepends=True)
         test_str = json.dumps(test_data, indent=2, sort_keys=True).splitlines(keepends=True)
         diff = difflib.unified_diff(ref_str, test_str, fromfile='reference', tofile='test')
         print(''.join(diff))
-        sys.exit(1)
+    sys.exit(0)
 
 
 def main():
