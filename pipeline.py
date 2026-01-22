@@ -71,8 +71,8 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False):
     process = subprocess.Popen(
         cmd,
         cwd=cwd,
-        stdout=subprocess.PIPE if capture_output else subprocess.PIPE,
-        stderr=subprocess.STDOUT if capture_output else subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
     )
@@ -303,7 +303,7 @@ psubmit:
 
         print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
-            "rsync", "-rlpgoDcvvz", 
+            "rsync", "-rlpgoD", "--compress", "--progress",
             str(local_path) + "/",
             f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
         ]
