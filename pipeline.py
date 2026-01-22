@@ -4,6 +4,7 @@ from shlex import quote
 import subprocess
 from pathlib import Path
 from fabric import Connection
+from datetime import datetime
 import shutil
 import time
 import sys
@@ -19,6 +20,10 @@ from test_runner import (
 # ANSI formatting
 BOLD = '\033[1m'
 RESET = '\033[0m'
+
+def timestamp():
+    """Return current timestamp in date -d style format."""
+    return datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 
 verbose = True
 
@@ -253,7 +258,7 @@ psubmit:
             if temp_ref_dir.exists():
                 shutil.rmtree(temp_ref_dir)
 
-            print(f"{BOLD}Fetching references: {ref_url} (branch: {ref_branch}){RESET}")
+            print(f"{BOLD}Fetching references: {ref_url} (branch: {ref_branch}) [{timestamp()}]{RESET}")
             run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
 
             source_path = temp_ref_dir / ref_path_in_repo
@@ -296,7 +301,7 @@ psubmit:
         print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
         conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
 
-        print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/{RESET}")
+        print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
             "rsync", "-rlpgoDcvvz", 
             str(local_path) + "/",
@@ -364,7 +369,7 @@ ln -sf {machine_file} machine.yaml
         conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
         # Run the build on compute node with sbatch job
-        print(f"{BOLD}Submitting build job to remote...{RESET}")
+        print(f"{BOLD}Submitting build job to remote... [{timestamp()}]{RESET}")
         job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
         # Wait until completion
@@ -386,7 +391,7 @@ ln -sf {machine_file} machine.yaml
         print(f"{BOLD}Skipping run and compare stages (--no-run).{RESET}")
     else:
         # Load test definitions
-        print(f"{BOLD}Starting test execution...{RESET}")
+        print(f"{BOLD}Starting test execution... [{timestamp()}]{RESET}")
         test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
         test_defs = load_test_definitions(test_defs_path)
 
@@ -495,7 +500,7 @@ ln -sf {machine_file} machine.yaml
     # Write the results to a JSON file
     with open(results_file, "w") as f:
         json.dump(test_results, f, indent=4)
-    print(f"{BOLD}Test results written to {results_file}{RESET}")
+    print(f"{BOLD}Test results written to {results_file} [{timestamp()}]{RESET}")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build and run ifs-nemo comparison pipeline.")
