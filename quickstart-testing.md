@@ -234,7 +234,7 @@ references:
   path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
 ```
 
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testi[...]
+For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](https://github.com/NickAbel/ifsnemo-compare/blob/7f0e0a34a084b661914d796a0c9df109a288ea57/pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
 
 ---
 
