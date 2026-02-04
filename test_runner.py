@@ -123,11 +123,12 @@ def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
     return cmd
 
 
-def get_output_filename(suite_def: dict, cmd_name: str, test_id: str) -> Path:
+def get_output_filename(suite_name: str, suite_def: dict, cmd_name: str, test_id: str) -> Path:
     """
     Get the output filename for a command execution.
 
     Args:
+        suite_name: Name of the test suite
         suite_def: The test suite definition dict
         cmd_name: Name of the command
         test_id: The test identifier string
@@ -138,7 +139,7 @@ def get_output_filename(suite_def: dict, cmd_name: str, test_id: str) -> Path:
     commands = suite_def.get('commands', {})
     cmd_def = commands.get(cmd_name, {})
     output_prefix = cmd_def.get('output_prefix', cmd_name.replace('-', '_'))
-    filename = f"{output_prefix}_{test_id}.log"
+    filename = f"{suite_name}-{output_prefix}-{test_id}.log"
 
     if RUN_OUTPUT_DIR:
         return RUN_OUTPUT_DIR / filename
@@ -162,13 +163,14 @@ def get_result_keys(suite_def: dict, cmd_name: str) -> tuple:
     return (f"{output_prefix}_passed", f"{output_prefix}_output")
 
 
-def execute_test(conn, suite_def: dict, cmd_name: str, context: dict,
+def execute_test(conn, suite_name: str, suite_def: dict, cmd_name: str, context: dict,
                  test_id: str, verbose: bool = False) -> dict:
     """
     Execute a single test command and return results.
 
     Args:
         conn: Fabric connection to the remote machine
+        suite_name: Name of the test suite
         suite_def: The test suite definition dict
         cmd_name: Name of the command to execute
         context: Dictionary of parameter values
@@ -179,7 +181,7 @@ def execute_test(conn, suite_def: dict, cmd_name: str, context: dict,
         Dictionary with result keys mapping to pass/fail and output file
     """
     cmd = render_command(suite_def, cmd_name, context)
-    output_file = get_output_filename(suite_def, cmd_name, test_id)
+    output_file = get_output_filename(suite_name, suite_def, cmd_name, test_id)
     passed_key, output_key = get_result_keys(suite_def, cmd_name)
 
     print(cmd)

@@ -425,7 +425,7 @@ ln -sf {machine_file} machine.yaml
                 for cmd_name in sequence:
                     print(f"{BOLD}Running build suite {suite_name}:{cmd_name}...{RESET}")
                     results = execute_test(
-                        conn, suite_def, cmd_name, build_context,
+                        conn, suite_name, suite_def, cmd_name, build_context,
                         'build', verbose=verbose
                     )
                     test_results['build'].update(results)
@@ -492,7 +492,7 @@ ln -sf {machine_file} machine.yaml
                         for cmd_name in sequence:
                             print(f"{BOLD}Running {suite_name}:{cmd_name}...{RESET}")
                             results = execute_test(
-                                conn, suite_def, cmd_name, test_context,
+                                conn, suite_name, suite_def, cmd_name, test_context,
                                 test_id, verbose=verbose
                             )
                             test_results[test_id].update(results)
