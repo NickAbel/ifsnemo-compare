@@ -303,7 +303,7 @@ psubmit:
 
         print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
-            "rsync", "-rlpgoD", "--compress", "--progress",
+            "rsync", "-rlpgoD", "--compress", "--info=progress2",
             str(local_path) + "/",
             f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
         ]
