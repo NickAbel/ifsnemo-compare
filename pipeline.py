@@ -64,7 +64,8 @@ def check_remote_requirements(conn, verbose=False):
     elif verbose:
         print("All remote requirements are present.")
 
-def run_command(cmd, cwd=None, verbose=False, capture_output=False):
+def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False):
+    import threading
     if verbose:
         print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
     # Use subprocess with output shown live
@@ -77,10 +78,27 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False):
         bufsize=1,
     )
     output_lines = []
-    for line in process.stdout:
-        print(line, end='')  # print output live
-        if capture_output:
-            output_lines.append(line)
+    if show_spinner:
+        # Read stdout in background thread to prevent blocking
+        def drain_output():
+            for line in process.stdout:
+                output_lines.append(line)
+        reader = threading.Thread(target=drain_output)
+        reader.start()
+        # Show spinner while process runs
+        spinner = ['|', '/', '-', '\\']
+        spin_idx = 0
+        while process.poll() is None:
+            print(f"\r  {spinner[spin_idx]} syncing...", end='', flush=True)
+            spin_idx = (spin_idx + 1) % 4
+            time.sleep(0.2)
+        reader.join()
+        print("\r  done.          ")
+    else:
+        for line in process.stdout:
+            print(line, end='')
+            if capture_output:
+                output_lines.append(line)
     process.wait()
     if process.returncode != 0:
         raise subprocess.CalledProcessError(process.returncode, cmd)
@@ -287,7 +305,7 @@ psubmit:
             str(script_dir) + "/",
             str(local_path) + "/ifsnemo-compare/"
         ]
-        run_command(rsync_compare_cmd, verbose=verbose)
+        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
 
         ############################################
         # 2.1-2.3 Build and Install on remote
@@ -307,7 +325,7 @@ psubmit:
             str(local_path) + "/",
             f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
         ]
-        run_command(rsync_cmd, verbose=verbose)
+        run_command(rsync_cmd, verbose=verbose, show_spinner=True)
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
