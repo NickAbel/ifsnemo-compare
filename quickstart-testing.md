@@ -578,4 +578,4 @@ test_required_params:
   - steps
 ```
 
-If your test needs additional parameters, they must be added to these lists and provided in the pipeline context.
+If your test needs additional parameters, add them to `build_required_params` or `test_required_params` in `test_definitions.yaml` and update `pipeline.py` to provide them in the context.
