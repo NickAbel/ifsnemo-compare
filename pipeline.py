@@ -4,11 +4,26 @@ from shlex import quote
 import subprocess
 from pathlib import Path
 from fabric import Connection
+from datetime import datetime
 import shutil
 import time
 import sys
 import argparse
 import json
+from test_runner import (
+    load_test_definitions,
+    validate_test_definitions,
+    execute_test,
+    init_run_directory,
+)
+
+# ANSI formatting
+BOLD = '\033[1m'
+RESET = '\033[0m'
+
+def timestamp():
+    """Return current timestamp in date -d style format."""
+    return datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 
 verbose = True
 
@@ -49,23 +64,41 @@ def check_remote_requirements(conn, verbose=False):
     elif verbose:
         print("All remote requirements are present.")
 
-def run_command(cmd, cwd=None, verbose=False, capture_output=False):
+def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False):
+    import threading
     if verbose:
         print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
     # Use subprocess with output shown live
     process = subprocess.Popen(
         cmd,
         cwd=cwd,
-        stdout=subprocess.PIPE if capture_output else subprocess.PIPE,
-        stderr=subprocess.STDOUT if capture_output else subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
     )
     output_lines = []
-    for line in process.stdout:
-        print(line, end='')  # print output live
-        if capture_output:
-            output_lines.append(line)
+    if show_spinner:
+        # Read stdout in background thread to prevent blocking
+        def drain_output():
+            for line in process.stdout:
+                output_lines.append(line)
+        reader = threading.Thread(target=drain_output)
+        reader.start()
+        # Show spinner while process runs
+        spinner = ['|', '/', '-', '\\']
+        spin_idx = 0
+        while process.poll() is None:
+            print(f"\r  {spinner[spin_idx]} syncing...", end='', flush=True)
+            spin_idx = (spin_idx + 1) % 4
+            time.sleep(0.2)
+        reader.join()
+        print("\r  done.          ")
+    else:
+        for line in process.stdout:
+            print(line, end='')
+            if capture_output:
+                output_lines.append(line)
     process.wait()
     if process.returncode != 0:
         raise subprocess.CalledProcessError(process.returncode, cmd)
@@ -135,6 +168,10 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     with open(pipeline_yaml_path, "r") as f:
         cfg = yaml.safe_load(f) or {}
 
+    # Initialize output directory for this run
+    run_dir = init_run_directory(pipeline_yaml_path)
+    print(f"{BOLD}Output directory: {run_dir}{RESET}")
+
     remote_username = cfg.get("user", {}).get("remote_username")
     remote_machine = cfg.get("user", {}).get("remote_machine_url")
     machine_file = cfg.get("user", {}).get("machine_file")
@@ -168,8 +205,8 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         partial_build = False
 
     if skip_build:
-        # If we skip the build, the remote tests directory will not be empty.
-        # We want to delete any subdirectory in there that corresponds to the
+        # If we skip the build, the remote tests directory may not be empty.
+        # We'd have to delete any subdirectory in there that corresponds to the
         # test configuration we are running.
         if dnb_sandbox_subdir:
             remote_tests_dir = f"{remote_path}/ifsnemo-build/ifsnemo/tests/{dnb_sandbox_subdir}"
@@ -239,7 +276,7 @@ psubmit:
             if temp_ref_dir.exists():
                 shutil.rmtree(temp_ref_dir)
 
-            print(f"Cloning {ref_url} (branch: {ref_branch}) to {temp_ref_dir}")
+            print(f"{BOLD}Fetching references: {ref_url} (branch: {ref_branch}) [{timestamp()}]{RESET}")
             run_command(["git", "clone", "--depth", "1", "--branch", ref_branch, ref_url, str(temp_ref_dir)], verbose=verbose)
 
             source_path = temp_ref_dir / ref_path_in_repo
@@ -260,9 +297,15 @@ psubmit:
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
 
-        # Download ifsnemo-compare into the local_path
+        # Copy local ifsnemo-compare into the local_path
+        script_dir = Path(__file__).resolve().parent
         subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-        subprocess.run(["git", "clone", "https://github.com/NickAbel/ifsnemo-compare.git", str(local_path) + "/ifsnemo-compare"], check=True)
+        rsync_compare_cmd = [
+            "rsync", "-a", "--exclude", ".git", "--exclude", "__pycache__", "--exclude", "*.log",
+            str(script_dir) + "/",
+            str(local_path) + "/ifsnemo-compare/"
+        ]
+        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
 
         ############################################
         # 2.1-2.3 Build and Install on remote
@@ -276,13 +319,13 @@ psubmit:
         print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
         conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
 
-        print(f"Syncing {local_path}/ to {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ ...")
+        print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
-            "rsync", "-rlpgoDcvvz", 
+            "rsync", "-rlpgoD", "--compress", "--info=progress2",
             str(local_path) + "/",
             f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
         ]
-        run_command(rsync_cmd, verbose=verbose)
+        run_command(rsync_cmd, verbose=verbose, show_spinner=True)
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
@@ -344,6 +387,7 @@ ln -sf {machine_file} machine.yaml
         conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
         # Run the build on compute node with sbatch job
+        print(f"{BOLD}Submitting build job to remote... [{timestamp()}]{RESET}")
         job_output = conn.run(f"cd {remote_path} && sbatch ifsnemo_build_dnb_b.sbatch", hide=True)
 
         # Wait until completion
@@ -357,83 +401,124 @@ ln -sf {machine_file} machine.yaml
         if "references" in cfg:
             conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
 
-        # Copy the comparison script into the test arena
-        conn.run(f"rsync -a {remote_path}/ifsnemo-build/ifsnemo-compare/compare_norms.py {remote_path}/ifsnemo-build/ifsnemo/")
-
     test_results = {}
-    results_file = "test_results.json"
+    results_file = run_dir / "test_results.json"
 
     # Explicitly handle the case where the user asked to skip run/compare
     if no_run:
-        print("Skipping run and compare stages (--no-run).")
+        print(f"{BOLD}Skipping run and compare stages (--no-run).{RESET}")
     else:
-        # If any of the test-parameter lists are empty, there are no tests to run.
+        # Load test definitions
+        print(f"{BOLD}Starting test execution... [{timestamp()}]{RESET}")
+        test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
+        test_defs = load_test_definitions(test_defs_path)
+
+        # === Build suites (run once per build) ===
+        default_build_suites = test_defs.get('default_build_suites', [])
+        requested_build_suites = ifs_cfg.get('build_suites', default_build_suites)
+
+        if requested_build_suites:
+            # Validate build suites exist
+            validate_test_definitions(test_defs, cfg, requested_build_suites, suite_type='build_suites')
+
+            # Build context for build suites
+            build_context = {
+                'remote_path': str(remote_path),
+                'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
+                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+                'gold_standard_tag': gold_standard_tag,
+            }
+
+            # Validate build context
+            build_required = test_defs.get('build_required_params', [])
+            missing = [p for p in build_required if p not in build_context]
+            if missing:
+                raise ValueError(f"Build context missing required params: {missing}")
+
+            test_results['build'] = {}
+            for suite_name in requested_build_suites:
+                suite_def = test_defs['build_suites'][suite_name]
+                sequence = suite_def.get('sequence', [])
+
+                for cmd_name in sequence:
+                    print(f"{BOLD}Running build suite {suite_name}:{cmd_name}...{RESET}")
+                    results = execute_test(
+                        conn, suite_name, suite_def, cmd_name, build_context,
+                        'build', verbose=verbose
+                    )
+                    test_results['build'].update(results)
+
+        # === Test suites (run per configuration) ===
         if not (resolution and steps and threads and ppn and nodes):
-            print("No test configurations found; skipping run and compare stages.")
+            print("No test configurations found; skipping per-config test suites.")
         else:
-            use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
-            loop_items = [resolution, steps, threads, ppn, nodes]
-            if use_gpu:
-                loop_items.append(gpus)
+            default_test_suites = test_defs.get('default_test_suites', [])
+            requested_test_suites = ifs_cfg.get('test_suites', default_test_suites)
 
-            # Ensure all elements are lists for zip
-            loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
+            if requested_test_suites:
+                # Validate test suites exist
+                validate_test_definitions(test_defs, cfg, requested_test_suites, suite_type='test_suites')
 
-            for items in zip(*loop_items):
+                use_gpu = str(ov.get('DNB_IFSNEMO_WITH_GPU', 'FALSE')).upper() == 'TRUE'
+                loop_items = [resolution, steps, threads, ppn, nodes]
                 if use_gpu:
-                    r, s, t, p, n, g = items
-                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
-                    gpu_flag = f" --gpus {quote(str(g))}"
-                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
-                else:
-                    r, s, t, p, n = items
-                    test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
-                    gpu_flag = ""
-                    print(f"running test remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
+                    loop_items.append(gpus)
 
-                test_results[test_id] = {}
+                # Ensure all elements are lists for zip
+                loop_items = [x if isinstance(x, list) else [x] for x in loop_items]
 
-                run_output_file = f"run_tests_{test_id}.log"
-                cmd_run = (
-                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-                    f"python3 compare_norms.py run-tests "
-                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests -r {quote(r)} -nt {quote(str(t))} "
-                    f"-p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
-                )
-                print(cmd_run)
-                result = conn.run(cmd_run, warn=True, pty=True)
-                with open(run_output_file, "w") as f:
-                    f.write(result.stdout)
-                if verbose:
-                    print(f"Output of run-tests saved to local file {run_output_file}")
-                test_results[test_id]["run_tests_passed"] = result.return_code == 0
-                test_results[test_id]["run_tests_output"] = run_output_file
+                for items in zip(*loop_items):
+                    # Unpack test parameters and build test_id
+                    if use_gpu:
+                        r, s, t, p, n, g = items
+                        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}_g{g}"
+                        gpu_flag = f" --gpus {quote(str(g))}"
+                    else:
+                        r, s, t, p, n = items
+                        test_id = f"r{r}_s{s}_t{t}_p{p}_n{n}"
+                        gpu_flag = ""
 
-                if use_gpu:
-                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}, g={g}...")
-                else:
-                    print(f"comparing tests remotely with r={r}, s={s}, t={t}, p={p}, n={n}...")
-                compare_output_file = f"compare_{test_id}.log"
-                cmd_cmp = (
-                    f"cd {quote(str(remote_path))}/ifsnemo-build/ifsnemo && "
-                    f"python3 compare_norms.py compare "
-                    f"-t {quote(dnb_sandbox_subdir)}/ -ot tests "
-                    f"-g {quote(gold_standard_tag)}/ -og references "
-                    f"-r {quote(r)} -nt {quote(str(t))} -p {quote(str(p))} -n {quote(str(n))} -s {quote(s)}{gpu_flag}"
-                )
-                print(cmd_cmp)
-                result = conn.run(cmd_cmp, warn=True, pty=True)
-                with open(compare_output_file, "w") as f:
-                    f.write(result.stdout)
-                if verbose:
-                    print(f"Output of compare saved to local file {compare_output_file}")
-                test_results[test_id]["compare_passed"] = result.return_code == 0
-                test_results[test_id]["compare_output"] = compare_output_file
+                    print(f"{BOLD}Processing test config: {test_id}{RESET}")
+                    test_results[test_id] = {}
+
+                    # Build context for template substitution
+                    test_context = {
+                        'remote_path': str(remote_path),
+                        'test_subdir': dnb_sandbox_subdir,
+                        'gold_standard_tag': gold_standard_tag,
+                        'resolution': r,
+                        'steps': s,
+                        'threads': t,
+                        'ppn': p,
+                        'nodes': n,
+                        'gpu_flag': gpu_flag,
+                    }
+                    if use_gpu:
+                        test_context['gpus'] = g
+
+                    # Validate test context
+                    test_required = test_defs.get('test_required_params', [])
+                    missing = [p for p in test_required if p not in test_context]
+                    if missing:
+                        raise ValueError(f"Test context missing required params: {missing}")
+
+                    # Execute each requested test suite
+                    for suite_name in requested_test_suites:
+                        suite_def = test_defs['test_suites'][suite_name]
+                        sequence = suite_def.get('sequence', [])
+
+                        for cmd_name in sequence:
+                            print(f"{BOLD}Running {suite_name}:{cmd_name}...{RESET}")
+                            results = execute_test(
+                                conn, suite_name, suite_def, cmd_name, test_context,
+                                test_id, verbose=verbose
+                            )
+                            test_results[test_id].update(results)
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
         json.dump(test_results, f, indent=4)
-    print(f"Test results written to {results_file} on the local machine.")
+    print(f"{BOLD}Test results written to {results_file} [{timestamp()}]{RESET}")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build and run ifs-nemo comparison pipeline.")

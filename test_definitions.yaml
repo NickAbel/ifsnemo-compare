@@ -1,0 +1,68 @@
+# Test suite definitions for ifsnemo-compare
+#
+# Two types of test suites:
+# - build_suites: Run once per build (compile-time checks)
+# - test_suites: Run per configuration (runtime checks, vary by resolution/threads/etc.)
+#
+# Pipeline YAML can override which suites to run via:
+#   ifsnemo_compare:
+#     build_suites: [bundle_validator]
+#     test_suites: [compare_norms]
+
+# Default suites when pipeline YAML doesn't specify
+default_build_suites:
+  - bundle_validator
+
+default_test_suites:
+  - compare_norms
+
+# Build suites - run once per build
+build_suites:
+  bundle_validator:
+    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/bundle_validator"
+    script: "python3 bundle_validator.py"
+    commands:
+      run-tests:
+        args: "{bundle_yaml} {build_dir} -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
+        output_prefix: "bundle_validate"
+      compare:
+        args: "-og {remote_path}/ifsnemo-build/ifsnemo/references/{gold_standard_tag}/bundle_validator -ot {remote_path}/ifsnemo-build/ifsnemo/tests/bundle_validator"
+        output_prefix: "bundle_compare"
+    sequence:
+      - run-tests
+      - compare
+
+# Test suites - run per configuration (resolution, threads, ppn, nodes, steps)
+test_suites:
+  compare_norms:
+    working_dir: "{remote_path}/ifsnemo-build/src/sandbox"
+    script: "python3 {remote_path}/ifsnemo-build/ifsnemo-compare/tests/compare_norms/compare_norms.py"
+    commands:
+      run-tests:
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        output_prefix: "run_tests"
+      compare:
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        output_prefix: "compare"
+    sequence:
+      - run-tests
+      - compare
+
+# Required parameters for build_suites
+build_required_params:
+  - remote_path
+  - bundle_yaml
+  - build_dir
+  - gold_standard_tag
+
+# Required parameters for test_suites
+test_required_params:
+  - remote_path
+  - test_subdir
+  - gold_standard_tag
+  - resolution
+  - threads
+  - ppn
+  - nodes
+  - steps
+  - gpu_flag

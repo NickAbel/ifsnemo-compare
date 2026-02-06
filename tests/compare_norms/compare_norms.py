@@ -134,15 +134,14 @@ def create_runs(subdirs, root, resolutions, nthreads, ppn, nnodes, nsteps, gpus,
             run_logfile
         )
         if os.path.isfile(run_logfilepath) and runtype == "ref":
-            print(f"[SKIP] {run_logdir} already contains a run log and we are running reference creation")
+            print(f"[SKIP] {run_logdir} already contains a run log and we are running {runtype} creation")
             continue
 
         print(f"Creating {run_logdir}")
         ensure_dir(run_logdir)
 
-        ## (A) Run the reference job
-        print(f"Running reference {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} gpus={gpus} nsteps={nsteps}\n")
-                # when building psubmit_cmd in compare_norms.py
+        print(f"Running {runtype} {subdir}:  res={res} nthreads={nthreads} ppn={ppn} nnodes={nnodes} gpus={gpus} nsteps={nsteps}\n")
+
         psubmit_cmd = [
             "psubmit.sh",
             "-t", str(nthreads), "-p", str(ppn), "-n", str(nnodes),
@@ -211,7 +210,6 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
                 print(f"[WARN] missing test dir {base_test}: skipping")
                 continue
 
-            #cmp_cmd = ["./cmp.sh", base_ref, base_test] # not currently 
             compare_cmd = ["./compare.sh", base_ref, base_test]
             result = subprocess.run(
                 compare_cmd,
