@@ -23,6 +23,10 @@ except ImportError:
     print("ERROR: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
+# ANSI formatting
+BOLD = '\033[1m'
+RESET = '\033[0m'
+
 
 class BundleConfig:
     """Configuration constants for the bundle comparer."""
@@ -43,6 +47,32 @@ class BundleConfig:
         'build_off': lambda proj: _has_build_flag_off(proj),
         'no_version': lambda proj: not proj.get('version') or str(proj.get('version', '')).strip() == ''
     }
+
+    # Placeholder for normalized paths
+    PATH_PLACEHOLDER = "{BUILD_ROOT}"
+
+
+def normalize_paths(data: Any, root_path: str) -> Any:
+    """
+    Recursively normalize paths in data by replacing root_path with placeholder.
+
+    Args:
+        data: JSON-like data structure (dict, list, or primitive)
+        root_path: The absolute path to replace with {BUILD_ROOT}
+
+    Returns:
+        Data with paths normalized
+    """
+    if isinstance(data, dict):
+        return {k: normalize_paths(v, root_path) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [normalize_paths(item, root_path) for item in data]
+    elif isinstance(data, str):
+        if root_path in data:
+            return data.replace(root_path, BundleConfig.PATH_PLACEHOLDER)
+        return data
+    else:
+        return data
 
 
 def _has_build_flag_off(project: Dict) -> bool:
@@ -422,66 +452,37 @@ def check_cmake_flags(bundle_data: Dict, build_dir: Path) -> Dict[str, Any]:
     }
 
 
-def main():
-    """Main entry point for the bundle comparer tool."""
-    parser = argparse.ArgumentParser(
-        description='Compare bundle.yml with CMake configuration files',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s bundle.yml build/
-  %(prog)s bundle.yml build/ -o results.json
-  %(prog)s bundle.yml build/ --pretty
-        """
-    )
+def run_validation(bundle_yaml: Path, build_dir: Path) -> Dict[str, Any]:
+    """
+    Run all validation routines and return results.
 
-    parser.add_argument(
-        'bundle_yaml',
-        type=Path,
-        help='Path to bundle.yml file'
-    )
+    Args:
+        bundle_yaml: Path to bundle.yml file
+        build_dir: Path to build directory
 
-    parser.add_argument(
-        'build_dir',
-        type=Path,
-        help='Path to build directory'
-    )
-
-    parser.add_argument(
-        '-o', '--output',
-        type=Path,
-        default=None,
-        help='Output JSON file (default: stdout)'
-    )
-
-    parser.add_argument(
-        '--pretty',
-        action='store_true',
-        help='Pretty-print JSON output'
-    )
-
-    args = parser.parse_args()
-
+    Returns:
+        Dictionary with validation results
+    """
     # Validate inputs
-    if not args.bundle_yaml.exists():
-        print(f"ERROR: Bundle YAML file not found: {args.bundle_yaml}", file=sys.stderr)
+    if not bundle_yaml.exists():
+        print(f"ERROR: Bundle YAML file not found: {bundle_yaml}", file=sys.stderr)
         sys.exit(1)
 
-    if not args.build_dir.exists():
-        print(f"ERROR: Build directory not found: {args.build_dir}", file=sys.stderr)
+    if not build_dir.exists():
+        print(f"ERROR: Build directory not found: {build_dir}", file=sys.stderr)
         sys.exit(1)
 
-    if not args.build_dir.is_dir():
-        print(f"ERROR: Build path is not a directory: {args.build_dir}", file=sys.stderr)
+    if not build_dir.is_dir():
+        print(f"ERROR: Build path is not a directory: {build_dir}", file=sys.stderr)
         sys.exit(1)
 
     # Load bundle.yml
-    bundle_data = load_yaml(args.bundle_yaml)
+    bundle_data = load_yaml(bundle_yaml)
 
     # Run all three routines
-    routine1_result = check_bundle_version(bundle_data, args.build_dir)
-    routine2_result = check_project_versions(bundle_data, args.build_dir)
-    routine3_result = check_cmake_flags(bundle_data, args.build_dir)
+    routine1_result = check_bundle_version(bundle_data, build_dir)
+    routine2_result = check_project_versions(bundle_data, build_dir)
+    routine3_result = check_cmake_flags(bundle_data, build_dir)
 
     # Determine overall pass/fail
     all_passed = (
@@ -490,17 +491,24 @@ Examples:
         routine3_result['passed']
     )
 
-    # Build output JSON
-    output = {
+    return {
         'overall_passed': all_passed,
-        'routine1_bundle_version': routine1_result,
-        'routine2_project_versions': routine2_result,
-        'routine3_cmake_flags': routine3_result
+        'bundle_version': routine1_result,
+        'project_versions': routine2_result,
+        'cmake_flags': routine3_result
     }
 
-    # Write output
-    json_kwargs = {'indent': 2} if args.pretty else {}
-    json_output = json.dumps(output, **json_kwargs)
+
+def cmd_validate(args):
+    """Run validation (original behavior)."""
+    output = run_validation(args.bundle_yaml, args.build_dir)
+
+    # Normalize if requested
+    if args.normalize:
+        root_path = str(args.build_dir.resolve().parent)
+        output = normalize_paths(output, root_path)
+
+    json_output = json.dumps(output)
 
     if args.output:
         try:
@@ -512,8 +520,112 @@ Examples:
     else:
         print(json_output)
 
-    # Return appropriate exit code
-    sys.exit(0 if all_passed else 1)
+    sys.exit(0 if output['overall_passed'] else 1)
+
+
+def cmd_create_refs(args):
+    """Run validation and save normalized output as reference."""
+    output = run_validation(args.bundle_yaml, args.build_dir)
+
+    # Normalize paths using build_dir's parent as root
+    root_path = str(args.build_dir.resolve().parent)
+    output = normalize_paths(output, root_path)
+
+    # Save to output directory
+    output_path = Path(args.output_dir) / "bundle_validation.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    json_output = json.dumps(output)
+    output_path.write_text(json_output)
+    print(f"Reference saved to: {output_path}")
+
+
+def cmd_run_tests(args):
+    """Run validation and save normalized output as test result."""
+    output = run_validation(args.bundle_yaml, args.build_dir)
+
+    # Normalize paths using build_dir's parent as root
+    root_path = str(args.build_dir.resolve().parent)
+    output = normalize_paths(output, root_path)
+
+    # Save to output directory
+    output_path = Path(args.output_dir) / "bundle_validation.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    json_output = json.dumps(output)
+    output_path.write_text(json_output)
+    print(f"Test result saved to: {output_path}")
+
+
+def cmd_compare(args):
+    """Compare test result against reference."""
+    ref_path = Path(args.ref_dir) / "bundle_validation.json"
+    test_path = Path(args.test_dir) / "bundle_validation.json"
+
+    if not ref_path.exists():
+        print(f"ERROR: Reference file not found: {ref_path}", file=sys.stderr)
+        sys.exit(1)
+
+    if not test_path.exists():
+        print(f"ERROR: Test file not found: {test_path}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(ref_path) as f:
+        ref_data = json.load(f)
+    with open(test_path) as f:
+        test_data = json.load(f)
+
+    # Compare the two
+    if ref_data == test_data:
+        print(f"{BOLD}bundle_validator: MATCH:{RESET} Test output matches reference")
+    else:
+        print(f"{BOLD}bundle_validator: DIFF:{RESET} Test output differs from reference")
+        import difflib
+        ref_str = json.dumps(ref_data, indent=2, sort_keys=True).splitlines(keepends=True)
+        test_str = json.dumps(test_data, indent=2, sort_keys=True).splitlines(keepends=True)
+        diff = difflib.unified_diff(ref_str, test_str, fromfile='reference', tofile='test')
+        print(''.join(diff))
+    sys.exit(0)
+
+
+def main():
+    """Main entry point for the bundle validator tool."""
+    parser = argparse.ArgumentParser(
+        description='Bundle YAML vs CMake configuration validation tool',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    subparsers = parser.add_subparsers(dest='command', required=True)
+
+    # validate subcommand (original behavior)
+    p_validate = subparsers.add_parser('validate', help='Run validation checks')
+    p_validate.add_argument('bundle_yaml', type=Path, help='Path to bundle.yml file')
+    p_validate.add_argument('build_dir', type=Path, help='Path to build directory')
+    p_validate.add_argument('-o', '--output', type=Path, help='Output JSON file (default: stdout)')
+    p_validate.add_argument('--normalize', action='store_true', help='Normalize machine-specific paths')
+    p_validate.set_defaults(func=cmd_validate)
+
+    # create-refs subcommand
+    p_create = subparsers.add_parser('create-refs', help='Run validation and save as reference')
+    p_create.add_argument('bundle_yaml', type=Path, help='Path to bundle.yml file')
+    p_create.add_argument('build_dir', type=Path, help='Path to build directory')
+    p_create.add_argument('-og', '--output-dir', required=True, help='Output directory for reference')
+    p_create.set_defaults(func=cmd_create_refs)
+
+    # run-tests subcommand
+    p_run = subparsers.add_parser('run-tests', help='Run validation and save as test result')
+    p_run.add_argument('bundle_yaml', type=Path, help='Path to bundle.yml file')
+    p_run.add_argument('build_dir', type=Path, help='Path to build directory')
+    p_run.add_argument('-ot', '--output-dir', required=True, help='Output directory for test result')
+    p_run.set_defaults(func=cmd_run_tests)
+
+    # compare subcommand
+    p_compare = subparsers.add_parser('compare', help='Compare test result against reference')
+    p_compare.add_argument('-og', '--ref-dir', required=True, help='Reference directory')
+    p_compare.add_argument('-ot', '--test-dir', required=True, help='Test result directory')
+    p_compare.set_defaults(func=cmd_compare)
+
+    args = parser.parse_args()
+    args.func(args)
 
 
 if __name__ == '__main__':

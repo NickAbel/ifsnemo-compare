@@ -220,6 +220,11 @@ psubmit:
 # IFS-NEMO comparison settings
 ifsnemo_compare:
   gold_standard_tag: string     # Reference tag (e.g., "ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP") (see https://github.com/kellekai/bsc-ndse/tree/main/references for all available tags)
+
+  # Test suite selection (optional - defaults defined in test_definitions.yaml)
+  build_suites: []            # Build-time test suites to run (e.g., ["bundle_validator"])
+  test_suites: []             # Runtime test suites to run (e.g., ["compare_norms"])
+
   # Test configuration arrays (the five arrays below all must have matching lengths)
   resolution: []               # Array of resolutions (e.g., ["tco79-eORCA1", "tco399-eORCA025"])
   steps: []                   # Array of steps (e.g., ["d1", "d1"])
@@ -234,7 +239,9 @@ references:
   path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
 ```
 
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-20250521-nabel.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testi[...]
+For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](https://github.com/NickAbel/ifsnemo-compare/blob/7f0e0a34a084b661914d796a0c9df109a288ea57/pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
+
+> Note: The available test suites are defined in `test_definitions.yaml`. If `build_suites` or `test_suites` are not specified in your pipeline.yaml, the defaults from `test_definitions.yaml` will be used. This ensures backwards compatibility with existing pipeline.yaml files.
 
 ---
 
@@ -263,23 +270,39 @@ The pipeline script (`pipeline.py`) accepts several optional arguments to change
 - `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: `pipeline.yaml`)
 - `-s, --skip-build`: Skip the build and install steps, only run tests and compare
 - `--no-run`: Do the build/install but skip the run and compare stages
+- `--partial-build`: Use incremental rebuild instead of full build (only recompiles changed sources)
 
 Example usage:
 ```bash
 python3 pipeline.py --yaml custom-pipeline.yaml  # Use a custom config file
 python3 pipeline.py --skip-build                # Skip build steps, only run tests
 python3 pipeline.py --no-run                    # Only do build/install, no tests
+python3 pipeline.py --partial-build             # Incremental rebuild only
 ```
 
 Notes:
 - `--skip-build` is useful when you have already built and installed artifacts on the remote and want to re-run tests only (the script will clean remote test directories for the configured sandbox).
 - `--no-run` is useful for producing the build/install artifacts and uploading them without executing test runs; the output JSON (test_results.json) will reflect that no runs were executed.
+- `--partial-build` is intended for when only source code changes have occurred and a full bundle rebuild is not needed. If in doubt, run a full build instead.
 
 ### 6.2 Using `compare_norms.py` tool directly at the command line
 
 The `compare_norms.py` helper provides three subcommands to manage reference creation, test runs, and comparisons. This tool is useful on the remote/login node where `psubmit.sh` (or `psubmit`) and `yq` are available.
 
-After running the install portion of the pipeline, the `compare_norms.py` will have automatically located into `<paths:remote_project_dir>/ifsnemo-build/src/sandbox` on the remote node, in the same directory as the `references` directory, and the `cmp.sh` and `compare.sh` tools.
+After running the install portion of the pipeline, `compare_norms.py` and its companion scripts (`cmp.sh`, `compare.sh`) are located at:
+```
+<paths:remote_project_dir>/ifsnemo-build/ifsnemo-compare/tests/compare_norms/
+```
+
+For standalone use, you can either:
+- Call with full path: `python3 /path/to/ifsnemo-compare/tests/compare_norms/compare_norms.py`
+- Or symlink into the sandbox for convenience:
+  ```bash
+  cd <paths:remote_project_dir>/ifsnemo-build/src/sandbox
+  ln -s ../../ifsnemo-compare/tests/compare_norms/compare_norms.py .
+  ln -s ../../ifsnemo-compare/tests/compare_norms/compare.sh .
+  ln -s ../../ifsnemo-compare/tests/compare_norms/cmp.sh .
+  ```
 
 General usage:
 ```bash
@@ -394,28 +417,43 @@ Notes and tips:
 
 ## 7. Interpreting the Results
 
-After the pipeline successfully completes, you will find several new files in your `ifsnemo-compare` directory. This section explains what these files are and how to interpret them.
+After the pipeline completes, results are placed in a timestamped subdirectory within `results/` in your `ifsnemo-compare` directory:
+
+```
+results/<YYYYMMDD>_<HHMMSS>__<pipeline-filename>/
+```
+
+For example: `results/20260122_143052__pipeline.develop.mn5-gpp/`
 
 ### 7.1. Output Files
 
-The primary outputs of the pipeline are:
+Within this results directory, you will find:
 
--   **`test_results.json`**: This file contains a summary of the test execution. For each test case, it indicates whether the `run-tests` and `compare` steps passed or failed.
--   **`run_tests_*.log`**: These are the log files generated during the execution of the tests on the remote machine. There will be one for each test configuration.
--   **`compare_*.log`**: These log files contain the output of the comparison between your test results and the gold standard.
+-   **`test_results.json`**: Summary of all test executions, indicating pass/fail status for each step.
+-   **`{suite}_{command}_{test_id}.log`**: Detailed log files for each test command. For example:
+    - `bundle_validator_bundle_validate_build.log` - build suite validation
+    - `bundle_validator_bundle_compare_build.log` - build suite comparison
+    - `compare_norms_run_tests_*.log` - runtime test execution
+    - `compare_norms_compare_*.log` - runtime test comparison
 
 ### 7.2. Analyzing `test_results.json`
 
-The `test_results.json` file provides a high-level overview of the test outcomes. A `true` value for `run_tests_passed` and `compare_passed` indicates a successful run and comparison for that specific test configuration. If any of these are `false`, it signifies a failure that requires further investigation.
+The `test_results.json` file provides a high-level overview of the test outcomes. Results are grouped by test configuration (or `"build"` for build-time tests). A `true` value for `*_passed` indicates success; `false` indicates failure requiring investigation.
 
-Example `test_results.json` entry:
+Example `test_results.json`:
 ```json
 {
-    "r_tco79-eORCA1_s_d1_t_4_p_28_n_1": {
+    "build": {
+        "bundle_validate_passed": true,
+        "bundle_validate_output": "results/{results_dir}/bundle_validator_bundle_validate_build.log",
+        "bundle_compare_passed": true,
+        "bundle_compare_output": "results/{results_dir}/bundle_validator_bundle_compare_build.log"
+    },
+    "rtco79-eORCA1_sd1_t4_p28_n1": {
         "run_tests_passed": true,
-        "run_tests_output": "run_tests_r_tco79-eORCA1_s_d1_t_4_p_28_n_1.log",
+        "run_tests_output": "results/{results_dir}/compare_norms_run_tests_rtco79-eORCA1_sd1_t4_p28_n1.log",
         "compare_passed": true,
-        "compare_output": "compare_r_tco79-eORCA1_s_d1_t_4_p_28_n_1.log"
+        "compare_output": "results/{results_dir}/compare_norms_compare_rtco79-eORCA1_sd1_t4_p28_n1.log"
     }
 }
 ```
@@ -424,7 +462,120 @@ Example `test_results.json` entry:
 
 For any failed steps, the corresponding `.log` files are essential for debugging.
 
--   **`run_tests_*.log`**: Check this file for errors related to the model execution itself. Search for error messages or stack traces that could indicate what went wrong during the simulation.
--   **`compare_*.log`**: This file contains the `diff` output from the comparison script. It will show the specific differences between the output of your test run and the gold standard. This is the key to understanding why the regression test failed.
+-   **`{suite}_run_tests_*.log`**: Check these files for errors related to test execution. Search for error messages or stack traces that could indicate what went wrong.
+-   **`{suite}_compare_*.log`**: These files contain the comparison output. For `compare_norms`, this shows differences between your test run and the gold standard. For `bundle_validator`, this shows configuration differences.
 
 By examining these files, you can diagnose the root cause of any test failures and determine the next steps for your development work.
+
+---
+
+## 8. How to Add a Test to the Test Suite
+
+This section explains how to add a new test to the ifsnemo-compare framework.
+
+### 8.1. Directory Structure
+
+For a new test called `my_test`, create a directory under `tests/`:
+
+```
+tests/my_test/
+├── my_test.py          # Main test script
+├── helper_script.sh    # Optional helper scripts
+└── ...
+```
+
+> **Important:** Comparison standards (reference data) do NOT belong in these folders unless they are universal across all configurations. References should be stored in the repository pointed to by the `references` section in your `pipeline.yaml`. This can be any git repository.
+
+### 8.2. Adding to test_definitions.yaml
+
+Add your test under the appropriate section in `test_definitions.yaml`:
+
+- **`build_suites`**: For tests that run once per build, independent of runtime parameters
+- **`test_suites`**: For tests that need to run for each combination of resolution/threads/ppn/nodes/steps
+
+Example entry:
+
+```yaml
+test_suites:
+  my_test:
+    working_dir: "{remote_path}/ifsnemo-build/src/sandbox"
+    script: "python3 {remote_path}/ifsnemo-build/ifsnemo-compare/tests/my_test/my_test.py"
+    commands:
+      run-tests:
+        args: "-t {test_subdir}/ -o {remote_path}/ifsnemo-build/ifsnemo/tests"
+        output_prefix: "run_tests"
+      compare:
+        args: "-g {gold_standard_tag}/ -t {test_subdir}/"
+        output_prefix: "compare"
+    sequence:
+      - run-tests
+      - compare
+```
+
+### 8.3. Configuration Options Explained
+
+| Option | Description |
+|--------|-------------|
+| `working_dir` | Directory from which the script is executed. Template variables like `{remote_path}` are expanded. |
+| `script` | The command to invoke, e.g., `python3 /path/to/script.py`. Template variables are expanded. |
+| `commands` | Named commands with their arguments. Each command becomes a subcommand to your script. |
+| `commands.{name}.args` | Arguments passed to the script. Template variables are expanded. |
+| `commands.{name}.output_prefix` | Prefix for the log filename (e.g., `run_tests` → `my_test_run_tests_*.log`). |
+| `sequence` | Order in which commands are executed. |
+
+### 8.4. Example: Multiple Commands
+
+If your test script supports multiple operations like `my_test.py abc -a -b -c` and `my_test.py xyz -x -y -z`:
+
+```yaml
+commands:
+  abc:
+    args: "-a -b -c"
+    output_prefix: "abc"
+  xyz:
+    args: "-x -y -z"
+    output_prefix: "xyz"
+sequence:
+  - abc
+  - xyz
+```
+
+### 8.5. Default Suites
+
+If your test should run by default (when `build_suites` or `test_suites` is not specified in the pipeline.yaml), add it to the respective default list:
+
+```yaml
+default_build_suites:
+  - bundle_validator
+  - my_new_build_test    # Add here for build-time tests
+
+default_test_suites:
+  - compare_norms
+  - my_new_runtime_test  # Add here for runtime tests
+```
+
+> **Caution:** Legacy pipeline.yaml files (before February 2026) do not specify test suites, so they will run all default suites. Be careful when adding new defaults.
+
+### 8.6. Required Parameters
+
+The `build_required_params` and `test_required_params` lists specify which context variables must be available:
+
+```yaml
+build_required_params:
+  - remote_path
+  - bundle_yaml
+  - build_dir
+  - gold_standard_tag
+
+test_required_params:
+  - remote_path
+  - test_subdir
+  - gold_standard_tag
+  - resolution
+  - threads
+  - ppn
+  - nodes
+  - steps
+```
+
+If your test needs additional parameters, add them to `build_required_params` or `test_required_params` in `test_definitions.yaml` and update `pipeline.py` to provide them in the context.
