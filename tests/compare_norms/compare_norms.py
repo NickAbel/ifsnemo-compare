@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-import os, time
+import os, sys, time
+import glob
 import shutil
-import sys
 import argparse
 import itertools
 import subprocess
 import tempfile
+
+# stat_tests lives one directory up under tests/
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import stat_tests
 
 #Section 1: File+Dir Utilities
 
@@ -33,6 +37,40 @@ def copy_results(jobid, ref_dir):
         if os.path.isfile(src_path):
             print(f"Copying file: {src_path} -> {dst_path}")
             shutil.copy2(src_path, dst_path)
+
+def parse_yaml_arrays(yaml_path: str) -> dict:
+    """
+    Extract array-valued variables from the model: section of a result YAML.
+    Returns {varname: [float, …]}; scalar fields are skipped.
+    """
+    arrays = {}
+    in_model = False
+    with open(yaml_path) as f:
+        for raw in f:
+            line = raw.rstrip()
+            if line == "model:":
+                in_model = True
+                continue
+            if not in_model:
+                continue
+            if line.strip() == "timing:":
+                break
+            colon = line.find(": ")
+            if colon == -1:
+                continue
+            varname = line[:colon].strip()
+            rest    = line[colon + 2:].strip()
+            if not (rest.startswith("[") and rest.endswith("]")):
+                continue  # scalar — skip
+            inner = rest[1:-1].strip()
+            if not inner:
+                continue
+            try:
+                arrays[varname] = [float(v.strip()) for v in inner.split(",")]
+            except ValueError:
+                continue
+    return arrays
+
 
 #Section 2: Job Runner
 
@@ -221,6 +259,48 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
             print("stderr:", result.stderr)
 
 
+def stat_test(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps, gpus):
+    """
+    For each parameter combination, parse ref and test result YAMLs and
+    hand the raw arrays to stat_tests.run() for statistical analysis.
+    """
+    for test in test_subdirs:
+        for res, nt, p, nn, g, nst in itertools.product(resolutions, nthreads, ppn, nnodes, gpus, nsteps):
+
+            ref_parts = [ref_root[0], ref_subdir, f"{res}", f"nthreads{nt}", f"ppn{p}", f"nnodes{nn}"]
+            if g != 0:
+                ref_parts.append(f"gpus{g}")
+            ref_parts.append(f"nsteps{nst}")
+            base_ref = os.path.join(*ref_parts, "results")
+
+            test_parts = [test_root[0], test, f"{res}", f"nthreads{nt}", f"ppn{p}", f"nnodes{nn}"]
+            if g != 0:
+                test_parts.append(f"gpus{g}")
+            test_parts.append(f"nsteps{nst}")
+            base_test = os.path.join(*test_parts, "results")
+
+            for label, base in (("ref", base_ref), ("test", base_test)):
+                if not os.path.isdir(base):
+                    print(f"[WARN] missing {label} dir {base}: skipping")
+                    break
+            else:
+                ref_yamls  = glob.glob(os.path.join(base_ref,  "result.*.yaml"))
+                test_yamls = glob.glob(os.path.join(base_test, "result.*.yaml"))
+
+                if len(ref_yamls) != 1:
+                    print(f"[WARN] expected 1 ref YAML in {base_ref}, found {len(ref_yamls)}: skipping")
+                    continue
+                if len(test_yamls) != 1:
+                    print(f"[WARN] expected 1 test YAML in {base_test}, found {len(test_yamls)}: skipping")
+                    continue
+
+                print(f"\n=== stat-test: {ref_subdir} vs {test} | {res} nt={nt} ppn={p} nn={nn} g={g} nst={nst} ===")
+                ref_arrays  = parse_yaml_arrays(ref_yamls[0])
+                test_arrays = parse_yaml_arrays(test_yamls[0])
+                results     = stat_tests.run(ref_arrays, test_arrays)
+                stat_tests.report(results)
+
+
 #Section 4: CLI Glue
 
 def parse_args():
@@ -294,6 +374,28 @@ def parse_args():
     p3.add_argument("--gpus", nargs="+", type=int, default=[0],
                     help="Number of gpus")
     p3.set_defaults(func=lambda args: compare(
+        args.ref_subdir, args.test_subdirs,
+        args.output_refdir, args.output_testdir,
+        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus
+    ))
+
+    # stat-test
+    p4 = subs.add_parser("stat-test", help="Run statistical tests (effect-size, KS) on ref vs. test arrays")
+    p4.add_argument("-g", "--ref-subdir", required=True,
+                    help="Which reference binary to compare against")
+    p4.add_argument("-t", "--test-subdirs", nargs="+", required=True,
+                    help="One or more test binary directories")
+    p4.add_argument("-og", "--output-refdir", nargs=1, required=True,
+                    help="Directory where references are stored")
+    p4.add_argument("-ot", "--output-testdir", nargs=1, required=True,
+                    help="Directory where test result outputs are stored")
+    p4.add_argument("-r", "--resolutions", nargs="+", default=["tco79-eORCA1"])
+    p4.add_argument("-nt", "--nthreads", nargs="+", type=int, default=[1])
+    p4.add_argument("-p", "--ppn", nargs="+", type=int, default=[1])
+    p4.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
+    p4.add_argument("-s", "--nsteps", nargs="+", default=["d1"])
+    p4.add_argument("--gpus", nargs="+", type=int, default=[0])
+    p4.set_defaults(func=lambda args: stat_test(
         args.ref_subdir, args.test_subdirs,
         args.output_refdir, args.output_testdir,
         args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus
