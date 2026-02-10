@@ -188,6 +188,16 @@ def run(
             )
             continue
 
+        if len(ref_arr) + len(test_arr) <= 2:
+            results[varname] = StatResult(
+                varname=varname, n_ref=len(ref_arr), n_test=len(test_arr),
+                mean_ref=_mean(ref_arr), mean_test=_mean(test_arr),
+                sigma_pooled=_nan, effect_size=_nan, effect_passed=False,
+                skipped=True,
+                skip_reason=f"insufficient data for pooled std (n1 + n2 = {len(ref_arr) + len(test_arr)} <= 2)",
+            )
+            continue
+
         results[varname] = _test_var(varname, ref_arr, test_arr)
 
     return results
@@ -201,12 +211,23 @@ def report(results: dict[str, StatResult]) -> None:
             print(f"    [SKIP] {r.skip_reason}")
             continue
 
-        effect_label = "pass" if r.effect_passed else "WARN"
-        print(
-            f"    effect-size: d={r.effect_size:.4e}"
-            f"  sigma_pooled={r.sigma_pooled:.4e}"
-            f"  [{effect_label}]"
-        )
+        if math.isnan(r.effect_size):
+            # sigma_pooled == 0: both groups are constant
+            if r.mean_ref == r.mean_test:
+                effect_str = "d=nan [degenerate: sigma_pooled=0, means identical — pass]"
+            else:
+                effect_str = (
+                    f"d=nan [degenerate: sigma_pooled=0, "
+                    f"means differ ({r.mean_ref:.4e} vs {r.mean_test:.4e}) — WARN]"
+                )
+        else:
+            effect_label = "pass" if r.effect_passed else "WARN"
+            effect_str   = (
+                f"d={r.effect_size:.4e}"
+                f"  sigma_pooled={r.sigma_pooled:.4e}"
+                f"  [{effect_label}]"
+            )
+        print(f"    effect-size: {effect_str}")
 
         if r.ks_stat is not None:
             ks_label = "pass" if r.ks_passed else "WARN"
