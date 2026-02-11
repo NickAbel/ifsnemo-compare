@@ -7,7 +7,9 @@ differences of prognostic 2-norms between diverging runs.
 import re
 import sys
 import os
+import glob as _glob
 import argparse
+from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
@@ -17,12 +19,24 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from compare_norms import parse_yaml_arrays
 
 _p = argparse.ArgumentParser(description="Plot norm comparison between two IFS-NEMO result YAMLs")
-_p.add_argument('ref_yaml',  help="Path to reference result YAML")
-_p.add_argument('test_yaml', help="Path to test result YAML")
+_p.add_argument('ref_dir',     help="Reference results directory (containing result.*.yaml)")
+_p.add_argument('test_dir',    help="Test results directory (containing result.*.yaml)")
+_p.add_argument('--output-dir', default='.', dest='output_dir',
+                help="Directory in which to save output PNG files (default: current dir)")
 _args = _p.parse_args()
 
-ref_arrays  = parse_yaml_arrays(_args.ref_yaml)
-test_arrays = parse_yaml_arrays(_args.test_yaml)
+_output_dir = _args.output_dir
+os.makedirs(_output_dir, exist_ok=True)
+_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+def _find_yaml(d):
+    hits = _glob.glob(os.path.join(d, 'result.*.yaml'))
+    if len(hits) != 1:
+        sys.exit(f"Expected exactly 1 result YAML in {d}, found {len(hits)}")
+    return hits[0]
+
+ref_arrays  = parse_yaml_arrays(_find_yaml(_args.ref_dir))
+test_arrays = parse_yaml_arrays(_find_yaml(_args.test_dir))
 
 # Build paired variables dict: {varname: [(ref_val, test_val), …]}
 # Zipped element-wise; arrays of different lengths are truncated to the shorter.
@@ -467,10 +481,12 @@ fig.text(0.5, -0.003,
          fontsize=9, color=MUTED_TEXT, ha='center', fontfamily='monospace',
          fontstyle='italic')
 
-plt.savefig('validation_dashboard.png', dpi=150, facecolor=BG_COLOR,
+_dashboard_png = os.path.join(_output_dir, f'validation_dashboard_{_ts}.png')
+plt.savefig(_dashboard_png, dpi=150, facecolor=BG_COLOR,
             bbox_inches='tight', pad_inches=0.2)
 plt.close()
-print("\nSaved validation_dashboard.png")
+print(f"\nSaved {_dashboard_png}")
+print(f"ARTIFACT: {_dashboard_png}")
 
 # --- SECOND FIGURE: Summary heatmap ---
 # Variable x Timestep heatmap of log10(relative diff)
@@ -610,7 +626,9 @@ if vars_main:
                   '* max of relative differences across mean/min/max stats at each timestep',
                   fontsize=9, color=MUTED_TEXT, ha='center', fontfamily='monospace',
                   fontstyle='italic')
-    plt.savefig('validation_heatmap.png', dpi=150, facecolor=BG_COLOR,
+    _heatmap_png = os.path.join(_output_dir, f'validation_heatmap_{_ts}.png')
+    plt.savefig(_heatmap_png, dpi=150, facecolor=BG_COLOR,
                 bbox_inches='tight', pad_inches=0.2)
     plt.close()
-    print("Saved validation_heatmap.png")
+    print(f"Saved {_heatmap_png}")
+    print(f"ARTIFACT: {_heatmap_png}")

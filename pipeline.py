@@ -21,6 +21,29 @@ from test_runner import (
 BOLD = '\033[1m'
 RESET = '\033[0m'
 
+
+def collect_artifacts(conn, log_path: Path, local_dir: Path) -> list:
+    """
+    Scan a local log file for 'ARTIFACT: <remote_path>' lines and download
+    each file from the remote host into local_dir.  Returns list of local paths.
+    """
+    collected = []
+    try:
+        text = log_path.read_text()
+    except OSError:
+        return collected
+    for line in text.splitlines():
+        if line.startswith("ARTIFACT:"):
+            remote = line.split(":", 1)[1].strip()
+            local_dest = local_dir / Path(remote).name
+            try:
+                conn.get(remote, local=str(local_dest))
+                print(f"  Artifact fetched: {local_dest}")
+                collected.append(str(local_dest))
+            except Exception as exc:
+                print(f"  [WARN] Could not fetch artifact {remote}: {exc}")
+    return collected
+
 def timestamp():
     """Return current timestamp in date -d style format."""
     return datetime.now().strftime("%a %b %d %H:%M:%S %Y")
@@ -519,6 +542,10 @@ ln -sf {machine_file} machine.yaml
                                 pre_cmd=machine_pre_commands.get(cmd_name, ''),
                             )
                             test_results[test_id].update(results)
+                            log_path = Path(results.get(
+                                next(k for k in results if k.endswith('_output')), ''))
+                            if log_path.exists():
+                                collect_artifacts(conn, log_path, run_dir)
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
