@@ -409,6 +409,37 @@ python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GP
 ```
 - Behavior: for each parameter combination, the tool looks for the reference results directory and the test results directory and then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
 
+4) `stat-test`
+- Purpose: run statistical tests on the raw norm arrays extracted from stored ref and test result YAMLs. Requires no job submission — it operates entirely on already-stored results. Two tests are applied per variable:
+  - **Effect-size test**: `d = (mean_ref − mean_test) / sigma_pooled` where `sigma_pooled` is the pooled standard deviation of both groups. Warns when `|d| > EFFECT_SIZE_THRESHOLD` (default `1.0`).
+  - **KS test**: two-sample Kolmogorov-Smirnov test (`scipy.stats.ks_2samp`). Warns when `p < KS_PVAL_THRESHOLD` (default `0.05`).
+- Key options: identical to `compare` — same `-g`, `-t`, `-og`, `-ot`, `-r`, `-nt`, `-p`, `-n`, `-s`, `--gpus` arguments.
+- Example:
+```bash
+python3 compare_norms.py stat-test \
+  -g /path/to/ref/bin/dir \
+  -t /path/to/test/bin/dir \
+  -og /path/to/output_refs \
+  -ot /path/to/output_tests \
+  -r tco79-eORCA1 \
+  -nt 4 \
+  -p 28 \
+  -n 1 \
+  -s d1
+```
+- Pipeline-Following Example (If Using `pipeline-20250521-nabel.yaml`):
+```bash
+#TCO79 1day
+python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+#TCO399 1day
+python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+#TCO1279 1day
+python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+#TCO2559 1day
+python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
+```
+- Behavior: for each parameter combination, locates the ref and test result YAMLs, parses all array-valued variables from the `model:` section, and prints per-variable effect-size and KS results. No job submission or filesystem writes are performed. Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or zero pooled standard deviation are reported as `[SKIP]` or `[degenerate]` with an explanation.
+
 Notes and tips:
 - `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
