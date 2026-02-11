@@ -44,9 +44,21 @@ test_suites:
       compare:
         args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
         output_prefix: "compare"
+      stat-test:
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        output_prefix: "stat_test"
     sequence:
       - run-tests
       - compare
+      - stat-test
+
+# Machine-specific pre-commands, keyed by machine file stem then by command name.
+# Looked up by pipeline.py using the machine_file from the pipeline YAML.
+machine_pre_commands:
+  dnb-mn5-gpp:
+    stat-test: "module load EB/apps SciPy-bundle/2025.07-gfbf-2025b"
+  dnb-mn5-acc:
+    stat-test: "module load EB/apps SciPy-bundle/2025.07-gfbf-2025b"
 
 # Required parameters for build_suites
 build_required_params:
