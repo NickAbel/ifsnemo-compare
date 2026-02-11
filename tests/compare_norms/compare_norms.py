@@ -61,7 +61,11 @@ def parse_yaml_arrays(yaml_path: str) -> dict:
             varname = line[:colon].strip()
             rest    = line[colon + 2:].strip()
             if not (rest.startswith("[") and rest.endswith("]")):
-                continue  # scalar — skip
+                try:
+                    arrays[varname] = [float(rest)]
+                except ValueError:
+                    pass  # non-numeric scalar — skip
+                continue
             inner = rest[1:-1].strip()
             if not inner:
                 continue
