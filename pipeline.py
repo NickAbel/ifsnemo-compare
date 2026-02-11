@@ -413,6 +413,10 @@ ln -sf {machine_file} machine.yaml
         test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
         test_defs = load_test_definitions(test_defs_path)
 
+        # Derive machine key from machine_file stem (e.g. "dnb-mn5-gpp.yaml" -> "dnb-mn5-gpp")
+        machine_key = Path(machine_file).stem if machine_file else ''
+        machine_pre_commands = test_defs.get('machine_pre_commands', {}).get(machine_key, {})
+
         # === Build suites (run once per build) ===
         default_build_suites = test_defs.get('default_build_suites', [])
         requested_build_suites = ifs_cfg.get('build_suites', default_build_suites)
@@ -511,7 +515,8 @@ ln -sf {machine_file} machine.yaml
                             print(f"{BOLD}Running {suite_name}:{cmd_name}...{RESET}")
                             results = execute_test(
                                 conn, suite_name, suite_def, cmd_name, test_context,
-                                test_id, verbose=verbose
+                                test_id, verbose=verbose,
+                                pre_cmd=machine_pre_commands.get(cmd_name, ''),
                             )
                             test_results[test_id].update(results)
 
