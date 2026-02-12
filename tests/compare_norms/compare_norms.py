@@ -305,7 +305,7 @@ def stat_test(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthrea
                 stat_tests.report(results)
 
 
-def parse_and_plot_run(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps, gpus):
+def parse_and_plot_run(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads, ppn, nnodes, nsteps, gpus, annotation=''):
     """
     For each parameter combination, invoke parse_and_plot.py with the ref and
     test results directories.  PNGs are saved into the test results directory;
@@ -335,6 +335,8 @@ def parse_and_plot_run(ref_subdir, test_subdirs, ref_root, test_root, resolution
             else:
                 print(f"\n=== parse-and-plot: {ref_subdir} vs {test} | {res} nt={nt} ppn={p} nn={nn} g={g} nst={nst} ===")
                 cmd = [sys.executable, script, base_ref, base_test, "--output-dir", base_test]
+                if annotation:
+                    cmd += ["--annotation", annotation]
                 result = subprocess.run(cmd, text=True)
                 if result.returncode != 0:
                     print(f"[WARN] parse_and_plot.py exited {result.returncode}", file=sys.stderr)
@@ -456,10 +458,13 @@ def parse_args():
     p5.add_argument("-n", "--nnodes", nargs="+", type=int, default=[1])
     p5.add_argument("-s", "--nsteps", nargs="+", default=["d1"])
     p5.add_argument("--gpus", nargs="+", type=int, default=[0])
+    p5.add_argument("--annotation", default='',
+                    help="Optional identifying text for the figure footnote box")
     p5.set_defaults(func=lambda args: parse_and_plot_run(
         args.ref_subdir, args.test_subdirs,
         args.output_refdir, args.output_testdir,
-        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus
+        args.resolutions, args.nthreads, args.ppn, args.nnodes, args.nsteps, args.gpus,
+        annotation=args.annotation,
     ))
 
     return p.parse_args()

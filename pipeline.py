@@ -509,6 +509,9 @@ ln -sf {machine_file} machine.yaml
                     test_results[test_id] = {}
 
                     # Build context for template substitution
+                    _pipeline_name = Path(pipeline_yaml_path).name
+                    _machine_name  = Path(machine_file).stem if machine_file else 'unknown'
+                    _run_ts        = datetime.now().strftime("%Y%m%d_%H%M%S")
                     test_context = {
                         'remote_path': str(remote_path),
                         'test_subdir': dnb_sandbox_subdir,
@@ -519,6 +522,7 @@ ln -sf {machine_file} machine.yaml
                         'ppn': p,
                         'nodes': n,
                         'gpu_flag': gpu_flag,
+                        'annotation': f"pipeline: {_pipeline_name} | machine: {_machine_name} | run: {_run_ts}",
                     }
                     if use_gpu:
                         test_context['gpus'] = g
