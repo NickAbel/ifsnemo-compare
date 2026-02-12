@@ -81,7 +81,7 @@ def validate_test_definitions(defs: dict, cfg: dict, requested_suites: list, sui
             )
 
 
-def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
+def render_command(suite_def: dict, cmd_name: str, context: dict, pre_cmd: str = '') -> str:
     """
     Build a command string from a suite definition and context.
 
@@ -89,6 +89,7 @@ def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
         suite_def: The test suite definition dict
         cmd_name: Name of the command to render (e.g., 'run-tests', 'compare')
         context: Dictionary of parameter values to substitute
+        pre_cmd: Optional shell fragment to prepend before the main command
 
     Returns:
         The rendered command string ready for execution
@@ -117,8 +118,9 @@ def render_command(suite_def: dict, cmd_name: str, context: dict) -> str:
     # Render the args template
     rendered_args = args_template.format(**quoted_context)
 
-    # Build the full command
-    cmd = f"cd {quote(working_dir)} && {script} {cmd_name} {rendered_args}"
+    # Build the full command; pre_cmd is a raw shell fragment and must not be quoted
+    prefix = f"{pre_cmd} && " if pre_cmd else ""
+    cmd = f"cd {quote(working_dir)} && {prefix}{script} {cmd_name} {rendered_args}"
 
     return cmd
 
@@ -164,7 +166,7 @@ def get_result_keys(suite_def: dict, cmd_name: str) -> tuple:
 
 
 def execute_test(conn, suite_name: str, suite_def: dict, cmd_name: str, context: dict,
-                 test_id: str, verbose: bool = False) -> dict:
+                 test_id: str, verbose: bool = False, pre_cmd: str = '') -> dict:
     """
     Execute a single test command and return results.
 
@@ -176,11 +178,12 @@ def execute_test(conn, suite_name: str, suite_def: dict, cmd_name: str, context:
         context: Dictionary of parameter values
         test_id: The test identifier string
         verbose: Whether to print verbose output
+        pre_cmd: Optional shell fragment to prepend before the main command
 
     Returns:
         Dictionary with result keys mapping to pass/fail and output file
     """
-    cmd = render_command(suite_def, cmd_name, context)
+    cmd = render_command(suite_def, cmd_name, context, pre_cmd=pre_cmd)
     output_file = get_output_filename(suite_name, suite_def, cmd_name, test_id)
     passed_key, output_key = get_result_keys(suite_def, cmd_name)
 

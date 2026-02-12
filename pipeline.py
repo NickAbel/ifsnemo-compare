@@ -21,6 +21,29 @@ from test_runner import (
 BOLD = '\033[1m'
 RESET = '\033[0m'
 
+
+def collect_artifacts(conn, log_path: Path, local_dir: Path) -> list:
+    """
+    Scan a local log file for 'ARTIFACT: <remote_path>' lines and download
+    each file from the remote host into local_dir.  Returns list of local paths.
+    """
+    collected = []
+    try:
+        text = log_path.read_text()
+    except OSError:
+        return collected
+    for line in text.splitlines():
+        if line.startswith("ARTIFACT:"):
+            remote = line.split(":", 1)[1].strip()
+            local_dest = local_dir / Path(remote).name
+            try:
+                conn.get(remote, local=str(local_dest))
+                print(f"  Artifact fetched: {local_dest}")
+                collected.append(str(local_dest))
+            except Exception as exc:
+                print(f"  [WARN] Could not fetch artifact {remote}: {exc}")
+    return collected
+
 def timestamp():
     """Return current timestamp in date -d style format."""
     return datetime.now().strftime("%a %b %d %H:%M:%S %Y")
@@ -413,6 +436,10 @@ ln -sf {machine_file} machine.yaml
         test_defs_path = ifs_cfg.get('test_definitions_file', 'test_definitions.yaml')
         test_defs = load_test_definitions(test_defs_path)
 
+        # Derive machine key from machine_file stem (e.g. "dnb-mn5-gpp.yaml" -> "dnb-mn5-gpp")
+        machine_key = Path(machine_file).stem if machine_file else ''
+        machine_pre_commands = test_defs.get('machine_pre_commands', {}).get(machine_key, {})
+
         # === Build suites (run once per build) ===
         default_build_suites = test_defs.get('default_build_suites', [])
         requested_build_suites = ifs_cfg.get('build_suites', default_build_suites)
@@ -482,6 +509,9 @@ ln -sf {machine_file} machine.yaml
                     test_results[test_id] = {}
 
                     # Build context for template substitution
+                    _pipeline_name = Path(pipeline_yaml_path).name
+                    _machine_name  = Path(machine_file).stem if machine_file else 'unknown'
+                    _run_ts        = datetime.now().strftime("%Y%m%d_%H%M%S")
                     test_context = {
                         'remote_path': str(remote_path),
                         'test_subdir': dnb_sandbox_subdir,
@@ -492,6 +522,7 @@ ln -sf {machine_file} machine.yaml
                         'ppn': p,
                         'nodes': n,
                         'gpu_flag': gpu_flag,
+                        'annotation': f"pipeline: {_pipeline_name} | machine: {_machine_name} | run: {_run_ts}",
                     }
                     if use_gpu:
                         test_context['gpus'] = g
@@ -511,9 +542,14 @@ ln -sf {machine_file} machine.yaml
                             print(f"{BOLD}Running {suite_name}:{cmd_name}...{RESET}")
                             results = execute_test(
                                 conn, suite_name, suite_def, cmd_name, test_context,
-                                test_id, verbose=verbose
+                                test_id, verbose=verbose,
+                                pre_cmd=machine_pre_commands.get(cmd_name, ''),
                             )
                             test_results[test_id].update(results)
+                            log_path = Path(results.get(
+                                next(k for k in results if k.endswith('_output')), ''))
+                            if log_path.exists():
+                                collect_artifacts(conn, log_path, run_dir)
 
     # Write the results to a JSON file
     with open(results_file, "w") as f:
