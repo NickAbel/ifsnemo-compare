@@ -416,7 +416,7 @@ python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GP
 - Two tests are applied per variable:
   - **Effect-size test**: The difference of the means, in terms of the standard deviation, $`d = \dfrac{ \overline{ref} − \overline{test} } { \sigma_d } `$, where  $` { \sigma_d } `$  is the pooled standard deviation of both groups:
     - $` \sigma_d  = \dfrac{ (n - 1)(s_1^2 + s_2^2) } { 2n - 2 } `$, where
-    - $` s_i^2 = \dfrac{1}{n-1}\sum_{j=1}^n ( x_{i,j} - \overline{x_i} ) ^2, \quad i=1,2 `$ are the variances corresponding to the reference and test norm arrays $` x_1, x_2 `$. 
+    - $` s_i^2 = \dfrac{1}{n-1}\sum_{j=1}^n ( x_{i,j} - \overline{x_i} ) ^2, \quad i=1,2 `$ are the variances corresponding to the reference and test norm arrays $` x_1, x_2\in \mathbb{R}^n `$. 
     - Warns when $`\left| d \right| >`$ `EFFECT_SIZE_THRESHOLD` (default `1.0`).
   - Two-sample **Kolmogorov-Smirnov test** (`scipy.stats.ks_2samp`)
     - Warns when $` p < `$ `KS_PVAL_THRESHOLD` (default `0.05`).
