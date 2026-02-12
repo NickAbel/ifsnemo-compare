@@ -48,7 +48,7 @@ test_suites:
         args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
         output_prefix: "stat_test"
       parse-and-plot:
-        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag} --annotation {annotation}"
         output_prefix: "parse_and_plot"
     sequence:
       - run-tests

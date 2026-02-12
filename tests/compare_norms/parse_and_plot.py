@@ -23,11 +23,14 @@ _p.add_argument('ref_dir',     help="Reference results directory (containing res
 _p.add_argument('test_dir',    help="Test results directory (containing result.*.yaml)")
 _p.add_argument('--output-dir', default='.', dest='output_dir',
                 help="Directory in which to save output PNG files (default: current dir)")
+_p.add_argument('--annotation', default='', dest='annotation',
+                help="Optional identifying text rendered in a footnote box on each figure")
 _args = _p.parse_args()
 
 _output_dir = _args.output_dir
 os.makedirs(_output_dir, exist_ok=True)
 _ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+_annotation = _args.annotation
 
 def _find_yaml(d):
     hits = _glob.glob(os.path.join(d, 'result.*.yaml'))
@@ -481,6 +484,12 @@ fig.text(0.5, -0.003,
          fontsize=9, color=MUTED_TEXT, ha='center', fontfamily='monospace',
          fontstyle='italic')
 
+if _annotation:
+    fig.text(0.01, 0.002, _annotation, fontsize=7, color=MUTED_TEXT,
+             fontfamily='monospace', ha='left', va='bottom',
+             bbox=dict(boxstyle='round,pad=0.3', facecolor=PANEL_BG,
+                       edgecolor=BORDER_COLOR, alpha=0.85))
+
 _dashboard_png = os.path.join(_output_dir, f'validation_dashboard_{_ts}.png')
 plt.savefig(_dashboard_png, dpi=150, facecolor=BG_COLOR,
             bbox_inches='tight', pad_inches=0.2)
@@ -626,6 +635,12 @@ if vars_main:
                   '* max of relative differences across mean/min/max stats at each timestep',
                   fontsize=9, color=MUTED_TEXT, ha='center', fontfamily='monospace',
                   fontstyle='italic')
+    if _annotation:
+        fig2.text(0.01, 0.002, _annotation, fontsize=7, color=MUTED_TEXT,
+                  fontfamily='monospace', ha='left', va='bottom',
+                  bbox=dict(boxstyle='round,pad=0.3', facecolor=PANEL_BG,
+                            edgecolor=BORDER_COLOR, alpha=0.85))
+
     _heatmap_png = os.path.join(_output_dir, f'validation_heatmap_{_ts}.png')
     plt.savefig(_heatmap_png, dpi=150, facecolor=BG_COLOR,
                 bbox_inches='tight', pad_inches=0.2)
