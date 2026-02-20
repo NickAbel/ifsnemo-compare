@@ -5,6 +5,9 @@ NC='\033[0m'
 RED='\033[1;31m'
 GREEN='\033[1;32m'
 
+# Global array to store selected YAML paths.
+declare -a YAML_PATHS
+
 
 # Display fatal styled message with given argument.
 function fatal {
@@ -22,16 +25,28 @@ function parse_args {
     local yaml_path=""
     local yaml_length=-1
     local cur_yaml_length=0
-    
+    local idx=0
+
     for path in $@; do
         # Check if first dir exist.
         [ ! -d $path ] && fatal "$path does not exist"
-        yaml_path=$path/result.*.yaml
 
-        # Check if first dir has .yaml files.
-        NF=$(ls -1 $yaml_path 2>/dev/null | wc -l)
-        [ "$NF" != 1 ] && fatal "$path does not have .yaml files"
-    
+        # Check if dir has .yaml files.
+        NF=$(ls -1 $path/result.*.yaml 2>/dev/null | wc -l)
+        [ "$NF" == 0 ] && fatal "$path does not have .yaml files"
+
+        # If multiple YAML files found, use the most recent one.
+        if [ "$NF" -gt 1 ]; then
+            yaml_path=$(ls -t $path/result.*.yaml 2>/dev/null | head -n 1)
+            echo "Multiple YAML files found in $path, using most recent: $(basename $yaml_path)" 1>&2
+        else
+            yaml_path=$path/result.*.yaml
+        fi
+
+        # Store the selected yaml path in global array.
+        YAML_PATHS[$idx]=$yaml_path
+        idx=$((idx + 1))
+
         # Overwrite stored .yaml file length if not stored yet.
         cur_yaml_length=$(wc -l < $yaml_path)
         [ $yaml_length == -1 ] && yaml_length=$cur_yaml_length
@@ -133,7 +148,7 @@ function compare_yaml {
         
         # Print empty line for readability.
         echo ""
-    done 3<$1/result.*.yaml 4<$2/result.*.yaml
+    done 3<"${YAML_PATHS[0]}" 4<"${YAML_PATHS[1]}"
 }
 
 # Entry point.
