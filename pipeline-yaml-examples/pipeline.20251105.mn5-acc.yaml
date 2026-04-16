@@ -1,6 +1,7 @@
 user:
   remote_username: bsc631248          # Your username on the remote machine
   remote_machine_url: alogin2.bsc.es  # Remote machine address
+  remote_transfer_machine: transfer1.bsc.es  # Data transfer node
   machine_file: dnb-mn5-acc.yaml      # Machine configuration file to use
 
 paths:

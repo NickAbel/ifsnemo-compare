@@ -197,6 +197,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     remote_username = cfg.get("user", {}).get("remote_username")
     remote_machine = cfg.get("user", {}).get("remote_machine_url")
+    remote_transfer_machine = cfg.get("user", {}).get("remote_transfer_machine")
     machine_file = cfg.get("user", {}).get("machine_file")
     remote_path = cfg.get("paths", {}).get("remote_project_dir")
     local_path = Path(cfg.get("paths", {}).get("local_build_dir", "."))
@@ -340,15 +341,26 @@ psubmit:
         local_path = Path(local_path)
         remote_path = Path(remote_path)
 
-        # Ensure the remote directory exists
-        print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
-        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+        # Determine which machine to use for rsync (transfer machine if specified, otherwise target)
+        rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
 
-        print(f"{BOLD}Syncing to remote: {remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
+        # Ensure the remote directory exists
+        # If using a transfer machine, we need a separate connection to create the directory
+        if remote_transfer_machine:
+            print(f"Using transfer machine: {remote_transfer_machine}")
+            transfer_conn = Connection(f"{remote_username}@{remote_transfer_machine}")
+            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists on transfer machine...")
+            transfer_conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+            transfer_conn.close()
+        else:
+            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+            conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+
+        print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
             "rsync", "-rlpgoD", "--compress", "--info=progress2",
             str(local_path) + "/",
-            f"{remote_username}@{remote_machine}:{remote_path}/ifsnemo-build/"
+            f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
         ]
         run_command(rsync_cmd, verbose=verbose, show_spinner=True)
 
