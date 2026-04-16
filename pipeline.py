@@ -345,16 +345,8 @@ psubmit:
         rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
 
         # Ensure the remote directory exists
-        # If using a transfer machine, we need a separate connection to create the directory
-        if remote_transfer_machine:
-            print(f"Using transfer machine: {remote_transfer_machine}")
-            transfer_conn = Connection(f"{remote_username}@{remote_transfer_machine}")
-            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists on transfer machine...")
-            transfer_conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
-            transfer_conn.close()
-        else:
-            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
-            conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+        print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
 
         print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
