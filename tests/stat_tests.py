@@ -21,6 +21,7 @@ except ImportError:
 # Tuneable thresholds
 # ---------------------------------------------------------------------------
 KS_PVAL_THRESHOLD     = 0.05   # p-value below which the KS test raises a warning
+TTEST_PVAL_THRESHOLD  = 0.05   # p-value below which the Welch's t-test raises a warning
 EFFECT_SIZE_THRESHOLD = 1.0    # |effect size| above which the effect-size test warns
 
 
@@ -42,6 +43,10 @@ class StatResult:
     ks_stat:         float | None = None
     ks_pval:         float | None = None
     ks_passed:       bool  | None = None
+    # Welch's t-test (None when scipy is unavailable)
+    ttest_stat:      float | None = None
+    ttest_pval:      float | None = None
+    ttest_passed:    bool  | None = None
     # bookkeeping
     skipped:         bool  = False
     skip_reason:     str   = ""
@@ -113,9 +118,24 @@ def _ks_test(
     return stat, pval, pval >= KS_PVAL_THRESHOLD
 
 
+def _ttest_welch(
+    ref: list[float], test: list[float]
+) -> tuple[float | None, float | None, bool | None]:
+    """
+    Welch's t-test via scipy.stats.ttest_ind with equal_var=False.
+    Tests the null hypothesis that two independent samples have identical means.
+    Returns (statistic, p-value, passed).  All None when scipy is absent.
+    """
+    if not _SCIPY_AVAILABLE:
+        return None, None, None
+    stat, pval = _scipy_stats.ttest_ind(ref, test, equal_var=False, alternative='two-sided')
+    return stat, pval, pval >= TTEST_PVAL_THRESHOLD
+
+
 def _test_var(varname: str, ref: list[float], test: list[float]) -> StatResult:
     mean_ref, mean_test, sp, effect, effect_passed = _effect_size_test(ref, test)
     ks_stat, ks_pval, ks_passed                    = _ks_test(ref, test)
+    ttest_stat, ttest_pval, ttest_passed           = _ttest_welch(ref, test)
     return StatResult(
         varname       = varname,
         n_ref         = len(ref),
@@ -128,6 +148,9 @@ def _test_var(varname: str, ref: list[float], test: list[float]) -> StatResult:
         ks_stat       = ks_stat,
         ks_pval       = ks_pval,
         ks_passed     = ks_passed,
+        ttest_stat    = ttest_stat,
+        ttest_pval    = ttest_pval,
+        ttest_passed  = ttest_passed,
     )
 
 
@@ -238,3 +261,13 @@ def report(results: dict[str, StatResult]) -> None:
             )
         else:
             print("    KS:          [SKIP] scipy unavailable")
+
+        if r.ttest_stat is not None:
+            ttest_label = "pass" if r.ttest_passed else "WARN"
+            print(
+                f"    Welch-t:     stat={r.ttest_stat:.4e}"
+                f"  p={r.ttest_pval:.4e}"
+                f"  [{ttest_label}]"
+            )
+        else:
+            print("    Welch-t:     [SKIP] scipy unavailable")

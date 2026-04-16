@@ -249,6 +249,8 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
+        if ov.get('DNB_IFSNEMO_INPROOT'):
+            overrides_content.append(f'  - export DNB_IFSNEMO_INPROOT="{ov.get("DNB_IFSNEMO_INPROOT")}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_GIT'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_GIT="{ov.get("DNB_IFSNEMO_BUNDLE_GIT")}"')
         if ov.get('IFS_BUNDLE_RAPS_GIT'):
