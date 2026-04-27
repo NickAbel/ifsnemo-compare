@@ -333,6 +333,29 @@ psubmit:
         ]
         run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
 
+        # Restore modification times on git-controlled source files
+        print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
+        src_path = local_path / "src"
+        git_restore_mtime_script = local_path / "ifsnemo-compare" / "git-restore-mtime"
+
+        if src_path.exists() and git_restore_mtime_script.exists():
+            for src_dir in src_path.iterdir():
+                if src_dir.is_dir() and (src_dir / ".git").exists():
+                    print(f"  Restoring mtimes in {src_dir.name}...")
+                    try:
+                        run_command(
+                            [str(git_restore_mtime_script), "--quiet"],
+                            cwd=src_dir,
+                            verbose=verbose
+                        )
+                    except Exception as e:
+                        print(f"  [WARN] git-restore-mtime failed for {src_dir.name}: {e}")
+        else:
+            if not src_path.exists():
+                print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
+            if not git_restore_mtime_script.exists():
+                print(f"  [WARN] git-restore-mtime script not found at {git_restore_mtime_script}")
+
         ############################################
         # 2.1-2.3 Build and Install on remote
         ############################################
