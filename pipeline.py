@@ -314,6 +314,13 @@ psubmit:
             print(f"Copying {source_path} to {target_path}")
             shutil.copytree(source_path, target_path)
 
+            # Also copy .git to enable git-restore-mtime on references
+            git_source = temp_ref_dir / ".git"
+            git_target = target_path / ".git"
+            if git_source.exists():
+                print(f"Copying .git to {target_path}")
+                shutil.copytree(git_source, git_target)
+
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
 
@@ -338,23 +345,55 @@ psubmit:
         src_path = local_path / "src"
         git_restore_mtime_script = local_path / "ifsnemo-compare" / "git-restore-mtime"
 
-        if src_path.exists() and git_restore_mtime_script.exists():
-            for src_dir in src_path.iterdir():
-                if src_dir.is_dir() and (src_dir / ".git").exists():
-                    print(f"  Restoring mtimes in {src_dir.name}...")
+        def restore_mtimes_recursive(root_dir, base_path):
+            """Recursively find and process all git repositories"""
+            for item in root_dir.iterdir():
+                if not item.is_dir():
+                    continue
+
+                # Skip symlinks to avoid infinite loops
+                if item.is_symlink():
+                    continue
+
+                rel_path = item.relative_to(base_path)
+
+                if (item / ".git").exists():
+                    print(f"  Restoring mtimes in {rel_path}...")
                     try:
                         run_command(
                             [str(git_restore_mtime_script), "--quiet"],
-                            cwd=src_dir,
+                            cwd=item,
                             verbose=verbose
                         )
                     except Exception as e:
-                        print(f"  [WARN] git-restore-mtime failed for {src_dir.name}: {e}")
+                        print(f"  [WARN] git-restore-mtime failed for {rel_path}: {e}")
+
+                # Recurse into subdirectories
+                try:
+                    restore_mtimes_recursive(item, base_path)
+                except (PermissionError, OSError):
+                    pass
+
+        if src_path.exists() and git_restore_mtime_script.exists():
+            restore_mtimes_recursive(src_path, src_path)
         else:
             if not src_path.exists():
                 print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
             if not git_restore_mtime_script.exists():
                 print(f"  [WARN] git-restore-mtime script not found at {git_restore_mtime_script}")
+
+        # Also restore mtimes for references if it's git-controlled
+        references_path = local_path / "references"
+        if references_path.exists() and (references_path / ".git").exists() and git_restore_mtime_script.exists():
+            print(f"  Restoring mtimes in references...")
+            try:
+                run_command(
+                    [str(git_restore_mtime_script), "--quiet"],
+                    cwd=references_path,
+                    verbose=verbose
+                )
+            except Exception as e:
+                print(f"  [WARN] git-restore-mtime failed for references: {e}")
 
         ############################################
         # 2.1-2.3 Build and Install on remote
@@ -373,7 +412,7 @@ psubmit:
 
         print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
         rsync_cmd = [
-            "rsync", "-rlpgoD", "--compress", "--info=progress2",
+            "rsync", "-rlpgoDt", "--compress", "--info=progress2,stats2", "--itemize-changes",
             str(local_path) + "/",
             f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
         ]
