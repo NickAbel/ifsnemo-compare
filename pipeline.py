@@ -163,7 +163,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -227,6 +227,10 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     if skip_build and partial_build:
         print("Warning: --partial-build is ignored when --skip-build is set")
         partial_build = False
+
+    if skip_build and no_install:
+        print("Warning: --no-install is ignored when --skip-build is set")
+        no_install = False
 
     if skip_build:
         # If we skip the build, the remote tests directory may not be empty.
@@ -485,8 +489,12 @@ ln -sf {machine_file} machine.yaml
         job_id = job_output.stdout.strip().split()[-1]
         wait_for_job(conn, job_id)
 
-        # Run ./dnb.sh :i on login node
-        conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
+        # Run ./dnb.sh :i on login node (unless --no-install specified)
+        if no_install:
+            print(f"{BOLD}Skipping install step (--no-install).{RESET}")
+        else:
+            print(f"{BOLD}Running install step (./dnb.sh :i)... [{timestamp()}]{RESET}")
+            conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
         # Copy references into the test arena if they exist
         if "references" in cfg:
@@ -650,10 +658,16 @@ if __name__ == '__main__':
         action="store_true",
         help="Use partial build (dnb.sh :r) instead of full build (dnb.sh :b). Intended for quick rebuilds involving small changes in the code, and does not invoke ifs-bundle."
     )
+    parser.add_argument(
+        "--no-install",
+        dest="no_install",
+        action="store_true",
+        help="Skip the install step (dnb.sh :i) after building. Use when you don't need to set up the sandbox or want to avoid the potentially long install phase."
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build)
+        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
