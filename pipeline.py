@@ -496,9 +496,9 @@ ln -sf {machine_file} machine.yaml
             print(f"{BOLD}Running install step (./dnb.sh :i)... [{timestamp()}]{RESET}")
             conn.run(f"cd {remote_path}/ifsnemo-build && ./dnb.sh :i")
 
-        # Copy references into the test arena if they exist
-        if "references" in cfg:
-            conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
+            # Copy references into the test arena if they exist (only when install ran)
+            if "references" in cfg:
+                conn.run(f"rsync -a {remote_path}/ifsnemo-build/references/ {remote_path}/ifsnemo-build/ifsnemo/references/")
 
     test_results = {}
     results_file = run_dir / "test_results.json"
