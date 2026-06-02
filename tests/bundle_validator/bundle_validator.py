@@ -577,9 +577,9 @@ def cmd_compare(args):
 
     # Compare the two
     if ref_data == test_data:
-        print(f"{BOLD}bundle_validator: MATCH:{RESET} Test output matches reference")
+        print(f"{BOLD}bundle_validator: MATCH:{RESET} Test bundle config matches reference")
     else:
-        print(f"{BOLD}bundle_validator: DIFF:{RESET} Test output differs from reference")
+        print(f"{BOLD}bundle_validator: DIFF:{RESET} Test bundle config differs from reference. Carefully review the diff below:")
         import difflib
         ref_str = json.dumps(ref_data, indent=2, sort_keys=True).splitlines(keepends=True)
         test_str = json.dumps(test_data, indent=2, sort_keys=True).splitlines(keepends=True)
