@@ -583,7 +583,7 @@ def cmd_compare(args):
         import difflib
         ref_str = json.dumps(ref_data, indent=2, sort_keys=True).splitlines(keepends=True)
         test_str = json.dumps(test_data, indent=2, sort_keys=True).splitlines(keepends=True)
-        diff = difflib.unified_diff(ref_str, test_str, fromfile='reference', tofile='test')
+        diff = difflib.unified_diff(ref_str, test_str, fromfile=str(ref_path), tofile=str(test_path))
         print(''.join(diff))
     sys.exit(0)
 
