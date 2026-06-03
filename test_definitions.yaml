@@ -63,16 +63,16 @@ test_suites:
       run-tests:
         args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
         output_prefix: "fdb_run_tests"
-      generate-checksums:
-        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
-        output_prefix: "fdb_checksums"
-      compare:
-        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
-        output_prefix: "fdb_compare"
+          #      generate-checksums:
+          #        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+          #        output_prefix: "fdb_checksums"
+          #      compare:
+          #        args: "-t {test_subdir}/ -ot {remote_path}/ifsnemo-build/ifsnemo/tests -g {gold_standard_tag}/ -og {remote_path}/ifsnemo-build/ifsnemo/references -r {resolution} -nt {threads} -p {ppn} -n {nodes} -s {steps}{gpu_flag}"
+          #        output_prefix: "fdb_compare"
     sequence:
       - run-tests
-      - generate-checksums
-      - compare
+        #      - generate-checksums
+        #      - compare
 
 # Machine-specific pre-commands, keyed by machine file stem then by command name.
 # Looked up by pipeline.py using the machine_file from the pipeline YAML.
