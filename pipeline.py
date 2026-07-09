@@ -499,6 +499,9 @@ psubmit:
             except Exception as e:
                 print(f"  [WARN] git-restore-mtime failed for references: {e}")
 
+        # ~~~ WIP: everything from 2.1 onwards is cut off here for exec-mode testing ~~~
+        return
+
         ############################################
         # 2.1-2.3 Build and Install on remote
         ############################################

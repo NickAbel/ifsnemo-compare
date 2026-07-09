@@ -1,8 +1,8 @@
 user:
-  remote_username: bsc631248          		# Your username on the remote machine
-  remote_machine_url: glogin4.bsc.es  		# Remote machine address (must be internet connectable)
-  remote_transfer_machine: transfer1.bsc.es  	# Data transfer node
-  machine_file: dnb-mn5-gpp-CY49R3.yaml     	# Machine configuration file to use
+  remote_username: bsc631248           # Your username on the remote machine
+  remote_machine_url: glogin4.bsc.es   # Remote machine address (must be internet connectable)
+  remote_transfer_machine: transfer1.bsc.es  # Data transfer node
+  machine_file: dnb-mn5-gpp-CY49R3.yaml     # Machine configuration file to use
 
 paths:
   local_build_dir: /home/nabel/ifsnemo-build  # Path to ifsnemo-build directory on local machine
