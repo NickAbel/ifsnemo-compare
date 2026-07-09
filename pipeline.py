@@ -10,6 +10,7 @@ import time
 import sys
 import argparse
 import json
+import socket
 from test_runner import (
     load_test_definitions,
     validate_test_definitions,
@@ -20,6 +21,91 @@ from test_runner import (
 # ANSI formatting
 BOLD = '\033[1m'
 RESET = '\033[0m'
+
+
+from dataclasses import dataclass
+
+@dataclass
+class _LocalResult:
+    stdout: str
+    stderr: str
+    exited: int
+
+
+class LocalConnection:
+    """Fabric Connection-compatible interface for local (on-HPC) execution."""
+
+    def run(self, cmd, hide=False, warn=False):
+        result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+        if not hide:
+            if result.stdout:
+                print(result.stdout, end='')
+            if result.stderr:
+                print(result.stderr, end='', file=sys.stderr)
+        if result.returncode != 0 and not warn:
+            raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout, result.stderr)
+        return _LocalResult(stdout=result.stdout, stderr=result.stderr, exited=result.returncode)
+
+    def get(self, remote_path, local=None):
+        if local:
+            shutil.copy2(remote_path, local)
+
+    def put(self, local_path, remote_path):
+        dest = Path(remote_path)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(local_path, dest)
+
+    def close(self):
+        pass
+
+
+def check_internet() -> bool:
+    """Returns True if outbound TCP to github.com:443 succeeds within 5 seconds."""
+    try:
+        with socket.create_connection(("github.com", 443), timeout=5):
+            return True
+    except OSError:
+        return False
+
+
+def resolve_exec_mode(exec_mode_arg: str | None) -> str:
+    """
+    Returns 'direct' or 'proxy'.
+
+    If exec_mode_arg is provided (from --exec-mode), use it directly.
+    Otherwise, explain why we cannot determine this automatically and ask the user.
+    """
+    if exec_mode_arg in ('direct', 'proxy'):
+        return exec_mode_arg
+
+    print("""
+Cannot determine execution mode automatically.
+
+This tool needs to know whether it should run commands directly on this machine
+or connect to a remote system via SSH. We cannot infer this from the environment
+because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts —
+a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could
+cause unintended writes to an unknown system.
+
+Two modes are available:
+
+  [1] direct  — This machine has direct filesystem access to the target HPC
+                system's storage AND can submit jobs there from its command
+                line (e.g. you are on a login node of the target cluster).
+
+  [2] proxy   — This machine cannot do the above from its command line, but
+                can SSH to a machine that can (e.g. you are on a laptop
+                connecting to the cluster over SSH).
+
+To skip this prompt in future runs, pass --exec-mode direct or --exec-mode proxy.
+""")
+    while True:
+        answer = input("Enter 1 (direct) or 2 (proxy): ").strip()
+        if answer == '1':
+            return 'direct'
+        if answer == '2':
+            return 'proxy'
+        print("Please enter 1 or 2.")
 
 
 def collect_artifacts(conn, log_path: Path, local_dir: Path) -> list:
@@ -163,7 +249,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, args_exec_mode: str | None = None):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -218,9 +304,23 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
-    # Establish connection to remote
-    conn = Connection(f"{remote_username}@{remote_machine}")
-    # This will raise if remote requirements are missing
+    # Determine execution context
+    exec_mode = resolve_exec_mode(args_exec_mode or cfg.get('exec_mode'))
+    has_internet = check_internet()
+    if exec_mode == 'direct':
+        print(f"{BOLD}Execution mode: direct (running on HPC, filesystem and job submission available locally){RESET}")
+    else:
+        print(f"{BOLD}Execution mode: proxy (will connect via SSH to {remote_machine}){RESET}")
+    if has_internet:
+        print("Internet connectivity: OK")
+    else:
+        print("Internet connectivity: NONE — steps requiring git access will fail")
+
+    # Establish connection (or use local execution in direct mode)
+    if exec_mode == 'direct':
+        conn = LocalConnection()
+    else:
+        conn = Connection(f"{remote_username}@{remote_machine}")
     check_remote_requirements(conn, verbose=True)
 
     # Handle flag interactions
@@ -664,10 +764,21 @@ if __name__ == '__main__':
         action="store_true",
         help="Skip the install step (dnb.sh :i) after building. Use when you don't need to set up the sandbox or want to avoid the potentially long install phase."
     )
+    parser.add_argument(
+        "--exec-mode",
+        dest="exec_mode",
+        choices=["direct", "proxy"],
+        default=None,
+        help=(
+            "Execution mode: 'direct' if this machine has filesystem access and can submit jobs "
+            "on the target HPC system directly; 'proxy' if you need SSH to reach it. "
+            "If omitted, you will be prompted interactively."
+        ),
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install)
+        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install, args.exec_mode)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
