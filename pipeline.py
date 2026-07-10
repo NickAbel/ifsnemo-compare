@@ -558,31 +558,23 @@ psubmit:
             except Exception as e:
                 print(f"  [WARN] git-restore-mtime failed for references: {e}")
 
-        # ~~~ WIP: everything from 2.1 onwards is cut off here for exec-mode testing ~~~
-        return
-
         ############################################
         # 2.1-2.3 Build and Install on remote
         ############################################
 
-        # Sync files to remote using rsync
-        local_path = Path(local_path)
-        remote_path = Path(remote_path)
-
-        # Determine which machine to use for rsync (transfer machine if specified, otherwise target)
-        rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
-
-        # Ensure the remote directory exists
-        print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
-        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
-
-        print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
-        rsync_cmd = [
-            "rsync", "-rlpgoDt", "--compress", "--info=progress2,stats2", "--itemize-changes",
-            str(local_path) + "/",
-            f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
-        ]
-        run_command(rsync_cmd, verbose=verbose, show_spinner=True)
+        # In proxy mode, rsync local ifsnemo-build workspace to the remote.
+        # In direct mode we're already on the HPC — local_path IS the workspace, nothing to sync.
+        if exec_mode == 'proxy':
+            rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
+            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+            conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+            print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
+            rsync_cmd = [
+                "rsync", "-rlpgoDt", "--compress", "--info=progress2,stats2", "--itemize-changes",
+                str(local_path) + "/",
+                f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
+            ]
+            run_command(rsync_cmd, verbose=verbose, show_spinner=True)
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
@@ -640,8 +632,11 @@ ln -sf {machine_file} machine.yaml
 ./dnb.sh {build_cmd}
 """
 
-        Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-        conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+        if exec_mode == 'direct':
+            Path(remote_path).joinpath("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+        else:
+            Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+            conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
         # Run the build on compute node with sbatch job
         print(f"{BOLD}Submitting build job to remote... [{timestamp()}]{RESET}")
@@ -650,6 +645,9 @@ ln -sf {machine_file} machine.yaml
         # Wait until completion
         job_id = job_output.stdout.strip().split()[-1]
         wait_for_job(conn, job_id)
+
+        #~ WIP ~ testing until here; return after build step's done.
+        return
 
         # Run ./dnb.sh :i on login node (unless --no-install specified)
         if no_install:
