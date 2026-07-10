@@ -328,22 +328,27 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     if exec_mode == 'direct':
         # In direct mode the build workspace mirrors what proxy mode creates at remote_path/ifsnemo-build/.
         # We populate it from the ifsnemo-build clone that sits next to this script on the HPC.
-        hpc_build_source = script_dir.parent / "ifsnemo-build"
-        if not hpc_build_source.is_dir():
-            print(f"ERROR: expected ifsnemo-build clone at {hpc_build_source} (sibling of ifsnemo-compare). "
+        build_source_dir = script_dir.parent / "ifsnemo-build"
+        if not build_source_dir.is_dir():
+            print(f"ERROR: expected ifsnemo-build clone at {build_source_dir} (sibling of ifsnemo-compare). "
                   f"Clone it there or adjust the path.")
             sys.exit(1)
         local_path = Path(remote_path) / "ifsnemo-build"
         local_path.mkdir(parents=True, exist_ok=True)
-        print(f"{BOLD}Syncing ifsnemo-build to workspace: {local_path} [{timestamp()}]{RESET}")
-        run_command(["rsync", "-rlpgoDt", "--exclude", ".git", "--exclude", "src",
-                     str(hpc_build_source) + "/", str(local_path) + "/"], verbose=verbose)
         conn = LocalConnection()
     else:
+        build_source_dir = local_path
         if Connection is None:
             print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
             sys.exit(1)
         conn = Connection(f"{remote_username}@{remote_machine}")
+
+    run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=build_source_dir, verbose=verbose)
+
+    if exec_mode == 'direct':
+        print(f"{BOLD}Syncing ifsnemo-build to workspace: {local_path} [{timestamp()}]{RESET}")
+        run_command(["rsync", "-rlpgoDt", "--exclude", ".git", "--exclude", "src",
+                     str(build_source_dir) + "/", str(local_path) + "/"], verbose=verbose)
     check_remote_requirements(conn, verbose=True)
 
     # Handle flag interactions
