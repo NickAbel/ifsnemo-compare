@@ -3,7 +3,10 @@ import yaml
 from shlex import quote
 import subprocess
 from pathlib import Path
-from fabric import Connection
+try:
+    from fabric import Connection
+except ImportError:
+    Connection = None
 from datetime import datetime
 import shutil
 import time
@@ -320,6 +323,9 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     if exec_mode == 'direct':
         conn = LocalConnection()
     else:
+        if Connection is None:
+            print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
+            sys.exit(1)
         conn = Connection(f"{remote_username}@{remote_machine}")
     check_remote_requirements(conn, verbose=True)
 
