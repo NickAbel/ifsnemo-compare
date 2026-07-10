@@ -289,6 +289,9 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     remote_machine = cfg.get("user", {}).get("remote_machine_url")
     remote_transfer_machine = cfg.get("user", {}).get("remote_transfer_machine")
     machine_file = cfg.get("user", {}).get("machine_file")
+    # "local" and "remote" are from the perspective of proxy mode (running on a laptop).
+    # In direct mode (running on the HPC login node) local_path is overridden to remote_path
+    # below, so local_build_dir is unused and need not exist on the HPC.
     remote_path = cfg.get("paths", {}).get("remote_project_dir")
     local_path = Path(cfg.get("paths", {}).get("local_build_dir", "."))
 
@@ -322,6 +325,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     # Establish connection (or use local execution in direct mode)
     if exec_mode == 'direct':
+        local_path = Path(remote_path)
         conn = LocalConnection()
     else:
         if Connection is None:
