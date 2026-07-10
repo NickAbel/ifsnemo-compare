@@ -73,6 +73,36 @@ def check_internet() -> bool:
         return False
 
 
+def print_banner():
+    C  = '\033[96m'   # bright cyan
+    W  = '\033[97m'   # bright white
+    D  = '\033[2;36m' # dim cyan (box + separator)
+    DW = '\033[2m'    # dim (info line)
+    R  = '\033[0m'    # reset
+    pad = ' ' * 18    # right-pad art rows to fill 50-char interior (2 indent + 30 art + 18 pad)
+    bl  = ' ' * 50    # blank interior
+    print('\n'.join([
+        f"{D}╔{'═'*50}╗{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {C}███ ███ ███ █ █ ███ █   █ ████{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} █  █   █   ███ █   ██ ██ █  █{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} █  ██  ███ █ █ ██  █ █ █ █  █{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} █  █     █ █ █ █   █   █ █  █{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C}███ █   ███ █ █ ███ █   █ ████{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {D}──────────────────────────────{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {W}███ ████ █   █ ██   █  ██  ███{R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}█   █  █ ██ ██ █ █ █ █ █ █ █  {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}█   █  █ █ █ █ ██  ███ ██  ██ {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}█   █  █ █   █ █   █ █ █ █ █  {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}███ ████ █   █ █   █ █ █ █ ███{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {DW}version cy49r3  ·  BSC Earth Sciences{R}           {D}║{R}",
+        f"{D}╚{'═'*50}╝{R}",
+    ]))
+
+
 def can_ssh_github(conn) -> bool:
     """Returns True if outbound SSH to github.com port 22 succeeds."""
     try:
@@ -278,6 +308,8 @@ def upload_file(conn, local_path, remote_path, verbose=False):
         print(f"Upload complete: {remote_str}")
 
 def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, args_exec_mode: Optional[str] = None):
+    print_banner()
+
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
