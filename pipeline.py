@@ -13,6 +13,7 @@ import time
 import sys
 import argparse
 import json
+import os
 import socket
 from typing import Optional
 from test_runner import (
@@ -70,6 +71,29 @@ def check_internet() -> bool:
             return True
     except OSError:
         return False
+
+
+def can_ssh_github(conn) -> bool:
+    """Returns True if outbound SSH to github.com port 22 succeeds."""
+    try:
+        result = conn.run(
+            "ssh -o ConnectTimeout=5 -o BatchMode=yes -T git@github.com 2>&1 || true",
+            hide=True, warn=True
+        )
+        return "successfully authenticated" in result.stdout or "Hi " in result.stdout
+    except Exception:
+        return False
+
+
+def github_https_env(conn) -> dict:
+    """Returns env vars that rewrite git@github.com: to https://github.com/ if SSH is blocked."""
+    if can_ssh_github(conn):
+        return {}
+    return {
+        "GIT_CONFIG_COUNT": "1",
+        "GIT_CONFIG_KEY_0": "url.https://github.com/.insteadOf",
+        "GIT_CONFIG_VALUE_0": "git@github.com:",
+    }
 
 
 def resolve_exec_mode(exec_mode_arg: Optional[str]) -> str:
@@ -458,6 +482,13 @@ psubmit:
 
         # Create src folder for dnb.sh :du
         (local_path / "src").mkdir(exist_ok=True, parents=True)
+
+        # MN5 (and similar HPC nodes) block outbound SSH port 22, so git@github.com: URLs fail.
+        # Detect this and inject a git URL rewrite via env vars for the duration of :du.
+        gh_env = github_https_env(conn)
+        if gh_env:
+            print("GitHub SSH (port 22) not available — applying HTTPS URL rewrite for git clones")
+            os.environ.update(gh_env)
 
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
