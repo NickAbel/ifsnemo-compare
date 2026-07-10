@@ -5,8 +5,10 @@ user:
   machine_file: dnb-mn5-gpp-CY49R3.yaml     # Machine configuration file to use
 
 paths:
-  local_build_dir: /home/nabel/ifsnemo-build  # Path to ifsnemo-build directory on local machine
-  remote_project_dir: /gpfs/scratch/bsc32/bsc631248/ifsnemo-compare-CY49R3  # Path to remote project directory
+  # "local" and "remote" are from the perspective of proxy mode (running from a laptop over SSH).
+  # In direct mode (running on the HPC login node), local_build_dir is ignored.
+  local_build_dir: /home/nabel/ifsnemo-build
+  remote_project_dir: /gpfs/scratch/bsc32/bsc631248/ifsnemo-compare-CY49R3
 
 overrides:
   DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"      # Sandbox subdirectory name
