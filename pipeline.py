@@ -324,8 +324,20 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         print("Internet connectivity: NONE — steps requiring git access will fail")
 
     # Establish connection (or use local execution in direct mode)
+    script_dir = Path(__file__).resolve().parent
     if exec_mode == 'direct':
-        local_path = Path(remote_path)
+        # In direct mode the build workspace mirrors what proxy mode creates at remote_path/ifsnemo-build/.
+        # We populate it from the ifsnemo-build clone that sits next to this script on the HPC.
+        hpc_build_source = script_dir.parent / "ifsnemo-build"
+        if not hpc_build_source.is_dir():
+            print(f"ERROR: expected ifsnemo-build clone at {hpc_build_source} (sibling of ifsnemo-compare). "
+                  f"Clone it there or adjust the path.")
+            sys.exit(1)
+        local_path = Path(remote_path) / "ifsnemo-build"
+        local_path.mkdir(parents=True, exist_ok=True)
+        print(f"{BOLD}Syncing ifsnemo-build to workspace: {local_path} [{timestamp()}]{RESET}")
+        run_command(["rsync", "-rlpgoDt", "--exclude", ".git", "--exclude", "src",
+                     str(hpc_build_source) + "/", str(local_path) + "/"], verbose=verbose)
         conn = LocalConnection()
     else:
         if Connection is None:
