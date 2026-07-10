@@ -14,6 +14,7 @@ import sys
 import argparse
 import json
 import socket
+from typing import Optional
 from test_runner import (
     load_test_definitions,
     validate_test_definitions,
@@ -71,7 +72,7 @@ def check_internet() -> bool:
         return False
 
 
-def resolve_exec_mode(exec_mode_arg: str | None) -> str:
+def resolve_exec_mode(exec_mode_arg: Optional[str]) -> str:
     """
     Returns 'direct' or 'proxy'.
 
@@ -252,7 +253,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, args_exec_mode: str | None = None):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, args_exec_mode: Optional[str] = None):
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
