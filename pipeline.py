@@ -678,9 +678,6 @@ ln -sf {machine_file} machine.yaml
         job_id = job_output.stdout.strip().split()[-1]
         wait_for_job(conn, job_id)
 
-        #~ WIP ~ testing until here; return after build step's done.
-        return
-
         # Run ./dnb.sh :i on login node (unless --no-install specified)
         if no_install:
             print(f"{BOLD}Skipping install step (--no-install).{RESET}")
