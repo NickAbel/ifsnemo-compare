@@ -472,8 +472,8 @@ psubmit:
   node_type:   {cfg.get('psubmit', {}).get('node_type', '')}
 """)
 
-        # Link to generic machine config
-        run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
+        # Link to machine config
+        run_command(['ln', '-sf', machine_file, 'machine.yaml'], cwd=local_path, verbose=verbose)
 
         ############################################
         # 1.4 Fetch and Package Build Artifacts
