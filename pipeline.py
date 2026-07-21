@@ -40,7 +40,7 @@ class _LocalResult:
 class LocalConnection:
     """Fabric Connection-compatible interface for local (on-HPC) execution."""
 
-    def run(self, cmd, hide=False, warn=False):
+    def run(self, cmd, hide=False, warn=False, **kwargs):
         result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
         if not hide:
             if result.stdout:
