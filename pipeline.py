@@ -36,6 +36,10 @@ class _LocalResult:
     stderr: str
     exited: int
 
+    @property
+    def return_code(self):
+        return self.exited
+
 
 class LocalConnection:
     """Fabric Connection-compatible interface for local (on-HPC) execution."""
@@ -717,7 +721,7 @@ ln -sf {machine_file} machine.yaml
             build_context = {
                 'remote_path': str(remote_path),
                 'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
-                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/{cfg.get('overrides', {}).get('DNB_IFSNEMO_BUILD_SUBDIR', 'build')}",
                 'gold_standard_tag': gold_standard_tag,
             }
 
