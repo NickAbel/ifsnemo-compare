@@ -420,14 +420,18 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         print("Warning: --no-install is ignored when --skip-build is set")
         no_install = False
 
-    # Require explicit opt-in for a full rebuild (can take ~1 hour)
-    if not skip_build and not force_rebuild and not partial_build:
-        print("\nWARNING: A full rebuild is about to run. This can take ~1 hour.")
-        print("  Pass --force-rebuild to suppress this prompt, or --skip-build to skip the build.")
-        answer = input("Proceed with full rebuild? [y/N] ").strip().lower()
-        if answer != "y":
-            print("Aborting. Re-run with --skip-build to run tests only.")
-            sys.exit(1)
+    # Require explicit opt-in for a full rebuild (can take ~1 hour),
+    # but only when a sandbox already exists (fresh environments must build unconditionally).
+    if not skip_build and not force_rebuild and not partial_build and dnb_sandbox_subdir:
+        sandbox_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}"
+        sandbox_exists = conn.run(f"test -d {sandbox_path}", warn=True).ok
+        if sandbox_exists:
+            print(f"\nWARNING: A full rebuild is about to run against an existing sandbox ({dnb_sandbox_subdir}). This can take ~1 hour.")
+            print("  Pass --force-rebuild to suppress this prompt, or --skip-build to skip the build.")
+            answer = input("Proceed with full rebuild? [y/N] ").strip().lower()
+            if answer != "y":
+                print("Aborting. Re-run with --skip-build to run tests only.")
+                sys.exit(1)
 
     if skip_build:
         # If we skip the build, the remote tests directory may not be empty.
