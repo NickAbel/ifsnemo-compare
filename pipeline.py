@@ -311,7 +311,7 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, args_exec_mode: Optional[str] = None):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, force_rebuild: bool = False, args_exec_mode: Optional[str] = None):
     print_banner()
 
     ############################################
@@ -419,6 +419,15 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     if skip_build and no_install:
         print("Warning: --no-install is ignored when --skip-build is set")
         no_install = False
+
+    # Require explicit opt-in for a full rebuild (can take ~1 hour)
+    if not skip_build and not force_rebuild and not partial_build:
+        print("\nWARNING: A full rebuild is about to run. This can take ~1 hour.")
+        print("  Pass --force-rebuild to suppress this prompt, or --skip-build to skip the build.")
+        answer = input("Proceed with full rebuild? [y/N] ").strip().lower()
+        if answer != "y":
+            print("Aborting. Re-run with --skip-build to run tests only.")
+            sys.exit(1)
 
     if skip_build:
         # If we skip the build, the remote tests directory may not be empty.
@@ -852,6 +861,12 @@ if __name__ == '__main__':
         help="Use partial build (dnb.sh :r) instead of full build (dnb.sh :b). Intended for quick rebuilds involving small changes in the code, and does not invoke ifs-bundle."
     )
     parser.add_argument(
+        "--force-rebuild",
+        dest="force_rebuild",
+        action="store_true",
+        help="Explicitly authorize a full rebuild without interactive confirmation prompt."
+    )
+    parser.add_argument(
         "--no-install",
         dest="no_install",
         action="store_true",
@@ -871,7 +886,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install, args.exec_mode)
+        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install, args.force_rebuild, args.exec_mode)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
