@@ -40,6 +40,10 @@ class _LocalResult:
     def return_code(self):
         return self.exited
 
+    @property
+    def ok(self):
+        return self.exited == 0
+
 
 class LocalConnection:
     """Fabric Connection-compatible interface for local (on-HPC) execution."""
