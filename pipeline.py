@@ -520,15 +520,17 @@ psubmit:
             if target_path.exists():
                 shutil.rmtree(target_path)
 
-            print(f"Copying {source_path} to {target_path}")
-            shutil.copytree(source_path, target_path)
+            # Use mv (rename) instead of copytree — same GPFS filesystem, so this is O(1)
+            # and avoids hitting login-node memory/resource limits on large reference sets.
+            print(f"Moving {source_path} to {target_path}")
+            subprocess.run(["mv", str(source_path), str(target_path)], check=True)
 
-            # Also copy .git to enable git-restore-mtime on references
+            # Move .git into the new references dir to enable git-restore-mtime
             git_source = temp_ref_dir / ".git"
             git_target = target_path / ".git"
             if git_source.exists():
-                print(f"Copying .git to {target_path}")
-                shutil.copytree(git_source, git_target)
+                print(f"Moving .git to {target_path}")
+                subprocess.run(["mv", str(git_source), str(git_target)], check=True)
 
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
