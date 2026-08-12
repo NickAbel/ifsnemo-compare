@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 import yaml
 from shlex import quote
 import subprocess
@@ -372,7 +373,12 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     ov = cfg.get("overrides", {})
 
     ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
-    ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
+    if ifs_source_git_url_template:
+        # Expand both $VAR and {VAR} references using the overrides dict
+        ifs_source_git_url = re.sub(r'\$([A-Z_][A-Z0-9_]*)', lambda m: ov.get(m.group(1), m.group(0)), ifs_source_git_url_template)
+        ifs_source_git_url = ifs_source_git_url.format(**{k: v for k, v in ov.items() if isinstance(v, str)})
+    else:
+        ifs_source_git_url = ""
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
     # Determine execution context
