@@ -13,8 +13,8 @@ paths:
 overrides:
   DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"      # Sandbox subdirectory name
   DNB_IFSNEMO_URL: "https://github.com/ecmwf-ifs/" # IFSNEMO URL
-  IFS_BUNDLE_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"  # IFS source Git URL
-  IFS_BUNDLE_IFS_SOURCE_VERSION: "CY49R3_20260526"  # Branch or version to use
+  IFS_RAPS_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"  # IFS source Git URL
+  IFS_RAPS_IFS_SOURCE_VERSION: "CY49R3_20260526"  # Branch or version to use
   DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
   DNB_IFSNEMO_BUILD_SUBDIR: "build.49r3.intel"
   #  env:
