@@ -35,24 +35,20 @@ function parse_args {
         NF=$(ls -1 $path/result.*.yaml 2>/dev/null | wc -l)
         [ "$NF" == 0 ] && fatal "$path does not have .yaml files"
 
-        # If multiple YAML files found, use the most recent one.
-        if [ "$NF" -gt 1 ]; then
-            yaml_path=$(ls -t $path/result.*.yaml 2>/dev/null | head -n 1)
-            echo "Multiple YAML files found in $path, using most recent: $(basename $yaml_path)" 1>&2
-        else
-            yaml_path=$path/result.*.yaml
-        fi
+        # If multiple YAML files found, pick the highest-numbered one.
+        yaml_path=$(ls "$path"/result.*.yaml 2>/dev/null | sort -V | tail -n 1)
+        [ "$NF" -gt 1 ] && echo "Multiple YAML files found in $path, using highest-numbered: $(basename "$yaml_path")" 1>&2
 
         # Store the selected yaml path in global array.
         YAML_PATHS[$idx]=$yaml_path
         idx=$((idx + 1))
 
         # Overwrite stored .yaml file length if not stored yet.
-        cur_yaml_length=$(wc -l < $yaml_path)
-        [ $yaml_length == -1 ] && yaml_length=$cur_yaml_length
+        cur_yaml_length=$(wc -l < "$yaml_path")
+        [ "$yaml_length" == -1 ] && yaml_length=$cur_yaml_length
 
         # Check if .yaml file has same length.
-        [ $cur_yaml_length != $yaml_length ] && fatal "$path's .yaml file is of different length ($yaml_length != $cur_yaml_length)"
+        [ "$cur_yaml_length" != "$yaml_length" ] && fatal "$path's .yaml file is of different length ($yaml_length != $cur_yaml_length)"
     done
 
     success "Both result files exist and have .yaml files of equal length."
