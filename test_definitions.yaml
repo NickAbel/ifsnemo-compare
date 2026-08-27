@@ -32,6 +32,24 @@ build_suites:
       - run-tests
       - compare
 
+  lbclnk_build:
+    working_dir: "{remote_path}/ifsnemo-build/ifsnemo-compare/tests/lbclnk"
+    script: "python3 lbclnk_test.py"
+    commands:
+      clone:
+        args: "clone --lbclnk-path {lbclnk_path} --lbclnk-url {lbclnk_url} --lbclnk-branch {lbclnk_branch}"
+        output_prefix: "lbclnk_clone"
+      build:
+        args: "build --lbclnk-path {lbclnk_path} --sandbox {lbclnk_sandbox} --machine-file {lbclnk_machine_file} --ifs-source-lbc-dir {lbclnk_ifs_source_lbc_dir}"
+        output_prefix: "lbclnk_build"
+      run-tests:
+        args: "run-tests --lbclnk-path {lbclnk_path} --sandbox {lbclnk_sandbox} --nodes {lbclnk_nodes} --ppn {lbclnk_ppn} --threads {lbclnk_threads}"
+        output_prefix: "lbclnk_run"
+    sequence:
+      - clone
+      - build
+      - run-tests
+
 # Test suites - run per configuration (resolution, threads, ppn, nodes, steps)
 test_suites:
   compare_norms:

@@ -743,11 +743,22 @@ ln -sf {machine_file} machine.yaml
             validate_test_definitions(test_defs, cfg, requested_build_suites, suite_type='build_suites')
 
             # Build context for build suites
+            lbclnk_cfg = cfg.get('lbclnk', {})
             build_context = {
                 'remote_path': str(remote_path),
                 'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
                 'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/{cfg.get('overrides', {}).get('DNB_IFSNEMO_BUILD_SUBDIR', 'build')}",
                 'gold_standard_tag': gold_standard_tag,
+                # lbclnk optional module
+                'lbclnk_path':            f"{remote_path}/lbclnk_v40",
+                'lbclnk_url':             lbclnk_cfg.get('url', 'https://gitlab.earth.bsc.es/digital-twins/nvidia/lbclnk_v40.git'),
+                'lbclnk_branch':          lbclnk_cfg.get('branch', 'baseline'),
+                'lbclnk_sandbox':         lbclnk_cfg.get('sandbox', 'cpu'),
+                'lbclnk_machine_file':    lbclnk_cfg.get('machine_file', machine_file or 'dnb-mn5-gpp.yaml'),
+                'lbclnk_nodes':           str(lbclnk_cfg.get('nodes', 1)),
+                'lbclnk_ppn':             str(lbclnk_cfg.get('ppn', 8)),
+                'lbclnk_threads':         str(lbclnk_cfg.get('threads', 10)),
+                'lbclnk_ifs_source_lbc_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/source/ifs-source/nemo/NEMOGCM_V40/src/OCE/LBC",
             }
 
             # Validate build context
