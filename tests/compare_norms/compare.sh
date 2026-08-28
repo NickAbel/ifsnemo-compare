@@ -12,7 +12,7 @@ declare -a YAML_PATHS
 # Display fatal styled message with given argument.
 function fatal {
     echo -e "$RED \u274c FATAL: $1$NC" 1>&2
-    return 1
+    exit 1
 }
 
 # Display success styled message with given argument.
