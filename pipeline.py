@@ -452,6 +452,27 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             print(f"Deleting remote tests directory: {remote_tests_dir}")
             conn.run(f"rm -rf {remote_tests_dir}")
 
+    # Always sync ifsnemo-compare scripts into the workspace so test-script updates
+    # take effect even with --skip-build.
+    subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
+    rsync_compare_cmd = [
+        "rsync", "-a", "--exclude", ".git", "--exclude", "__pycache__", "--exclude", "*.log",
+        str(script_dir) + "/",
+        str(local_path) + "/ifsnemo-compare/"
+    ]
+    run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
+
+    # In proxy mode with --skip-build the main workspace rsync doesn't run, so push
+    # the ifsnemo-compare directory to the remote directly.
+    if exec_mode == 'proxy' and skip_build:
+        rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
+        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build/ifsnemo-compare'")
+        run_command([
+            "rsync", "-a", "--exclude", ".git", "--exclude", "__pycache__", "--exclude", "*.log",
+            str(script_dir) + "/",
+            f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ifsnemo-compare/"
+        ], verbose=verbose, show_spinner=True)
+
     if not skip_build:
         # Generate overrides.yaml
         overrides_content = ['---', 'environment:']
@@ -553,16 +574,6 @@ psubmit:
 
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
-
-        # Copy local ifsnemo-compare into the local_path
-        script_dir = Path(__file__).resolve().parent
-        subprocess.run(["rm", "-fr", str(local_path) + "/ifsnemo-compare"], check=True)
-        rsync_compare_cmd = [
-            "rsync", "-a", "--exclude", ".git", "--exclude", "__pycache__", "--exclude", "*.log",
-            str(script_dir) + "/",
-            str(local_path) + "/ifsnemo-compare/"
-        ]
-        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
 
         # Restore modification times on git-controlled source files.
         # Only needed for incremental builds (--partial-build / :r mode) to avoid
