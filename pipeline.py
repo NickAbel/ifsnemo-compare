@@ -316,14 +316,14 @@ psubmit:
                 shutil.rmtree(target_path)
 
             print(f"Copying {source_path} to {target_path}")
-            shutil.copytree(source_path, target_path)
+            shutil.copytree(source_path, target_path, symlinks=True)
 
             # Also copy .git to enable git-restore-mtime on references
             git_source = temp_ref_dir / ".git"
             git_target = target_path / ".git"
             if git_source.exists():
                 print(f"Copying .git to {target_path}")
-                shutil.copytree(git_source, git_target)
+                shutil.copytree(git_source, git_target, symlinks=True)
 
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
