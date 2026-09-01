@@ -87,7 +87,7 @@ def check_remote_requirements(conn, verbose=False):
     elif verbose:
         print("All remote requirements are present.")
 
-def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False):
+def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False, ok_codes=(0,)):
     import threading
     if verbose:
         print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
@@ -123,7 +123,7 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner
             if capture_output:
                 output_lines.append(line)
     process.wait()
-    if process.returncode != 0:
+    if process.returncode not in ok_codes:
         raise subprocess.CalledProcessError(process.returncode, cmd)
     if capture_output:
         return process.returncode, "".join(output_lines)
@@ -342,7 +342,7 @@ psubmit:
             str(script_dir) + "/",
             str(local_path) + "/ifsnemo-compare/"
         ]
-        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
+        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
 
         # Restore modification times on git-controlled source files
         print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
@@ -420,7 +420,7 @@ psubmit:
             str(local_path) + "/",
             f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
         ]
-        run_command(rsync_cmd, verbose=verbose, show_spinner=True)
+        run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
