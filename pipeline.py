@@ -248,8 +248,9 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
         if ov.get('DNB_IFSNEMO_URL'):
             overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
-        if ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION'):
-            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ov.get("IFS_BUNDLE_IFS_SOURCE_VERSION")}"')
+        ifs_source_version = ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION') or ov.get('IFS_RAPS_IFS_SOURCE_VERSION')
+        if ifs_source_version:
+            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ifs_source_version}"')
         if ifs_source_git_url:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
