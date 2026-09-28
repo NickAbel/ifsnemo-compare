@@ -214,7 +214,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     ov = cfg.get("overrides", {})
 
-    ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT", "")
+    ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT") or ov.get("IFS_RAPS_IFS_SOURCE_GIT", "")
     ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
@@ -251,8 +251,10 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         ifs_source_version = ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION') or ov.get('IFS_RAPS_IFS_SOURCE_VERSION')
         if ifs_source_version:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ifs_source_version}"')
+            overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_VERSION="{ifs_source_version}"')
         if ifs_source_git_url:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
+            overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
         if ov.get('DNB_IFSNEMO_INPROOT'):
