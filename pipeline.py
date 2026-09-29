@@ -528,10 +528,18 @@ ln -sf {machine_file} machine.yaml
             validate_test_definitions(test_defs, cfg, requested_build_suites, suite_type='build_suites')
 
             # Build context for build suites
+            build_subdir = ov.get('DNB_IFSNEMO_BUILD_SUBDIR', 'build')
+            dnb_env_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}/dnb_environment"
+            _env = conn.run(f"cat {dnb_env_path} 2>/dev/null", warn=True, hide=True)
+            bundle_file = 'bundle.yml'
+            for _line in _env.stdout.splitlines():
+                if _line.startswith('export DNB_IFSNEMO_RAPS_BUNDLE_FILE='):
+                    bundle_file = _line.split('=', 1)[1].strip()
+                    break
             build_context = {
                 'remote_path': str(remote_path),
-                'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/bundle.yml",
-                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/build",
+                'bundle_yaml': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/{bundle_file}",
+                'build_dir': f"{remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/{build_subdir}",
                 'gold_standard_tag': gold_standard_tag,
             }
 
