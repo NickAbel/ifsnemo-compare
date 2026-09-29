@@ -20,7 +20,7 @@ from typing import Dict, List, Tuple, Optional, Any
 try:
     import yaml
 except ImportError:
-    print("ERROR: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
+    print("ERROR: PyYAML is required. Install with: pip install pyyaml")
     sys.exit(1)
 
 # ANSI formatting
@@ -98,7 +98,7 @@ def load_yaml(yaml_path: Path) -> Dict:
         with open(yaml_path, 'r') as f:
             return yaml.safe_load(f)
     except Exception as e:
-        print(f"ERROR: Failed to load YAML file {yaml_path}: {e}", file=sys.stderr)
+        print(f"bundle_validator: ERROR: Failed to load YAML file {yaml_path}: {e}")
         sys.exit(1)
 
 
@@ -116,7 +116,7 @@ def extract_package_version_from_cmake(cmake_file: Path) -> Optional[str]:
         if match:
             return match.group(1).strip()
     except Exception as e:
-        print(f"WARNING: Failed to read {cmake_file}: {e}", file=sys.stderr)
+        print(f"WARNING: Failed to read {cmake_file}: {e}")
 
     return None
 
@@ -188,7 +188,7 @@ def parse_configure_script(configure_path: Path) -> Dict[str, List[str]]:
         return cmake_flags
 
     except Exception as e:
-        print(f"WARNING: Failed to parse {configure_path}: {e}", file=sys.stderr)
+        print(f"WARNING: Failed to parse {configure_path}: {e}")
         return {}
 
 
@@ -199,7 +199,7 @@ def load_cmake_cache(cache_path: Path) -> Dict[str, List[Tuple[str, str]]]:
     Returns a dict mapping FLAG names to list of (TYPE, VALUE) tuples.
     """
     if not cache_path.exists():
-        print(f"ERROR: CMakeCache.txt not found at {cache_path}", file=sys.stderr)
+        print(f"ERROR: CMakeCache.txt not found at {cache_path}")
         sys.exit(1)
 
     cache_flags = {}
@@ -222,7 +222,7 @@ def load_cmake_cache(cache_path: Path) -> Dict[str, List[Tuple[str, str]]]:
                         cache_flags[flag] = []
                     cache_flags[flag].append((flag_type, value))
     except Exception as e:
-        print(f"ERROR: Failed to read CMakeCache.txt: {e}", file=sys.stderr)
+        print(f"ERROR: Failed to read CMakeCache.txt: {e}")
         sys.exit(1)
 
     return cache_flags
@@ -465,15 +465,15 @@ def run_validation(bundle_yaml: Path, build_dir: Path) -> Dict[str, Any]:
     """
     # Validate inputs
     if not bundle_yaml.exists():
-        print(f"ERROR: Bundle YAML file not found: {bundle_yaml}", file=sys.stderr)
+        print(f"ERROR: Bundle YAML file not found: {bundle_yaml}")
         sys.exit(1)
 
     if not build_dir.exists():
-        print(f"ERROR: Build directory not found: {build_dir}", file=sys.stderr)
+        print(f"ERROR: Build directory not found: {build_dir}")
         sys.exit(1)
 
     if not build_dir.is_dir():
-        print(f"ERROR: Build path is not a directory: {build_dir}", file=sys.stderr)
+        print(f"ERROR: Build path is not a directory: {build_dir}")
         sys.exit(1)
 
     # Load bundle.yml
@@ -515,7 +515,7 @@ def cmd_validate(args):
             args.output.write_text(json_output)
             print(f"Results written to: {args.output}")
         except Exception as e:
-            print(f"ERROR: Failed to write output file: {e}", file=sys.stderr)
+            print(f"ERROR: Failed to write output file: {e}")
             sys.exit(1)
     else:
         print(json_output)
@@ -563,11 +563,11 @@ def cmd_compare(args):
     test_path = Path(args.test_dir) / "bundle_validation.json"
 
     if not ref_path.exists():
-        print(f"ERROR: Reference file not found: {ref_path}", file=sys.stderr)
-        sys.exit(1)
+        print(f"bundle_validator: SKIP: Reference not found (gold standard predates bundle_validator): {ref_path}")
+        sys.exit(0)
 
     if not test_path.exists():
-        print(f"ERROR: Test file not found: {test_path}", file=sys.stderr)
+        print(f"bundle_validator: ERROR: Test result not found (run-tests step likely failed): {test_path}")
         sys.exit(1)
 
     with open(ref_path) as f:
