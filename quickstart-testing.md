@@ -65,26 +65,37 @@ source ~/.bashrc
 
 ### 2.2. Configure GitLab Access (generic-hpc-scripts)
 
-1. Generate a token:
-   - Go to **Profile → Personal Access Tokens** on [earth.bsc.es](https://earth.bsc.es/gitlab/-/profile/personal_access_tokens)
-   - Select all scopes
-   - Remove the expiration date
+The token is stored on shared HPC systems, so give it read-only access to code and nothing else. A leaked read-only token cannot push, change settings or act on your behalf.
 
-   ![Token Creation](https://github.com/user-attachments/assets/665f5be5-9889-46b5-a77d-6f7a0b396262)
+1. Generate a fine-grained token at [gitlab.earth.bsc.es → Personal access tokens → Generate fine-grained token](https://gitlab.earth.bsc.es/-/user_settings/personal_access_tokens/granular/new):
+   - **Name**: anything, e.g. `ifsnemo-build read-only`.
+   - **Expiration date**: the maximum is 365 days; renew the token when GitLab reminds you.
+   - **Group and project access**: *All groups and projects that I'm a member of*.
+   - **Resource permissions**: add **Repository → Code** with read access only. Leave every other resource unselected.
 
-2. Create and copy your token:
-   - Click **Create personal access token**
-   - Copy the token when the page reloads
+2. Create the token and copy it immediately; it is shown only once.
 
-   ![Copy Token](https://github.com/user-attachments/assets/4c75d326-fa82-4e7a-a0b8-abfa18fafe02)
-
-3. Add it to your `~/.netrc`:
+3. Add it to your `~/.netrc` and make the file private:
 
 ```ini
-machine earth.bsc.es
+machine gitlab.earth.bsc.es
   login YOUR_USERNAME
   password YOUR_NEW_PERSONAL_ACCESS_TOKEN
 ```
+
+```bash
+chmod 600 ~/.netrc
+```
+
+   `~/.netrc` is the **only** place the token belongs. The model run scripts copy the shell environment into result files, and `git` reads `~/.netrc` directly, so the token **never** needs to be in your environment.
+
+4. Check that the token can read code:
+
+```bash
+git ls-remote https://gitlab.earth.bsc.es/digital-twins/nvidia/ifsnemo-build.git HEAD
+```
+
+   This should print a commit hash without asking for a password.
 
 ### 2.3. Configure ECMWF Bitbucket Access
 
