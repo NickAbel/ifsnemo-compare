@@ -35,6 +35,6 @@ ifsnemo_compare:
   gpus:    [4]                # Number of GPUs (if applicable)
 
 references:
-  url: https://github.com/kellekai/bsc-ndse.git  # Git URL for references repository
+  url: https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git  # Git URL for references repository
   branch: main                                   # Branch to use
   path_in_repo: references                       # Path within the repository
