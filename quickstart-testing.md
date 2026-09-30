@@ -71,7 +71,7 @@ The token is stored on shared HPC systems, so give it read-only access to code a
    - **Name**: anything, e.g. `ifsnemo-build read-only`.
    - **Expiration date**: the maximum is 365 days; renew the token when GitLab reminds you.
    - **Group and project access**: *All groups and projects that I'm a member of*.
-   - **Resource permissions**: add **Repository → Code** with read access only. Leave every other resource unselected.
+   - **Resource permissions**: under **Group and project**, add **Repository → Code** with only the **Download** permission. Leave every other resource unselected.
 
 2. Create the token and copy it immediately; it is shown only once.
 
