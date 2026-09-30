@@ -42,6 +42,6 @@ ifsnemo_compare:
 
 #the Git repo where the references are stored
 references:
-  url: https://github.com/kellekai/bsc-ndse.git  # Git URL for references repository
+  url: https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git  # Git URL for references repository
   branch: main                                   # Branch to use (defaults to "main" if not specified)
   path_in_repo: references                       # Path within the repository where references are located

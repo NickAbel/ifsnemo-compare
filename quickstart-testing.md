@@ -230,7 +230,7 @@ psubmit:
 
 # IFS-NEMO comparison settings
 ifsnemo_compare:
-  gold_standard_tag: string     # Reference tag (e.g., "ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP") (see https://github.com/kellekai/bsc-ndse/tree/main/references for all available tags)
+  gold_standard_tag: string     # Reference tag (e.g., "ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references for all available tags)
 
   # Test suite selection (optional - defaults defined in test_definitions.yaml)
   build_suites: []            # Build-time test suites to run (e.g., ["bundle_validator"])
@@ -245,9 +245,9 @@ ifsnemo_compare:
 
 # Reference configuration (optional)
 references:
-  url: string                 # Git URL for references repository (e.g https://github.com/kellekai/bsc-ndse/) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  url: string                 # Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
   branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
+  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
 ```
 
 For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
