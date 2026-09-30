@@ -200,22 +200,22 @@ paths:
 # Override settings
 overrides:
   DNB_SANDBOX_SUBDIR: string     # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP") 
-  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-20250521.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable) (see pipeline-20250521.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use (see pipeline-20250521.yaml and quickstart.md for guidance)
-  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-20250521.yaml and quickstart.md for guidance)
-  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-20250521.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-20250521.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-20250521.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
   DNB_IFSNEMO_WITH_GPU: string         # Enable GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_GPU_EXTRA: string   # Enable extra GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_STATIC_LINKING: string # Enable static linking (e.g., "TRUE" or "FALSE")
 
 # SLURM submission settings
 psubmit:
-  queue_name: string             # Queue name (can be empty string) (see pipeline-20250521.yaml for guidance)
-  account: string               # Account name (e.g., ehpcXX) (see pipeline-20250521.yaml for guidance)
-  node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-20250521.yaml for guidance)
+  queue_name: string             # Queue name (can be empty string) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  account: string               # Account name (e.g., ehpcXX) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
 
 # IFS-NEMO comparison settings
 ifsnemo_compare:
@@ -234,12 +234,12 @@ ifsnemo_compare:
 
 # Reference configuration (optional)
 references:
-  url: string                 # Git URL for references repository (e.g https://github.com/kellekai/bsc-ndse/) (see pipeline-20250521.yaml for guidance)
-  branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-20250521.yaml for guidance)
+  url: string                 # Git URL for references repository (e.g https://github.com/kellekai/bsc-ndse/) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
   path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://github.com/kellekai/bsc-ndse/tree/main/references)
 ```
 
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](https://github.com/NickAbel/ifsnemo-compare/blob/7f0e0a34a084b661914d796a0c9df109a288ea57/pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
+For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
 
 > Note: The available test suites are defined in `test_definitions.yaml`. If `build_suites` or `test_suites` are not specified in your pipeline.yaml, the defaults from `test_definitions.yaml` will be used. This ensures backwards compatibility with existing pipeline.yaml files.
 
@@ -364,7 +364,7 @@ python3 compare_norms.py run-tests \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-20250521.yaml`):
+- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
 ```bash
 #TCO79 1day
 python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
@@ -398,7 +398,7 @@ python3 compare_norms.py compare \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-20250521.yaml`):
+- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
 ```bash
 #TCO79 1day
 python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
@@ -438,7 +438,7 @@ python3 compare_norms.py stat-test \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-20250521.yaml`):
+- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
 ```bash
 #TCO79 1day
 python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
