@@ -65,6 +65,9 @@ machine_pre_commands:
   dnb-mn5-acc:
     stat-test: "module load EB/apps SciPy-bundle/2025.07-gfbf-2025b"
     parse-and-plot: "module load EB/apps matplotlib/3.9.2-gfbf-2024a"
+  dnb-mn5-gpp-CY49R3:
+    stat-test: "module load EB/apps SciPy-bundle/2025.07-gfbf-2025b"
+    parse-and-plot: "module load EB/apps matplotlib/3.9.2-gfbf-2024a"
 
 # Required parameters for build_suites
 build_required_params:
