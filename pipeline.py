@@ -743,7 +743,11 @@ ln -sf {machine_file} machine.yaml
             validate_test_definitions(test_defs, cfg, requested_build_suites, suite_type='build_suites')
 
             # Build context for build suites
-            build_subdir = cfg.get('overrides', {}).get('DNB_IFSNEMO_BUILD_SUBDIR', 'build')
+            # The CMake build directory is always "build".
+            build_subdir = 'build'
+            if 'DNB_IFSNEMO_BUILD_SUBDIR' in cfg.get('overrides', {}):
+                print("[WARN] overrides.DNB_IFSNEMO_BUILD_SUBDIR is deprecated and ignored: "
+                      "the build directory is always 'build'.")
             dnb_env_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}/dnb_environment"
             _env = conn.run(f"cat {dnb_env_path} 2>/dev/null", warn=True, hide=True)
             bundle_file = 'bundle.yml'
