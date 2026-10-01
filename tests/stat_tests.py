@@ -255,29 +255,33 @@ def report(results: dict[str, StatResult]) -> None:
                 )
         else:
             effect_label = "pass" if r.effect_passed else "WARN"
+            effect_cmp   = "<=" if r.effect_passed else ">"
             effect_str   = (
                 f"d={r.effect_size:.4e}"
                 f"  sigma_pooled={r.sigma_pooled:.4e}"
-                f"  [{effect_label}]"
+                f"  [{effect_label}: |d|={abs(r.effect_size):.4e} {effect_cmp} "
+                f"tolerance {EFFECT_SIZE_THRESHOLD:g}]"
             )
         print(f"    effect-size: {effect_str}")
 
         if r.ks_stat is not None:
             ks_label = "pass" if r.ks_passed else "WARN"
+            ks_cmp   = ">=" if r.ks_passed else "<"
             print(
                 f"    KS:          stat={r.ks_stat:.4e}"
                 f"  p={r.ks_pval:.4e}"
-                f"  [{ks_label}]"
+                f"  [{ks_label}: p {ks_cmp} tolerance {KS_PVAL_THRESHOLD:g}]"
             )
         else:
             print("    KS:          [SKIP] scipy unavailable")
 
         if r.ttest_stat is not None:
             ttest_label = "pass" if r.ttest_passed else "WARN"
+            ttest_cmp   = ">=" if r.ttest_passed else "<"
             print(
                 f"    Welch-t:     stat={r.ttest_stat:.4e}"
                 f"  p={r.ttest_pval:.4e}"
-                f"  [{ttest_label}]"
+                f"  [{ttest_label}: p {ttest_cmp} tolerance {TTEST_PVAL_THRESHOLD:g}]"
             )
         else:
             print("    Welch-t:     [SKIP] scipy unavailable")
