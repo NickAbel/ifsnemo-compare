@@ -212,12 +212,22 @@ def run(
             continue
 
         if len(ref_arr) + len(test_arr) <= 2:
+            # Lengths are equal here, so each run has 0 or 1 values: there is no
+            # spread to estimate, but a single value can still be compared directly.
+            if not ref_arr:
+                reason = "empty array in both runs, nothing to compare"
+                mean_ref = mean_test = _nan
+            else:
+                mean_ref, mean_test = ref_arr[0], test_arr[0]
+                verdict = "identical" if mean_ref == mean_test else "DIFFER"
+                reason = (f"single value, no statistics possible: "
+                          f"ref={mean_ref!r} test={mean_test!r} ({verdict})")
             results[varname] = StatResult(
                 varname=varname, n_ref=len(ref_arr), n_test=len(test_arr),
-                mean_ref=_mean(ref_arr), mean_test=_mean(test_arr),
+                mean_ref=mean_ref, mean_test=mean_test,
                 sigma_pooled=_nan, effect_size=_nan, effect_passed=False,
                 skipped=True,
-                skip_reason=f"insufficient data for pooled std (n1 + n2 = {len(ref_arr) + len(test_arr)} <= 2)",
+                skip_reason=reason,
             )
             continue
 
