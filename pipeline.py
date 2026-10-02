@@ -746,8 +746,9 @@ ln -sf {machine_file} machine.yaml
             # The CMake build directory is always "build".
             build_subdir = 'build'
             if 'DNB_IFSNEMO_BUILD_SUBDIR' in cfg.get('overrides', {}):
-                print("[WARN] overrides.DNB_IFSNEMO_BUILD_SUBDIR is deprecated and ignored: "
-                      "the build directory is always 'build'.")
+                print(f"[WARN] overrides.DNB_IFSNEMO_BUILD_SUBDIR (set to "
+                      f"{cfg['overrides']['DNB_IFSNEMO_BUILD_SUBDIR']!r}) is deprecated: "
+                      f"the build directory is hardcoded to 'build'.")
             dnb_env_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}/dnb_environment"
             _env = conn.run(f"cat {dnb_env_path} 2>/dev/null", warn=True, hide=True)
             bundle_file = 'bundle.yml'
