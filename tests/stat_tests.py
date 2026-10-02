@@ -220,8 +220,7 @@ def run(
             else:
                 mean_ref, mean_test = ref_arr[0], test_arr[0]
                 verdict = "identical" if mean_ref == mean_test else "DIFFER"
-                reason = (f"single value, no statistics possible: "
-                          f"ref={mean_ref!r} test={mean_test!r} ({verdict})")
+                reason = f"ref={mean_ref!r} test={mean_test!r} ({verdict})"
             results[varname] = StatResult(
                 varname=varname, n_ref=len(ref_arr), n_test=len(test_arr),
                 mean_ref=mean_ref, mean_test=mean_test,
