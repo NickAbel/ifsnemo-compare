@@ -563,7 +563,7 @@ def cmd_compare(args):
     test_path = Path(args.test_dir) / "bundle_validation.json"
 
     if not ref_path.exists():
-        print(f"bundle_validator: SKIP: Reference not found (gold standard predates bundle_validator): {ref_path}")
+        print(f"bundle_validator: SKIP: Expected reference not found: {ref_path}")
         sys.exit(0)
 
     if not test_path.exists():
