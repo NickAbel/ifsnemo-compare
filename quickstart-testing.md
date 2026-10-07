@@ -2,54 +2,44 @@
 
 ## 0. Introduction
 
-This document describes how to use the `ifsnemo-compare` tool to run regression tests for the IFS-NEMO model. The tool automates the process of building the model, running a set of predefined tests, and comparing the results against a set of gold standards.
+This document describes how to use the `ifsnemo-compare` tool to run regression tests for the IFS-NEMO model. 
+
+The tool automates the process of building the model, running a set of predefined tests, and comparing the results against a set of gold standards.
 
 ## 1. Prerequisites
 
 Before you begin, ensure you have:
 
-### 1.1. ifsnemo-build access
-- For full setup details, visit:
-  - [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build)
-  - [ifsnemo-build instructions](https://hackmd.io/@mxKVWCKbQd6NvRm0h72YpQ/SkHOb6FZgg)
+### 1.1. Access to the following repositories
+- Please ensure you have access to the [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build)
+- As well as the following ecmwf-ifs GitHub repositories:
+  - [ifs-source](https://github.com/ecmwf-ifs/ifs-source)
+  - [ifs-raps](https://github.com/ecmwf-ifs/ifs-raps)
 
 ### 1.2. Required Python packages (installed on local machine)
-[fabric](https://github.com/fabric/fabric) is a remote execution package used by ifsnemo-compare's ´pipeline.py´ for automating commands on remote nodes.
-[pyyaml](https://github.com/yaml/pyyaml) is a YAML parser used to read the `pipeline.yaml` input files that drive ifsnemo-compare's `pipeline.py`.
+- [fabric](https://github.com/fabric/fabric), a remote execution package used by ifsnemo-compare's `pipeline.py` for automating commands on remote nodes.
+- [pyyaml](https://github.com/yaml/pyyaml), a YAML parser used to read the pipeline YAML configuration files that drive ifsnemo-compare's `pipeline.py`.
+
 Both are dependencies of ifsnemo-compare and must be installed.
-We recommend creating a dedicated Python virtual environment for this project:
-```bash
-# Create environment
-python3 -m venv ifsnemo-compare
 
-# Activate environment
-source ifsnemo-compare/bin/activate
+### 1.3. Access to your target platform
+- [MareNostrum 5](https://www.bsc.es/marenostrum/marenostrum-5)
 
-# Install required packages
-pip3 install fabric pyyaml
-
-# Deactivate environment (when needed)
-deactivate
-```
-
-### 1.3. Access to required platforms
-- [MareNostrum5](https://www.bsc.es/marenostrum/marenostrum-5) (if you do not have access, please contact your supervisor)
-- [ECMWF Bitbucket](https://git.ecmwf.int/) (see section 2.3 for detailed access requirements)
-
----
+**Note: For assistance with access to the repositories, please contact your supervisor! The ifsnemo-compare maintainers do not have any ability to grant access.**
 
 ## 2. Local Machine Setup
 
-First, create a dedicated project directory to organize all the components:
+Create a dedicated project directory to organize all the components:
 ```bash
 mkdir ifsnemo-compare-project
 cd ifsnemo-compare-project
-# All subsequent clone operations will be performed in this directory
 ```
 
 ### 2.1. Install `yq`
 
-[yq](https://github.com/mikefarah/yq) is a portable command-line YAML, JSON, XML, CSV, TOML and properties processor. It is a dependency of [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build).
+[yq](https://github.com/mikefarah/yq) is a portable command-line YAML processor and a dependency of [ifsnemo-build](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), a necessary component of `ifsnemo-compare`.
+
+`yq` must be in your PATH. For example, here is a simple way to add `yq` to `~/bin` and `~/bin` to your PATH:
 
 ```bash
 mkdir -p ~/bin
@@ -61,9 +51,9 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-> Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. The `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
+> Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
 
-### 2.2. Configure GitLab Access (generic-hpc-scripts)
+### 2.2. Configure Earth GitLab Access Token for `ifsnemo-build`
 
 The token is stored on shared HPC systems, so give it read-only access to code and nothing else. A leaked read-only token cannot push, change settings or act on your behalf.
 
@@ -75,7 +65,7 @@ The token is stored on shared HPC systems, so give it read-only access to code a
 
 2. Create the token and copy it immediately; it is shown only once.
 
-3. Add it to your `~/.netrc` and make the file private:
+3. Add it to your `~/.netrc` and ensure it is only readable by you:
 
 ```ini
 machine gitlab.earth.bsc.es
@@ -87,8 +77,6 @@ machine gitlab.earth.bsc.es
 chmod 600 ~/.netrc
 ```
 
-   `~/.netrc` is the **only** place the token belongs. The model run scripts copy the shell environment into result files, and `git` reads `~/.netrc` directly, so the token **never** needs to be in your environment.
-
 4. Check that the token can read code:
 
 ```bash
@@ -97,40 +85,11 @@ git ls-remote https://gitlab.earth.bsc.es/digital-twins/nvidia/ifsnemo-build.git
 
    This should print a commit hash without asking for a password.
 
-### 2.3. Configure ECMWF Bitbucket Access
+### 2.3. Configure ecmwf-ifs GitHub Access for `ifs-raps` and `ifs-source`
 
-Important: Before proceeding with Bitbucket access setup, you must first:
+**Note: If you have not been granted access to `ifs-raps` and `ifs-source` in the ecmwf-ifs GitHub, please contact your supervisor! ifsnemo-compare maintainers are unable to grant access.**
 
-1. Have an ECMWF account (https://ecmwf.int)
-2. Request Bitbucket access:
-   - Visit the [IFS Access Request Form](https://wiki.eduuni.fi/pages/viewpage.action?pageId=343558915&spaceKey=cscRDIcollaboration&title=IFS%2Baccess)
-   - Fill out the form with the following details:
-     - For "Group leader support/explanation": write "model development and integration testing"
-     - For "Specific access needed to": write "Bitbucket (IFS-Sources/RAPS)"
-   - Note: This is a monthly process and you will receive a confirmation email that you must acknowledge
-   - Important: By requesting access, you agree to the terms, particularly that IFS source code must not be made publicly available
-
-Once you have Bitbucket access:
-
-1. Create an HTTP access token:
-   - Log in to ECMWF: https://git.ecmwf.int/account
-   - Under "HTTP access tokens" click **Create token** (default options are sufficient)
-
-   ![ECMWF Token Creation](https://github.com/user-attachments/assets/ce1a17c2-4e3a-407c-8980-7755a5cecbab)
-
-2. Copy the token when prompted (you won't see it again).
-
-3. Add it to your `~/.netrc`:
-
-```ini
-machine git.ecmwf.int
-  login YOUR_ECMWF_USERNAME
-  password YOUR_NEW_ACCESS_TOKEN
-```
-
-> Note: You can find your ECMWF username at https://git.ecmwf.int/profile (example: ecmeXXXX).
-
-   ![ECMWF Username Example](https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9)
+1. From your [GitHub Keys page](https://github.com/settings/keys), under the SSH key you've created for your local machine, click "Configure SSO" and authorize "**ecmwf-ifs**", following the instructions. 
 
 ### 2.4. Clone and Configure ifsnemo-build
 In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
@@ -138,14 +97,14 @@ In this step, we'll clone the ifsnemo-build repository and set up the necessary 
 ```bash
 git clone --recursive https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git
 cd ifsnemo-build
-git checkout nabel-main-patch-75101
+git checkout cy49r3
 
 # Link to generic machine config
 ln -s dnb-generic.yaml machine.yaml
 ```
 
 ### 2.5. Clone ifsnemo-compare
-Now we'll clone the main comparison tool repository:
+If you have not done so already, be sure to clone the main comparison tool repository:
 
 ```bash
 cd ..  # Return to project root directory
@@ -154,11 +113,13 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 ---
 
-## 3. Login Node Setup
+## 3. Target Machine Setup
 
-> Note: This step assumes the availability and existence of an internet-connected login node. If this is not the case, download `yq` and `psubmit` and use `scp`, etc. as needed.
-[psubmit](https://github.com/a-v-medvedev/psubmit) is a software package for automated, generalized submission of batch jobs on a number of HPC systems. It is a dependency of both [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build) and ifsnemo-compare, and must be installed and in `PATH` on the target system where jobs will be submitted. This step performs this automatically.
-SSH into your internet-connected login node (in this case, `glogin4`) and prepare utilities:
+`yq` and `psubmit` are dependencies of `ifsnemo-build` and `ifsnemo-compare`, they both must be in `PATH` on your target machine.
+
+[psubmit](https://github.com/a-v-medvedev/psubmit) is a software package for automated, generalized submission of batch jobs on a number of HPC systems. It is a dependency of both [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build) and ifsnemo-compare.
+
+For example, to add `yq` to `~/bin` and `~/bin` to `PATH` on `glogin4`:
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es
@@ -252,23 +213,18 @@ references:
 
 For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
 
-> Note: The available test suites are defined in `test_definitions.yaml`. If `build_suites` or `test_suites` are not specified in your pipeline.yaml, the defaults from `test_definitions.yaml` will be used. This ensures backwards compatibility with existing pipeline.yaml files.
+> Note: The available test suites are defined in `test_definitions.yaml`. If `build_suites` or `test_suites` are not specified in your `pipeline.yaml`, the defaults set in `test_definitions.yaml` will be used. This ensures backwards compatibility with existing pipeline.yaml files.
 
 ---
 
 ## 5. Run the pipeline on your local machine
 
-Ensure your Python virtual environment is activated:
-```bash
-source ifsnemo-compare/bin/activate
-```
-
-Then run the pipeline:
+Run the pipeline:
 ```bash
 python3 pipeline.py
 ```
 
-This will execute the pipeline using the configuration specified in `pipeline.yaml`.
+This will execute the pipeline using the configuration specified in `pipeline.yaml`, building, installing, running, and post-processing the output, then delivering the test results.
 
 ## 6. Advanced Topics
 
