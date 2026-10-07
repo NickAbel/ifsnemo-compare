@@ -10,50 +10,17 @@ The tool automates the process of building the model, running a set of predefine
 
 Before you begin, ensure you have:
 
-### 1.1. Access to the following repositories
-- Please ensure you have access to the [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build)
-- As well as the following ecmwf-ifs GitHub repositories:
+### 1.1. Access to the required repositories
+
+You need read access to:
+- the [ifsnemo-build repository](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build) (Earth GitLab)
+- the following ecmwf-ifs GitHub repositories:
   - [ifs-source](https://github.com/ecmwf-ifs/ifs-source)
   - [ifs-raps](https://github.com/ecmwf-ifs/ifs-raps)
 
-### 1.2. Required Python packages (installed on local machine)
-- [fabric](https://github.com/fabric/fabric), a remote execution package used by ifsnemo-compare's `pipeline.py` for automating commands on remote nodes.
-- [pyyaml](https://github.com/yaml/pyyaml), a YAML parser used to read the pipeline YAML configuration files that drive ifsnemo-compare's `pipeline.py`.
+**Note: For assistance with access to the repositories, please contact your supervisor! The ifsnemo-compare maintainers do not have any ability to grant access.** The steps below configure credentials for access you've already been granted; they can't grant access itself.
 
-Both are dependencies of ifsnemo-compare and must be installed.
-
-### 1.3. Access to your target platform
-- [MareNostrum 5](https://www.bsc.es/marenostrum/marenostrum-5)
-
-**Note: For assistance with access to the repositories, please contact your supervisor! The ifsnemo-compare maintainers do not have any ability to grant access.**
-
-## 2. Local Machine Setup
-
-Create a dedicated project directory to organize all the components:
-```bash
-mkdir ifsnemo-compare-project
-cd ifsnemo-compare-project
-```
-
-### 2.1. Install `yq`
-
-[yq](https://github.com/mikefarah/yq) is a portable command-line YAML processor and a dependency of [ifsnemo-build](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), a necessary component of `ifsnemo-compare`.
-
-`yq` must be in your PATH. For example, here is a simple way to add `yq` to `~/bin` and `~/bin` to your PATH:
-
-```bash
-mkdir -p ~/bin
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ~/bin/yq
-chmod +x ~/bin/yq
-
-# Ensure ~/bin is in your PATH
-echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-> Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
-
-### 2.2. Configure Earth GitLab Access Token for `ifsnemo-build`
+#### 1.1.a. Earth GitLab (ifsnemo-build)
 
 The token is stored on shared HPC systems, so give it read-only access to code and nothing else. A leaked read-only token cannot push, change settings or act on your behalf.
 
@@ -85,13 +52,55 @@ git ls-remote https://gitlab.earth.bsc.es/digital-twins/nvidia/ifsnemo-build.git
 
    This should print a commit hash without asking for a password.
 
-### 2.3. Configure ecmwf-ifs GitHub Access for `ifs-raps` and `ifs-source`
+#### 1.1.b. ecmwf-ifs GitHub (ifs-raps, ifs-source)
 
-**Note: If you have not been granted access to `ifs-raps` and `ifs-source` in the ecmwf-ifs GitHub, please contact your supervisor! ifsnemo-compare maintainers are unable to grant access.**
+1. From your [GitHub Keys page](https://github.com/settings/keys), under the SSH key you've created for your local machine, click "Configure SSO" and authorize "**ecmwf-ifs**", following the instructions.
 
-1. From your [GitHub Keys page](https://github.com/settings/keys), under the SSH key you've created for your local machine, click "Configure SSO" and authorize "**ecmwf-ifs**", following the instructions. 
+2. Check access:
 
-### 2.4. Clone and Configure ifsnemo-build
+```bash
+git ls-remote git@github.com:ecmwf-ifs/ifs-raps.git HEAD
+git ls-remote git@github.com:ecmwf-ifs/ifs-source.git HEAD
+```
+
+   Each should print a commit hash. If you have not been granted access to `ifs-raps` and `ifs-source` in the ecmwf-ifs GitHub organization, the "Configure SSO" option won't be available -- see the note above.
+
+### 1.2. Required Python packages (installed on local machine)
+- [fabric](https://github.com/fabric/fabric), a remote execution package used by ifsnemo-compare's `pipeline.py` for automating commands on remote nodes.
+- [pyyaml](https://github.com/yaml/pyyaml), a YAML parser used to read the pipeline YAML configuration files that drive ifsnemo-compare's `pipeline.py`.
+
+Both are dependencies of ifsnemo-compare and must be installed.
+
+### 1.3. Access to your target platform
+- [MareNostrum 5](https://www.bsc.es/marenostrum/marenostrum-5)
+
+## 2. Local Machine Setup
+
+Create a dedicated project directory to organize all the components:
+```bash
+mkdir ifsnemo-compare-project
+cd ifsnemo-compare-project
+```
+
+### 2.1. Install `yq`
+
+[yq](https://github.com/mikefarah/yq) is a portable command-line YAML processor and a dependency of [ifsnemo-build](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), a necessary component of `ifsnemo-compare`.
+
+`yq` must be in your PATH. For example, here is a simple way to add `yq` to `~/bin` and `~/bin` to your PATH:
+
+```bash
+mkdir -p ~/bin
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ~/bin/yq
+chmod +x ~/bin/yq
+
+# Ensure ~/bin is in your PATH
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+> Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
+
+### 2.2. Clone and Configure ifsnemo-build
 In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
 
 ```bash
@@ -103,7 +112,7 @@ git checkout cy49r3
 ln -s dnb-generic.yaml machine.yaml
 ```
 
-### 2.5. Clone ifsnemo-compare
+### 2.3. Clone ifsnemo-compare
 If you have not done so already, be sure to clone the main comparison tool repository:
 
 ```bash
@@ -166,7 +175,7 @@ user:
 
 # Path configuration
 paths:
-  local_build_dir: string        # Path to ifsnemo-build directory on local machine. (Step 2.4)
+  local_build_dir: string        # Path to ifsnemo-build directory on local machine. (Step 2.2)
   remote_project_dir: string     # Path to remote project directory. Will be created if it doesn't exist.
 
 # Override settings
