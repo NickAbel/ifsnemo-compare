@@ -164,11 +164,91 @@ def step_repo_access():
     return all_ok
 
 
+# ---------------------------------------------------------------------------
+# Execution mode: mirrors pipeline.py's own resolve_exec_mode() exactly, so
+# this installer and the tool it's setting up use the same question and the
+# same vocabulary ('direct' / 'proxy'). Not imported from pipeline.py itself:
+# pipeline.py does an unconditional `import yaml` at module level, which may
+# not exist yet at this point in setup.
+# ---------------------------------------------------------------------------
+def ask_exec_mode():
+    print("""
+Cannot determine execution mode automatically.
+
+This tool needs to know whether it should run commands directly on this machine
+or connect to a remote system via SSH. We cannot infer this from the environment
+because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts —
+a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could
+cause unintended writes to an unknown system.
+
+Two modes are available:
+
+  [1] direct  — This machine has direct filesystem access to the target HPC
+                system's storage AND can submit jobs there from its command
+                line (e.g. you are on a login node of the target cluster).
+
+  [2] proxy   — This machine cannot do the above from its command line, but
+                can SSH to a machine that can (e.g. you are on a laptop
+                connecting to the cluster over SSH).
+""")
+    while True:
+        answer = input("Enter 1 (direct) or 2 (proxy): ").strip()
+        if answer == '1':
+            return 'direct'
+        if answer == '2':
+            return 'proxy'
+        print("Please enter 1 or 2.")
+
+
+# ---------------------------------------------------------------------------
+# Step 1.2: Python packages
+# ---------------------------------------------------------------------------
+def step_python_packages(exec_mode):
+    needed_mods = ["yaml"] if exec_mode == 'direct' else ["yaml", "fabric"]
+    label = "pyyaml" if exec_mode == 'direct' else "pyyaml, fabric"
+    print(f"\n{BOLD}1.2. Python packages ({label}){RESET}")
+    if exec_mode == 'direct':
+        print("  fabric (the SSH connection library) isn't needed in direct mode --")
+        print("  there's no SSH hop to make from the login node to itself.")
+
+    missing = []
+    for mod in needed_mods:
+        try:
+            __import__(mod)
+        except ImportError:
+            missing.append("pyyaml" if mod == "yaml" else mod)
+
+    if not missing:
+        if len(needed_mods) == 1:
+            ok(f"{label} is already importable")
+        else:
+            ok("pyyaml and fabric are both already importable")
+        return
+
+    warn(f"Missing: {', '.join(missing)}")
+    if not ask_yn(f"Install with 'pip3 install {' '.join(missing)}' now?", default=True):
+        warn(f"Skipped. Install them yourself before running pipeline.py:\n"
+             f"    pip3 install {' '.join(missing)}")
+        return
+
+    print(f"  pip3 install {' '.join(missing)}")
+    result = subprocess.run([sys.executable, "-m", "pip", "install", "--user", *missing],
+                            text=True, capture_output=True)
+    if result.returncode != 0:
+        fail("pip install failed:")
+        print(result.stdout)
+        print(result.stderr)
+    else:
+        ok(f"Installed {', '.join(missing)}")
+
+
 def main():
     print(f"{BOLD}ifsnemo-compare guided setup{RESET}")
     print("Safe to re-run: already-completed steps are detected and skipped.\n")
 
     step_repo_access()
+    exec_mode = ask_exec_mode()
+    step_python_packages(exec_mode)
 
     print(f"\n{BOLD}(more steps to come){RESET}")
 
