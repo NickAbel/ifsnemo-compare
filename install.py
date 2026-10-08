@@ -12,8 +12,11 @@ pyyaml/fabric, so it can't depend on either of them itself.
 """
 import getpass
 import os
+import shutil
+import stat
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 BOLD = '\033[1m'
@@ -37,12 +40,15 @@ def fail(msg):
     print(f"{RED}✗{RESET} {msg}")
 
 
-def ask(prompt, secret=False):
+def ask(prompt, default=None, secret=False):
     getter = getpass.getpass if secret else input
+    suffix = f" [{default}]" if default is not None else ""
     while True:
-        val = getter(f"{prompt}: ").strip()
+        val = getter(f"{prompt}{suffix}: ").strip()
         if val:
             return val
+        if default is not None:
+            return default
         print("  (a value is required)")
 
 
@@ -242,6 +248,40 @@ def step_python_packages(exec_mode):
         ok(f"Installed {', '.join(missing)}")
 
 
+# ---------------------------------------------------------------------------
+# Step 2.1: yq
+# ---------------------------------------------------------------------------
+def step_yq():
+    print(f"\n{BOLD}2.1. yq{RESET}")
+    existing = shutil.which("yq")
+    if existing:
+        ok(f"yq is already in PATH ({existing})")
+        return True
+
+    print("  yq not found.")
+    bin_dir = Path(ask("  Directory to install it in (must be in PATH, or you'll "
+                        "need to add it)", default=str(Path.home() / "bin"))).expanduser()
+    bin_dir.mkdir(parents=True, exist_ok=True)
+    dest = bin_dir / "yq"
+    url = "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
+    try:
+        urllib.request.urlretrieve(url, dest)
+    except Exception as e:
+        fail(f"Could not download yq: {e}")
+        warn(f"Install it manually and ensure it's in PATH: {url}")
+        return False
+
+    dest.chmod(dest.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+    ok(f"Installed yq to {dest}")
+
+    if shutil.which("yq") is None:
+        warn(f"{bin_dir} is not in your PATH yet. Add this to your shell rc file:\n"
+             f"    export PATH=\"{bin_dir}:$PATH\"\n"
+             "  then restart your shell (or `source` the rc file) before running pipeline.py.")
+        return False
+    return True
+
+
 def main():
     print(f"{BOLD}ifsnemo-compare guided setup{RESET}")
     print("Safe to re-run: already-completed steps are detected and skipped.\n")
@@ -249,6 +289,7 @@ def main():
     step_repo_access()
     exec_mode = ask_exec_mode()
     step_python_packages(exec_mode)
+    step_yq()
 
     print(f"\n{BOLD}(more steps to come){RESET}")
 
