@@ -306,18 +306,23 @@ python3 compare_norms.py <command> [options...]
 
 Commands and important options:
 
-1) `create-refs`
-- Purpose: submit jobs to create and store reference results.
-- **NOTE** Unless you are working on CI/CD and know what you are doing, you do not need this option.
-- Key options:
-  - `-g, --ref-subdirs` which reference binary to compare against (single string; required) (following the pipeline, may choose from any directory within the `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references` directory
-  - `-og, --output-refdir` directory in which the references created are to be stored (required; single value) (following the pipeline, `references/`)
-  - `-r, --resolutions` list of resolution names (default: tco79-eORCA1)
-  - `-nt, --nthreads` number of threads (list)
-  - `-p, --ppn` processes per node (list)
-  - `-n, --nnodes` number of nodes (list)
-  - `-s, --nsteps` number of steps (list; can be strings like "d1")
-- Example:
+#### 6.2.1 `create-refs`
+
+**Purpose:** submit jobs to create and store reference results.
+
+> **Note:** unless you are working on CI/CD and know what you are doing, you do not need this command.
+
+**Key options:**
+
+- `-g, --ref-subdirs` — which reference binary to compare against (single string; required). Following the pipeline, choose from any directory within `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references`.
+- `-og, --output-refdir` — directory in which the created references are stored (required; single value). Following the pipeline: `references/`.
+- `-r, --resolutions` — list of resolution names (default: `tco79-eORCA1`)
+- `-nt, --nthreads` — number of threads (list)
+- `-p, --ppn` — processes per node (list)
+- `-n, --nnodes` — number of nodes (list)
+- `-s, --nsteps` — number of steps (list; can be strings like `"d1"`)
+
+**Example:**
 ```bash
 python3 compare_norms.py create-refs \
   -g /path/to/ref/bin/dir \
@@ -328,27 +333,40 @@ python3 compare_norms.py create-refs \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (To create references for `ifsMASTER.SP.CPU.GPP`)
-- **NOTE** Unless you know what you are doing, you don't need to worry about this.
-```bash
-#TCO79 1day
-python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day  
-python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day 
-python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
-```
-- Behavior: for each combination of the supplied arrays, this will call `psubmit.sh` (expecting it in PATH), capture "Job ID <id>" from the submission output, write a run log file, and copy `results.<jobid>` into the organized output directory structure.
 
-2) `run-tests`
-- Purpose: submit jobs for test binaries (same parameterization as create-refs)
-- Key options:
-  - `-t, --test-subdirs` one or more test binary directories (required) (following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary)
-  - `-ot, --output-testdir` directory to store test outputs (required; single value) (following the pipeline, `tests/`)
-  - parameters: `-r`, `-nt`, `-p`, `-n`, `-s` (same meaning as above)
-- Example:
+**Pipeline-following example** (creating references for `ifsMASTER.SP.CPU.GPP`):
+
+> Unless you know what you are doing, you don't need to worry about this.
+
+```bash
+# TCO79, 1 day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+
+# TCO399, 1 day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+
+# TCO1279, 1 day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+
+# TCO2559, 1 day
+python3 compare_norms.py create-refs -g ifsMASTER.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
+```
+
+**Behavior:** for each combination of the supplied arrays, this calls `psubmit.sh` (expecting it in `PATH`), captures "Job ID \<id\>" from the submission output, writes a run log file, and copies `results.<jobid>` into the organized output directory structure.
+
+---
+
+#### 6.2.2 `run-tests`
+
+**Purpose:** submit jobs for test binaries (same parameterization as `create-refs`).
+
+**Key options:**
+
+- `-t, --test-subdirs` — one or more test binary directories (required). Following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary.
+- `-ot, --output-testdir` — directory to store test outputs (required; single value). Following the pipeline: `tests/`.
+- `-r`, `-nt`, `-p`, `-n`, `-s` — same meaning as above.
+
+**Example:**
 ```bash
 python3 compare_norms.py run-tests \
   -t  /path/to/test/bin/dir \
@@ -359,28 +377,39 @@ python3 compare_norms.py run-tests \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
-```bash
-#TCO79 1day
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day  
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day 
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599-eORCA12 -nt 14 -p 8 -n 260 -s d1      
-```
-- Behavior: similar to create-refs, but labels logs as test runs and stores `results.<jobid>` under the test output directory.
 
-3) `compare`
-- Purpose: compare stored reference results against test results using the repository's compare.sh
-- Key options:
-  - `-g, --ref-subdir` which reference binary to compare against (single string; required) (following the pipeline, may choose from any directory within the `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references` directory
-  - `-t, --test-subdirs` one or more test binary directories (required) (following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary)
-  - `-og, --output-refdir` directory in which references are stored (required; single value) (following the pipeline, `references/`)
-  - `-ot, --output-testdir` directory in which test outputs are stored (required; single value) (following the pipeline, `tests/`)
-  - `-r, -nt, -p, -n, -s` as above to iterate parameter combinations
-- Example:
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+```bash
+# TCO79, 1 day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+
+# TCO399, 1 day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+
+# TCO1279, 1 day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+
+# TCO2559, 1 day
+python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599-eORCA12 -nt 14 -p 8 -n 260 -s d1
+```
+
+**Behavior:** similar to `create-refs`, but labels logs as test runs and stores `results.<jobid>` under the test output directory.
+
+---
+
+#### 6.2.3 `compare`
+
+**Purpose:** compare stored reference results against test results using the repository's `compare.sh`.
+
+**Key options:**
+
+- `-g, --ref-subdir` — which reference binary to compare against (single string; required). Following the pipeline, choose from any directory within `<paths:remote_project_dir>/ifsnemo-build/src/sandbox/references`.
+- `-t, --test-subdirs` — one or more test binary directories (required). Following the pipeline, `<overrides:DNB_SANDBOX_SUBDIR>/` may be used to run tests with the pipeline-built binary.
+- `-og, --output-refdir` — directory in which references are stored (required; single value). Following the pipeline: `references/`.
+- `-ot, --output-testdir` — directory in which test outputs are stored (required; single value). Following the pipeline: `tests/`.
+- `-r, -nt, -p, -n, -s` — as above, to iterate parameter combinations.
+
+**Example:**
 ```bash
 python3 compare_norms.py compare \
   -g /path/to/ref/bin/dir \
@@ -393,34 +422,44 @@ python3 compare_norms.py compare \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
-```bash
-#TCO79 1day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day  
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day 
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
-```
-- Behavior: for each parameter combination, the tool looks for the reference results directory and the test results directory and then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
 
-4) `stat-test`
-- Runs statistical tests on the norm arrays extracted from stored ref and test `result.<jobid>.yaml`s.
-- The following tests are applied per-variable:
-  - **Effect-size test**: The difference of the means, in terms of the standard deviation, $`d = \dfrac{ \overline{ref} − \overline{test} } { \sigma_d } `$, where  $` { \sigma_d } `$  is the pooled standard deviation of both groups:
-    - $` \sigma_d  = \dfrac{ (n - 1)(s_1^2 + s_2^2) } { 2n - 2 } `$, where
-    - $` s_i^2 = \dfrac{1}{n-1}\sum_{j=1}^n ( x_{i,j} - \overline{x_i} ) ^2, \quad i=1,2 `$ are the variances corresponding to the reference and test norm arrays $` x_1, x_2\in \mathbb{R}^n `$. 
-    - Warns when $`\left| d \right| >`$ `EFFECT_SIZE_THRESHOLD` (default `1.0`).
-  - Two-sample **Kolmogorov-Smirnov test** (`scipy.stats.ks_2samp`), using the default optional arguments.
-    - Warns when $` p < `$ `KS_PVAL_THRESHOLD` (default `0.05`).
-  - Two-sample **Welch t-test** (`scipy.stats.ttest_ind` with `equal_var=False` and `alternative='two-sided'`).
-    - Warns when $` p < `$ `KS_PVAL_THRESHOLD` (default `0.05`).
-    - `equal_var=False` parameter is what makes it Welch's t-test specifically (allows unequal variances between the two groups).                                             
-    - Uses `alternative='two-sided'` for a two-tailed test.
-- Identical to `compare` — same `-g`, `-t`, `-og`, `-ot`, `-r`, `-nt`, `-p`, `-n`, `-s`, `--gpus` arguments.
-- Example:
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+```bash
+# TCO79, 1 day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+
+# TCO399, 1 day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+
+# TCO1279, 1 day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+
+# TCO2559, 1 day
+python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
+```
+
+**Behavior:** for each parameter combination, the tool looks for the reference results directory and the test results directory, then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
+
+---
+
+#### 6.2.4 `stat-test`
+
+Runs statistical tests on the norm arrays extracted from stored ref and test `result.<jobid>.yaml`s. The following tests are applied per-variable:
+
+- **Effect-size test**: the difference of the means, in terms of the standard deviation, $`d = \dfrac{ \overline{ref} − \overline{test} } { \sigma_d } `$, where $` { \sigma_d } `$ is the pooled standard deviation of both groups:
+  - $` \sigma_d  = \dfrac{ (n - 1)(s_1^2 + s_2^2) } { 2n - 2 } `$, where
+  - $` s_i^2 = \dfrac{1}{n-1}\sum_{j=1}^n ( x_{i,j} - \overline{x_i} ) ^2, \quad i=1,2 `$ are the variances corresponding to the reference and test norm arrays $` x_1, x_2\in \mathbb{R}^n `$.
+  - Warns when $`\left| d \right| >`$ `EFFECT_SIZE_THRESHOLD` (default `1.0`).
+- Two-sample **Kolmogorov-Smirnov test** (`scipy.stats.ks_2samp`), using the default optional arguments.
+  - Warns when $` p < `$ `KS_PVAL_THRESHOLD` (default `0.05`).
+- Two-sample **Welch t-test** (`scipy.stats.ttest_ind` with `equal_var=False` and `alternative='two-sided'`).
+  - Warns when $` p < `$ `KS_PVAL_THRESHOLD` (default `0.05`).
+  - `equal_var=False` is what makes it Welch's t-test specifically (allows unequal variances between the two groups).
+  - Uses `alternative='two-sided'` for a two-tailed test.
+
+Takes identical arguments to `compare` — same `-g`, `-t`, `-og`, `-ot`, `-r`, `-nt`, `-p`, `-n`, `-s`, `--gpus`.
+
+**Example:**
 ```bash
 python3 compare_norms.py stat-test \
   -g /path/to/ref/bin/dir \
@@ -433,24 +472,29 @@ python3 compare_norms.py stat-test \
   -n 1 \
   -s d1
 ```
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
 ```bash
-#TCO79 1day
+# TCO79, 1 day
 python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day
+
+# TCO399, 1 day
 python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
+
+# TCO1279, 1 day
 python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day
+
+# TCO2559, 1 day
 python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
 ```
-- Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or a zero pooled standard deviation are reported as `[SKIP]` or `[degenerate]` with an explanation.
 
-Notes and tips:
+Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or a zero pooled standard deviation are reported as `[SKIP]` or `[degenerate]` with an explanation.
+
+---
+
+**Notes and tips:**
 - `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
-- Ensure `compare.sh` (or equivalent comparison scripts) are present and executable where `compare_norms.py` runs.
-- Use the tools interactively on the remote/login node if you want step-by-step control, or use `pipeline.py` to automate the full build/upload/run/compare flow from your local machine.
 
 ## 7. Interpreting the Results
 
