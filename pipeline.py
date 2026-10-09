@@ -364,7 +364,18 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     ov = cfg.get("overrides", {})
 
-    ifs_source_git_url_template = ov.get("IFS_RAPS_IFS_SOURCE_GIT", "")
+    def resolve_alias(raps_key, bundle_key):
+        # IFS_RAPS_* is the real/canonical key; IFS_BUNDLE_* is an older alias
+        # some pipeline.yaml files still use. If both are set, that's redundant
+        # -- RAPS wins, and we say so rather than silently dropping one.
+        raps_val = ov.get(raps_key)
+        bundle_val = ov.get(bundle_key)
+        if raps_val and bundle_val:
+            print(f"NOTE: both {raps_key} and {bundle_key} are set in overrides; "
+                  f"{raps_key} takes precedence and {bundle_key} is ignored.")
+        return raps_val or bundle_val
+
+    ifs_source_git_url_template = resolve_alias("IFS_RAPS_IFS_SOURCE_GIT", "IFS_BUNDLE_IFS_SOURCE_GIT") or ""
     if ifs_source_git_url_template:
         # Expand both $VAR and {VAR} references using the overrides dict
         ifs_source_git_url = re.sub(r'\$([A-Z_][A-Z0-9_]*)', lambda m: ov.get(m.group(1), m.group(0)), ifs_source_git_url_template)
@@ -452,9 +463,12 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
         if ov.get('DNB_IFSNEMO_URL'):
             overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
-        if ov.get('IFS_RAPS_IFS_SOURCE_VERSION'):
-            overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_VERSION="{ov.get("IFS_RAPS_IFS_SOURCE_VERSION")}"')
+        ifs_source_version = resolve_alias('IFS_RAPS_IFS_SOURCE_VERSION', 'IFS_BUNDLE_IFS_SOURCE_VERSION')
+        if ifs_source_version:
+            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ifs_source_version}"')
+            overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_VERSION="{ifs_source_version}"')
         if ifs_source_git_url:
+            overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_GIT="{ifs_source_git_url}"')
             overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_GIT="{ifs_source_git_url}"')
         if ov.get('DNB_IFSNEMO_BUNDLE_BRANCH'):
             overrides_content.append(f'  - export DNB_IFSNEMO_BUNDLE_BRANCH="{ov.get("DNB_IFSNEMO_BUNDLE_BRANCH")}"')
