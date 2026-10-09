@@ -364,6 +364,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     ov = cfg.get("overrides", {})
 
+<<<<<<< HEAD
     def resolve_alias(raps_key, bundle_key):
         # IFS_RAPS_* is the real/canonical key; IFS_BUNDLE_* is an older alias
         # some pipeline.yaml files still use. If both are set, that's redundant
@@ -382,6 +383,10 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         ifs_source_git_url = ifs_source_git_url.format(**{k: v for k, v in ov.items() if isinstance(v, str)})
     else:
         ifs_source_git_url = ""
+=======
+    ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT") or ov.get("IFS_RAPS_IFS_SOURCE_GIT", "")
+    ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
+>>>>>>> origin/main
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
     # Determine execution context
@@ -463,7 +468,11 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
         if ov.get('DNB_IFSNEMO_URL'):
             overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
+<<<<<<< HEAD
         ifs_source_version = resolve_alias('IFS_RAPS_IFS_SOURCE_VERSION', 'IFS_BUNDLE_IFS_SOURCE_VERSION')
+=======
+        ifs_source_version = ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION') or ov.get('IFS_RAPS_IFS_SOURCE_VERSION')
+>>>>>>> origin/main
         if ifs_source_version:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ifs_source_version}"')
             overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_VERSION="{ifs_source_version}"')
@@ -533,17 +542,27 @@ psubmit:
             if target_path.exists():
                 shutil.rmtree(target_path)
 
+<<<<<<< HEAD
             # Use mv (rename) instead of copytree — same GPFS filesystem, so this is O(1)
             # and avoids hitting login-node memory/resource limits on large reference sets.
             print(f"Moving {source_path} to {target_path}")
             subprocess.run(["mv", str(source_path), str(target_path)], check=True)
+=======
+            print(f"Copying {source_path} to {target_path}")
+            shutil.copytree(source_path, target_path, symlinks=True)
+>>>>>>> origin/main
 
             # Move .git into the new references dir to enable git-restore-mtime
             git_source = temp_ref_dir / ".git"
             git_target = target_path / ".git"
             if git_source.exists():
+<<<<<<< HEAD
                 print(f"Moving .git to {target_path}")
                 subprocess.run(["mv", str(git_source), str(git_target)], check=True)
+=======
+                print(f"Copying .git to {target_path}")
+                shutil.copytree(git_source, git_target, symlinks=True)
+>>>>>>> origin/main
 
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
@@ -627,6 +646,7 @@ psubmit:
         # 2.1-2.3 Build and Install on remote
         ############################################
 
+<<<<<<< HEAD
         # In proxy mode, rsync local ifsnemo-build workspace to the remote.
         # In direct mode we're already on the HPC — local_path IS the workspace, nothing to sync.
         if exec_mode == 'proxy':
@@ -640,6 +660,26 @@ psubmit:
                 f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
             ]
             run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
+=======
+        # Sync files to remote using rsync
+        local_path = Path(local_path)
+        remote_path = Path(remote_path)
+
+        # Determine which machine to use for rsync (transfer machine if specified, otherwise target)
+        rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
+
+        # Ensure the remote directory exists
+        print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+        conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+
+        print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
+        rsync_cmd = [
+            "rsync", "-rlpgoDt", "--compress", "--info=progress2,stats2", "--itemize-changes",
+            str(local_path) + "/",
+            f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
+        ]
+        run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
+>>>>>>> origin/main
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
