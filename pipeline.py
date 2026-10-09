@@ -232,7 +232,7 @@ def check_remote_requirements(conn, verbose=False):
     elif verbose:
         print("All remote requirements are present.")
 
-def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False):
+def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner=False, ok_codes=(0,)):
     import threading
     if verbose:
         print(f"Running: {' '.join(cmd)} in {cwd or '.'}")
@@ -268,7 +268,7 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner
             if capture_output:
                 output_lines.append(line)
     process.wait()
-    if process.returncode != 0:
+    if process.returncode not in ok_codes:
         raise subprocess.CalledProcessError(process.returncode, cmd)
     if capture_output:
         return process.returncode, "".join(output_lines)
@@ -569,7 +569,7 @@ psubmit:
             str(script_dir) + "/",
             str(local_path) + "/ifsnemo-compare/"
         ]
-        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True)
+        run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
 
         # Restore modification times on git-controlled source files.
         # Only needed for incremental builds (--partial-build / :r mode) to avoid
@@ -639,7 +639,7 @@ psubmit:
                 str(local_path) + "/",
                 f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
             ]
-            run_command(rsync_cmd, verbose=verbose, show_spinner=True)
+            run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
@@ -752,9 +752,9 @@ ln -sf {machine_file} machine.yaml
             # Build context for build suites
             # The CMake build directory is always "build".
             build_subdir = 'build'
-            if 'DNB_IFSNEMO_BUILD_SUBDIR' in cfg.get('overrides', {}):
+            if 'DNB_IFSNEMO_BUILD_SUBDIR' in ov:
                 print(f"[WARN] overrides.DNB_IFSNEMO_BUILD_SUBDIR (set to "
-                      f"{cfg['overrides']['DNB_IFSNEMO_BUILD_SUBDIR']!r}) is deprecated: "
+                      f"{ov['DNB_IFSNEMO_BUILD_SUBDIR']!r}) is deprecated: "
                       f"the build directory is hardcoded to 'build'.")
             dnb_env_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}/dnb_environment"
             _env = conn.run(f"cat {dnb_env_path} 2>/dev/null", warn=True, hide=True)

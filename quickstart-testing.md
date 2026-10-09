@@ -46,6 +46,8 @@ machine gitlab.earth.bsc.es
 chmod 600 ~/.netrc
 ```
 
+`~/.netrc` is the **only** place the token belongs. The model run scripts copy the shell environment into result files, and `git` reads `~/.netrc` directly, so the token **never** needs to be in your environment.
+
 4. Check that the token can read code:
 
 ```bash
