@@ -6,6 +6,8 @@ This document describes how to use the `ifsnemo-compare` tool to run regression 
 
 The tool automates the process of building the model, running a set of predefined tests, and comparing the results against a set of gold standards.
 
+> **Tip:** `install.py` walks you through Sections 1-3 of this guide interactively, checking what's already done and only prompting for what's missing. It's safe to re-run.
+
 ## 1. Prerequisites
 
 Before you begin, ensure you have:
