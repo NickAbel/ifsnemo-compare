@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
+import re
 import yaml
 from shlex import quote
 import subprocess
 from pathlib import Path
-from fabric import Connection
+try:
+    from fabric import Connection
+except ImportError:
+    Connection = None
 from datetime import datetime
 import shutil
 import time
 import sys
 import argparse
 import json
+import os
+import socket
+from typing import Optional
 from test_runner import (
     load_test_definitions,
     validate_test_definitions,
@@ -20,6 +27,144 @@ from test_runner import (
 # ANSI formatting
 BOLD = '\033[1m'
 RESET = '\033[0m'
+
+
+from dataclasses import dataclass
+
+@dataclass
+class _LocalResult:
+    stdout: str
+    stderr: str
+    exited: int
+
+    @property
+    def return_code(self):
+        return self.exited
+
+    @property
+    def ok(self):
+        return self.exited == 0
+
+
+class LocalConnection:
+    """Fabric Connection-compatible interface for local (on-HPC) execution."""
+
+    def run(self, cmd, hide=False, warn=False, **kwargs):
+        result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+        if not hide:
+            if result.stdout:
+                print(result.stdout, end='')
+            if result.stderr:
+                print(result.stderr, end='', file=sys.stderr)
+        if result.returncode != 0 and not warn:
+            raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout, result.stderr)
+        return _LocalResult(stdout=result.stdout, stderr=result.stderr, exited=result.returncode)
+
+    def get(self, remote_path, local=None):
+        if local:
+            shutil.copy2(remote_path, local)
+
+    def put(self, local_path, remote_path):
+        dest = Path(remote_path)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(local_path, dest)
+
+    def close(self):
+        pass
+
+
+def check_internet() -> bool:
+    """Returns True if outbound TCP to github.com:443 succeeds within 5 seconds."""
+    try:
+        with socket.create_connection(("github.com", 443), timeout=5):
+            return True
+    except OSError:
+        return False
+
+
+def print_banner():
+    C  = '\033[96m'   # bright cyan
+    W  = '\033[97m'   # bright white
+    D  = '\033[2;36m' # dim cyan (box + separator)
+    DW = '\033[2m'    # dim (info line)
+    R  = '\033[0m'    # reset
+    pad = ' ' * 18    # right-pad art rows to fill 50-char interior (2 indent + 30 art + 18 pad)
+    bl  = ' ' * 50    # blank interior
+    print('\n'.join([
+        f"{D}╔{'═'*50}╗{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {C}### ### ### # # ### #   # ####{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} #  #   #   ### #   ## ## #  #{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} #  ##  ### # # ##  # # # #  #{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C} #  #     # # # #   #   # #  #{R}{pad}{D}║{R}",
+        f"{D}║{R}  {C}### #   ### # # ### #   # ####{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {D}──────────────────────────────{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {W}### #### #   # ##   #  ##  ###{R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}#   #  # ## ## # # # # # # #  {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}#   #  # # # # ##  ### ##  ## {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}#   #  # #   # #   # # # # #  {R}{pad}{D}║{R}",
+        f"{D}║{R}  {W}### #### #   # #   # # # # ###{R}{pad}{D}║{R}",
+        f"{D}║{R}{bl}{D}║{R}",
+        f"{D}║{R}  {DW}version cy49r3  ·  BSC Earth Sciences{R}           {D}║{R}",
+        f"{D}╚{'═'*50}╝{R}",
+    ]))
+
+
+def can_ssh_github(conn) -> bool:
+    """Returns True if outbound SSH to github.com port 22 succeeds."""
+    try:
+        result = conn.run(
+            "ssh -o ConnectTimeout=5 -o BatchMode=yes -T git@github.com 2>&1 || true",
+            hide=True, warn=True
+        )
+        return "successfully authenticated" in result.stdout or "Hi " in result.stdout
+    except Exception:
+        return False
+
+
+def github_https_env(conn) -> dict:
+    """Returns env vars that rewrite git@github.com: to https://github.com/ if SSH is blocked."""
+    if can_ssh_github(conn):
+        return {}
+    return {
+        "GIT_CONFIG_COUNT": "1",
+        "GIT_CONFIG_KEY_0": "url.https://github.com/.insteadOf",
+        "GIT_CONFIG_VALUE_0": "git@github.com:",
+    }
+
+
+def resolve_exec_mode(exec_mode_arg: Optional[str]) -> str:
+    """
+    Returns 'direct' or 'proxy'.
+
+    If exec_mode_arg is provided (from --exec-mode), use it directly.
+    Otherwise, explain why we cannot determine this automatically and ask the user.
+    """
+    if exec_mode_arg in ('direct', 'proxy'):
+        return exec_mode_arg
+
+    print("""
+Cannot determine execution mode automatically.
+
+This tool needs to know whether it should run commands directly on this machine or connect to a remote system via SSH. We cannot infer this from the environment because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts — a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could cause unintended writes to an unknown system.
+
+Two modes are available:
+
+  [1] direct  — This machine has direct filesystem access to the target HPC system's storage AND can submit jobs there from its command line (e.g. you are on a login node of the target cluster).
+
+  [2] proxy   — This machine cannot do the above from its command line, but can SSH to a machine that can (e.g. you are on a laptop connecting to the cluster over SSH).
+
+To skip this prompt in future runs, pass --exec-mode direct or --exec-mode proxy.
+""")
+    while True:
+        answer = input("Enter 1 (direct) or 2 (proxy): ").strip()
+        if answer == '1':
+            return 'direct'
+        if answer == '2':
+            return 'proxy'
+        print("Please enter 1 or 2.")
 
 
 def collect_artifacts(conn, log_path: Path, local_dir: Path) -> list:
@@ -163,7 +308,9 @@ def upload_file(conn, local_path, remote_path, verbose=False):
     if verbose:
         print(f"Upload complete: {remote_str}")
 
-def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool):
+def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build: bool, no_install: bool, force_rebuild: bool = False, args_exec_mode: Optional[str] = None):
+    print_banner()
+
     ############################################
     # 1.1 Ensure yq installed on local machine
     ############################################
@@ -199,6 +346,9 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     remote_machine = cfg.get("user", {}).get("remote_machine_url")
     remote_transfer_machine = cfg.get("user", {}).get("remote_transfer_machine")
     machine_file = cfg.get("user", {}).get("machine_file")
+    # "local" and "remote" are from the perspective of proxy mode (running on a laptop).
+    # In direct mode (running on the HPC login node) local_path is overridden to remote_path
+    # below, so local_build_dir is unused and need not exist on the HPC.
     remote_path = cfg.get("paths", {}).get("remote_project_dir")
     local_path = Path(cfg.get("paths", {}).get("local_build_dir", "."))
 
@@ -214,13 +364,70 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
 
     ov = cfg.get("overrides", {})
 
+<<<<<<< HEAD
+    def resolve_alias(raps_key, bundle_key):
+        # IFS_RAPS_* is the real/canonical key; IFS_BUNDLE_* is an older alias
+        # some pipeline.yaml files still use. If both are set, that's redundant
+        # -- RAPS wins, and we say so rather than silently dropping one.
+        raps_val = ov.get(raps_key)
+        bundle_val = ov.get(bundle_key)
+        if raps_val and bundle_val:
+            print(f"NOTE: both {raps_key} and {bundle_key} are set in overrides; "
+                  f"{raps_key} takes precedence and {bundle_key} is ignored.")
+        return raps_val or bundle_val
+
+    ifs_source_git_url_template = resolve_alias("IFS_RAPS_IFS_SOURCE_GIT", "IFS_BUNDLE_IFS_SOURCE_GIT") or ""
+    if ifs_source_git_url_template:
+        # Expand both $VAR and {VAR} references using the overrides dict
+        ifs_source_git_url = re.sub(r'\$([A-Z_][A-Z0-9_]*)', lambda m: ov.get(m.group(1), m.group(0)), ifs_source_git_url_template)
+        ifs_source_git_url = ifs_source_git_url.format(**{k: v for k, v in ov.items() if isinstance(v, str)})
+    else:
+        ifs_source_git_url = ""
+=======
     ifs_source_git_url_template = ov.get("IFS_BUNDLE_IFS_SOURCE_GIT") or ov.get("IFS_RAPS_IFS_SOURCE_GIT", "")
     ifs_source_git_url = ifs_source_git_url_template.format(**ov) if ifs_source_git_url_template else ""
+>>>>>>> origin/main
     dnb_sandbox_subdir = ov.get('DNB_SANDBOX_SUBDIR', '')
 
-    # Establish connection to remote
-    conn = Connection(f"{remote_username}@{remote_machine}")
-    # This will raise if remote requirements are missing
+    # Determine execution context
+    exec_mode = resolve_exec_mode(args_exec_mode or cfg.get('exec_mode'))
+    has_internet = check_internet()
+    if exec_mode == 'direct':
+        print(f"{BOLD}Execution mode: direct (running on HPC, filesystem and job submission available locally){RESET}")
+    else:
+        print(f"{BOLD}Execution mode: proxy (will connect via SSH to {remote_machine}){RESET}")
+    if has_internet:
+        print("Internet connectivity: OK")
+    else:
+        print("Internet connectivity: NONE — steps requiring git access will fail")
+
+    # Establish connection (or use local execution in direct mode)
+    script_dir = Path(__file__).resolve().parent
+    if exec_mode == 'direct':
+        # In direct mode the build workspace mirrors what proxy mode creates at remote_path/ifsnemo-build/.
+        # We populate it from your own ifsnemo-build clone, same as proxy mode: paths.local_build_dir.
+        build_source_dir = local_path
+        if not build_source_dir.is_dir():
+            print(f"ERROR: expected an ifsnemo-build clone at {build_source_dir} "
+                  f"(paths.local_build_dir). Clone it there or adjust paths.local_build_dir "
+                  f"in your pipeline.yaml.")
+            sys.exit(1)
+        local_path = Path(remote_path) / "ifsnemo-build"
+        local_path.mkdir(parents=True, exist_ok=True)
+        conn = LocalConnection()
+    else:
+        build_source_dir = local_path
+        if Connection is None:
+            print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
+            sys.exit(1)
+        conn = Connection(f"{remote_username}@{remote_machine}")
+
+    run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=build_source_dir, verbose=verbose)
+
+    if exec_mode == 'direct':
+        print(f"{BOLD}Syncing ifsnemo-build to workspace: {local_path} [{timestamp()}]{RESET}")
+        run_command(["rsync", "-rlpgoDt", "--exclude", ".git", "--exclude", "src",
+                     str(build_source_dir) + "/", str(local_path) + "/"], verbose=verbose)
     check_remote_requirements(conn, verbose=True)
 
     # Handle flag interactions
@@ -231,6 +438,19 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     if skip_build and no_install:
         print("Warning: --no-install is ignored when --skip-build is set")
         no_install = False
+
+    # Require explicit opt-in for a full rebuild (can take ~1 hour),
+    # but only when a sandbox already exists (fresh environments must build unconditionally).
+    if not skip_build and not force_rebuild and not partial_build and dnb_sandbox_subdir:
+        sandbox_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}"
+        sandbox_exists = conn.run(f"test -d {sandbox_path}", warn=True).ok
+        if sandbox_exists:
+            print(f"\nWARNING: A full rebuild is about to run against an existing sandbox ({dnb_sandbox_subdir}). This can take ~1 hour.")
+            print("  Pass --force-rebuild to suppress this prompt, or --skip-build to skip the build.")
+            answer = input("Proceed with full rebuild? [y/N] ").strip().lower()
+            if answer != "y":
+                print("Aborting. Re-run with --skip-build to run tests only.")
+                sys.exit(1)
 
     if skip_build:
         # If we skip the build, the remote tests directory may not be empty.
@@ -248,7 +468,11 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             overrides_content.append(f'  - export DNB_SANDBOX_SUBDIR="{dnb_sandbox_subdir}"')
         if ov.get('DNB_IFSNEMO_URL'):
             overrides_content.append(f'  - export DNB_IFSNEMO_URL="{ov.get("DNB_IFSNEMO_URL")}"')
+<<<<<<< HEAD
+        ifs_source_version = resolve_alias('IFS_RAPS_IFS_SOURCE_VERSION', 'IFS_BUNDLE_IFS_SOURCE_VERSION')
+=======
         ifs_source_version = ov.get('IFS_BUNDLE_IFS_SOURCE_VERSION') or ov.get('IFS_RAPS_IFS_SOURCE_VERSION')
+>>>>>>> origin/main
         if ifs_source_version:
             overrides_content.append(f'  - export IFS_BUNDLE_IFS_SOURCE_VERSION="{ifs_source_version}"')
             overrides_content.append(f'  - export IFS_RAPS_IFS_SOURCE_VERSION="{ifs_source_version}"')
@@ -291,8 +515,8 @@ psubmit:
   node_type:   {cfg.get('psubmit', {}).get('node_type', '')}
 """)
 
-        # Link to generic machine config
-        run_command(['ln', '-sf', 'dnb-generic.yaml', 'machine.yaml'], cwd=local_path, verbose=verbose)
+        # Link to machine config
+        run_command(['ln', '-sf', machine_file, 'machine.yaml'], cwd=local_path, verbose=verbose)
 
         ############################################
         # 1.4 Fetch and Package Build Artifacts
@@ -318,21 +542,40 @@ psubmit:
             if target_path.exists():
                 shutil.rmtree(target_path)
 
+<<<<<<< HEAD
+            # Use mv (rename) instead of copytree — same GPFS filesystem, so this is O(1)
+            # and avoids hitting login-node memory/resource limits on large reference sets.
+            print(f"Moving {source_path} to {target_path}")
+            subprocess.run(["mv", str(source_path), str(target_path)], check=True)
+=======
             print(f"Copying {source_path} to {target_path}")
             shutil.copytree(source_path, target_path, symlinks=True)
+>>>>>>> origin/main
 
-            # Also copy .git to enable git-restore-mtime on references
+            # Move .git into the new references dir to enable git-restore-mtime
             git_source = temp_ref_dir / ".git"
             git_target = target_path / ".git"
             if git_source.exists():
+<<<<<<< HEAD
+                print(f"Moving .git to {target_path}")
+                subprocess.run(["mv", str(git_source), str(git_target)], check=True)
+=======
                 print(f"Copying .git to {target_path}")
                 shutil.copytree(git_source, git_target, symlinks=True)
+>>>>>>> origin/main
 
             print(f"Cleaning up {temp_ref_dir}")
             shutil.rmtree(temp_ref_dir)
 
         # Create src folder for dnb.sh :du
         (local_path / "src").mkdir(exist_ok=True, parents=True)
+
+        # MN5 (and similar HPC nodes) block outbound SSH port 22, so git@github.com: URLs fail.
+        # Detect this and inject a git URL rewrite via env vars for the duration of :du.
+        gh_env = github_https_env(conn)
+        if gh_env:
+            print("GitHub SSH (port 22) not available — applying HTTPS URL rewrite for git clones")
+            os.environ.update(gh_env)
 
         # Run './dnb.sh :du' from within local_path
         run_command(['./dnb.sh', ':du'], cwd=local_path, verbose=verbose)
@@ -347,65 +590,77 @@ psubmit:
         ]
         run_command(rsync_compare_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
 
-        # Restore modification times on git-controlled source files
-        print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
-        src_path = local_path / "src"
-        git_restore_mtime_script = local_path / "ifsnemo-compare" / "git-restore-mtime"
+        # Restore modification times on git-controlled source files.
+        # Only needed for incremental builds (--partial-build / :r mode) to avoid
+        # spurious rebuilds caused by rsync touching timestamps. Full builds wipe
+        # the build directory anyway, so mtime restoration is wasted work there.
+        if partial_build:
+            print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
+            src_path = local_path / "src"
+            git_restore_mtime_script = local_path / "ifsnemo-compare" / "git-restore-mtime"
 
-        def restore_mtimes_recursive(root_dir, base_path):
-            """Recursively find and process all git repositories"""
-            for item in root_dir.iterdir():
-                if not item.is_dir():
-                    continue
-
-                # Skip symlinks to avoid infinite loops
-                if item.is_symlink():
-                    continue
-
-                rel_path = item.relative_to(base_path)
-
-                if (item / ".git").exists():
-                    print(f"  Restoring mtimes in {rel_path}...")
+            def restore_mtimes_recursive(root_dir, base_path):
+                for item in root_dir.iterdir():
+                    if not item.is_dir():
+                        continue
+                    if item.is_symlink():
+                        continue
+                    rel_path = item.relative_to(base_path)
+                    if (item / ".git").exists():
+                        print(f"  Restoring mtimes in {rel_path}...")
+                        try:
+                            run_command(
+                                [str(git_restore_mtime_script), "--quiet"],
+                                cwd=item,
+                                verbose=verbose
+                            )
+                        except Exception as e:
+                            print(f"  [WARN] git-restore-mtime failed for {rel_path}: {e}")
                     try:
-                        run_command(
-                            [str(git_restore_mtime_script), "--quiet"],
-                            cwd=item,
-                            verbose=verbose
-                        )
-                    except Exception as e:
-                        print(f"  [WARN] git-restore-mtime failed for {rel_path}: {e}")
+                        restore_mtimes_recursive(item, base_path)
+                    except (PermissionError, OSError):
+                        pass
 
-                # Recurse into subdirectories
+            if src_path.exists() and git_restore_mtime_script.exists():
+                restore_mtimes_recursive(src_path, src_path)
+            else:
+                if not src_path.exists():
+                    print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
+                if not git_restore_mtime_script.exists():
+                    print(f"  [WARN] git-restore-mtime script not found at {git_restore_mtime_script}")
+
+            # Also restore mtimes for references if it's git-controlled
+            references_path = local_path / "references"
+            if references_path.exists() and (references_path / ".git").exists() and git_restore_mtime_script.exists():
+                print(f"  Restoring mtimes in references...")
                 try:
-                    restore_mtimes_recursive(item, base_path)
-                except (PermissionError, OSError):
-                    pass
-
-        if src_path.exists() and git_restore_mtime_script.exists():
-            restore_mtimes_recursive(src_path, src_path)
-        else:
-            if not src_path.exists():
-                print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
-            if not git_restore_mtime_script.exists():
-                print(f"  [WARN] git-restore-mtime script not found at {git_restore_mtime_script}")
-
-        # Also restore mtimes for references if it's git-controlled
-        references_path = local_path / "references"
-        if references_path.exists() and (references_path / ".git").exists() and git_restore_mtime_script.exists():
-            print(f"  Restoring mtimes in references...")
-            try:
-                run_command(
-                    [str(git_restore_mtime_script), "--quiet"],
-                    cwd=references_path,
-                    verbose=verbose
-                )
-            except Exception as e:
-                print(f"  [WARN] git-restore-mtime failed for references: {e}")
+                    run_command(
+                        [str(git_restore_mtime_script), "--quiet"],
+                        cwd=references_path,
+                        verbose=verbose
+                    )
+                except Exception as e:
+                    print(f"  [WARN] git-restore-mtime failed for references: {e}")
 
         ############################################
         # 2.1-2.3 Build and Install on remote
         ############################################
 
+<<<<<<< HEAD
+        # In proxy mode, rsync local ifsnemo-build workspace to the remote.
+        # In direct mode we're already on the HPC — local_path IS the workspace, nothing to sync.
+        if exec_mode == 'proxy':
+            rsync_machine = remote_transfer_machine if remote_transfer_machine else remote_machine
+            print(f"Ensuring remote directory {remote_path}/ifsnemo-build exists...")
+            conn.run(f"mkdir -p '{remote_path}/ifsnemo-build'")
+            print(f"{BOLD}Syncing to remote: {remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/ [{timestamp()}]{RESET}")
+            rsync_cmd = [
+                "rsync", "-rlpgoDt", "--compress", "--info=progress2,stats2", "--itemize-changes",
+                str(local_path) + "/",
+                f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
+            ]
+            run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
+=======
         # Sync files to remote using rsync
         local_path = Path(local_path)
         remote_path = Path(remote_path)
@@ -424,6 +679,7 @@ psubmit:
             f"{remote_username}@{rsync_machine}:{remote_path}/ifsnemo-build/"
         ]
         run_command(rsync_cmd, verbose=verbose, show_spinner=True, ok_codes=(0, 24))
+>>>>>>> origin/main
 
         psubmit_account = cfg.get('psubmit', {}).get('account', '')
         psubmit_node_type = cfg.get('psubmit', {}).get('node_type', '')
@@ -476,13 +732,19 @@ psubmit:
 
 module load cmake/3.30.5
 
+export PIP_NO_INDEX=1
+export PIP_FIND_LINKS={remote_path}/ifsnemo-build/src/ifsnemo-XXX.src/pip-wheel-cache
+
 cd {remote_path}/ifsnemo-build
 ln -sf {machine_file} machine.yaml
 ./dnb.sh {build_cmd}
 """
 
-        Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
-        conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
+        if exec_mode == 'direct':
+            Path(remote_path).joinpath("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+        else:
+            Path("ifsnemo_build_dnb_b.sbatch").write_text(sbatch_script)
+            conn.put("ifsnemo_build_dnb_b.sbatch", f"{remote_path}/ifsnemo_build_dnb_b.sbatch")
 
         # Run the build on compute node with sbatch job
         print(f"{BOLD}Submitting build job to remote... [{timestamp()}]{RESET}")
@@ -675,15 +937,32 @@ if __name__ == '__main__':
         help="Use partial build (dnb.sh :r) instead of full build (dnb.sh :b). Intended for quick rebuilds involving small changes in the code, and does not invoke ifs-bundle."
     )
     parser.add_argument(
+        "--force-rebuild",
+        dest="force_rebuild",
+        action="store_true",
+        help="Explicitly authorize a full rebuild without interactive confirmation prompt."
+    )
+    parser.add_argument(
         "--no-install",
         dest="no_install",
         action="store_true",
         help="Skip the install step (dnb.sh :i) after building. Use when you don't need to set up the sandbox or want to avoid the potentially long install phase."
     )
+    parser.add_argument(
+        "--exec-mode",
+        dest="exec_mode",
+        choices=["direct", "proxy"],
+        default=None,
+        help=(
+            "Execution mode: 'direct' if this machine has filesystem access and can submit jobs "
+            "on the target HPC system directly; 'proxy' if you need SSH to reach it. "
+            "If omitted, you will be prompted interactively."
+        ),
+    )
     args = parser.parse_args()
 
     try:
-        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install)
+        main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install, args.force_rebuild, args.exec_mode)
     except Exception as e:
         print("ERROR:", e)
         # Print traceback for easier debugging
