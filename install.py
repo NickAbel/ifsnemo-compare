@@ -16,6 +16,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -345,6 +346,83 @@ def step_ifsnemo_build():
     return path
 
 
+# ---------------------------------------------------------------------------
+# Step 3: Target machine setup (yq, psubmit)
+# ---------------------------------------------------------------------------
+PSUBMIT_URL = "https://github.com/a-v-medvedev/psubmit.git"
+
+
+def step_target_machine(exec_mode):
+    print(f"\n{BOLD}3. Target machine setup (yq, psubmit){RESET}")
+
+    if exec_mode != 'direct':
+        print("  In proxy mode, this needs to happen ON the target machine (the one")
+        print("  pipeline.py will SSH into), not here. Run this there:\n")
+        print("""    ssh <remote_username>@<remote_machine_url>
+    mkdir -p ~/bin && cd ~/bin
+
+    # yq (if not already present)
+    wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ./yq && chmod +x ./yq
+
+    # psubmit helper
+    git clone https://github.com/a-v-medvedev/psubmit.git tmp-ps
+    chmod +x tmp-ps/*.sh
+    mv tmp-ps/*.sh . && rm -fr tmp-ps
+
+    # Ensure bin is in PATH
+    echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+""")
+        return
+
+    # direct mode: target machine == this machine. yq was already handled in
+    # step 2.1; only psubmit.sh (and its sibling scripts) remain.
+    existing = shutil.which("psubmit.sh")
+    if existing:
+        ok(f"psubmit.sh is already in PATH ({existing})")
+        return
+
+    print("  psubmit.sh not found.")
+    bin_dir = Path(ask("  Directory to install it in (must be in PATH, or you'll "
+                        "need to add it)", default=str(Path.home() / "bin"))).expanduser()
+    bin_dir.mkdir(parents=True, exist_ok=True)
+
+    tmp_dir = Path(tempfile.mkdtemp(prefix="psubmit-"))
+    try:
+        clone_dir = tmp_dir / "psubmit"
+        result = run(["git", "clone", PSUBMIT_URL, str(clone_dir)])
+        if result.returncode != 0:
+            fail("Clone failed:")
+            print(result.stderr)
+            return
+
+        scripts = list(clone_dir.glob("*.sh"))
+        if not scripts:
+            fail("No .sh scripts found in the cloned psubmit repo.")
+            return
+
+        conflicts = [s for s in scripts if (bin_dir / s.name).exists()]
+        if conflicts:
+            names = ", ".join(s.name for s in conflicts)
+            warn(f"{bin_dir} already has: {names}. This script won't overwrite "
+                 f"{'them' if len(conflicts) > 1 else 'it'} without asking.")
+            if not ask_yn(f"Overwrite {'them' if len(conflicts) > 1 else 'it'}?", default=False):
+                warn("Skipped. Resolve manually, or make sure psubmit.sh is in PATH.")
+                return
+
+        for script in scripts:
+            dest = bin_dir / script.name
+            shutil.copy2(script, dest)
+            dest.chmod(dest.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+        ok(f"Installed {len(scripts)} psubmit script(s) to {bin_dir}")
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    if shutil.which("psubmit.sh") is None:
+        warn(f"{bin_dir} is not in your PATH yet. Add this to your shell rc file:\n"
+             f"    export PATH=\"{bin_dir}:$PATH\"\n"
+             "  then restart your shell (or `source` the rc file) before running pipeline.py.")
+
+
 def main():
     print(f"{BOLD}ifsnemo-compare guided setup{RESET}")
     print("Safe to re-run: already-completed steps are detected and skipped.\n")
@@ -354,6 +432,7 @@ def main():
     step_python_packages(exec_mode)
     step_yq()
     step_ifsnemo_build()
+    step_target_machine(exec_mode)
 
     print(f"\n{BOLD}(more steps to come){RESET}")
 
