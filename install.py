@@ -2,10 +2,10 @@
 """
 Guided, idempotent setup for ifsnemo-compare.
 
-Walks through quickstart-testing.md one step at a time, checking whether
-each is already done before doing anything. Built and tested incrementally,
-one step at a time -- see quickstart-testing.md for the manual equivalent
-of any step not yet covered here.
+Covers quickstart-testing.md Sections 1-3 (repository access, required
+Python packages, yq, ifsnemo-build, and target machine setup), checking
+whether each step is already done before doing anything. Creating
+pipeline.yaml (Section 4) is out of scope -- see that section manually.
 
 Deliberately stdlib-only: part of this script's job is installing
 pyyaml/fabric, so it can't depend on either of them itself.
@@ -435,7 +435,8 @@ def main():
     step_ifsnemo_build()
     step_target_machine(exec_mode)
 
-    print(f"\n{BOLD}(more steps to come){RESET}")
+    print(f"\n{BOLD}Setup complete.{RESET}")
+    print("Remaining: create pipeline.yaml -- see quickstart-testing.md, Section 4.")
 
 
 if __name__ == "__main__":
