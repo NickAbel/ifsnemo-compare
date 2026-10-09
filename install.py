@@ -372,6 +372,7 @@ def step_target_machine(exec_mode):
     # Ensure bin is in PATH
     echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 """)
+        input("  Press Enter to continue... ")
         return
 
     # direct mode: target machine == this machine. yq was already handled in
