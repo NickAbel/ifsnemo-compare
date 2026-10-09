@@ -499,8 +499,6 @@ Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or
 **Notes and tips:**
 - `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
-- Ensure `compare.sh` (or equivalent comparison scripts) are present and executable where `compare_norms.py` runs.
-- Use the tools interactively on the remote/login node if you want step-by-step control, or use `pipeline.py` to automate the full build/upload/run/compare flow from your local machine.
 
 ## 7. Interpreting the Results
 
