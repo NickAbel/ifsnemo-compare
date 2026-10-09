@@ -171,7 +171,13 @@ The pipeline configuration file `pipeline.yaml` should be created in the `ifsnem
 user:
   remote_username: string          # Your username on the remote machine (e.g., bscXXXXXX)
   remote_machine_url: string      # Remote machine address (e.g., glogin4.bsc.es)
+  remote_transfer_machine: string # Optional: a separate machine for file transfer, if your target's login node isn't the right place for it
   machine_file: string           # Machine configuration file to use (e.g., dnb-mn5-gpp.yaml)
+
+# Execution mode (optional). 'direct' if this machine has filesystem access and can
+# submit jobs on the target HPC system directly; 'proxy' if you need SSH to reach it.
+# If omitted, pipeline.py prompts interactively (or pass --exec-mode on the command line).
+exec_mode: string              # "direct" or "proxy"
 
 # Path configuration
 paths:
@@ -182,15 +188,19 @@ paths:
 overrides:
   DNB_SANDBOX_SUBDIR: string     # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP") 
   DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_RAPS_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable); IFS_BUNDLE_IFS_SOURCE_GIT is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  IFS_RAPS_IFS_SOURCE_VERSION: string # Branch or version to use; IFS_BUNDLE_IFS_SOURCE_VERSION is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
   DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_INPROOT: string          # Optional override for the bundle's input-root path
   DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
   IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
   IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
   DNB_IFSNEMO_WITH_GPU: string         # Enable GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_GPU_EXTRA: string   # Enable extra GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_STATIC_LINKING: string # Enable static linking (e.g., "TRUE" or "FALSE")
+  DNB_IFSNEMO_USE_ARCH_AND_RAPS: string # Defaults to "TRUE"; set "FALSE" to override
+  env:                                 # Optional: arbitrary extra environment variables, passed through as-is
+    SOME_VAR: string                   #   (e.g. SOME_VAR: "value" -> export SOME_VAR="value")
 
 # SLURM submission settings
 psubmit:
@@ -206,18 +216,20 @@ ifsnemo_compare:
   build_suites: []            # Build-time test suites to run (e.g., ["bundle_validator"])
   test_suites: []             # Runtime test suites to run (e.g., ["compare_norms"])
 
-  # Test configuration arrays (the five arrays below all must have matching lengths)
+  # Test configuration arrays (resolution/steps/threads/ppn/nodes must all have matching
+  # lengths; gpus is only required, and must also match, when overrides.DNB_IFSNEMO_WITH_GPU is "TRUE")
   resolution: []               # Array of resolutions (e.g., ["tco79-eORCA1", "tco399-eORCA025"])
   steps: []                   # Array of steps (e.g., ["d1", "d1"])
   threads: []                 # Array of thread counts (e.g., [4, 4])
   ppn: []                    # Array of processes per node (e.g., [28, 28])
   nodes: []                  # Array of node counts (e.g., [1, 16])
+  gpus: []                   # Array of GPU counts, only used when DNB_IFSNEMO_WITH_GPU is "TRUE" (e.g., [1, 1])
 
-# Reference configuration (optional)
+# Reference configuration (optional block; if included, url and path_in_repo are required)
 references:
-  url: string                 # Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  url: string                 # Required if this block is present. Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
   branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
+  path_in_repo: string       # Required if this block is present. Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
 ```
 
 For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
@@ -246,20 +258,27 @@ The pipeline script (`pipeline.py`) accepts several optional arguments to change
 - `-y, --yaml <path>`: Specify a custom path to the pipeline YAML file (default: `pipeline.yaml`)
 - `-s, --skip-build`: Skip the build and install steps, only run tests and compare
 - `--no-run`: Do the build/install but skip the run and compare stages
-- `--partial-build`: Use incremental rebuild instead of full build (only recompiles changed sources)
+- `--partial-build`: Use partial build (`dnb.sh :r`) instead of full build (`dnb.sh :b`); for quick rebuilds involving small code changes, and does not invoke ifs-bundle
+- `--no-install`: Skip the install step (`dnb.sh :i`) after building
+- `--force-rebuild`: Skip the confirmation prompt that otherwise appears before a full rebuild against an existing sandbox
+- `--exec-mode {direct,proxy}`: Set execution mode without being prompted interactively (see `exec_mode` in `pipeline.yaml`, Section 4)
 
 Example usage:
 ```bash
 python3 pipeline.py --yaml custom-pipeline.yaml  # Use a custom config file
 python3 pipeline.py --skip-build                # Skip build steps, only run tests
 python3 pipeline.py --no-run                    # Only do build/install, no tests
-python3 pipeline.py --partial-build             # Incremental rebuild only
+python3 pipeline.py --partial-build             # Partial rebuild only
+python3 pipeline.py --no-install                # Build but skip the install step
+python3 pipeline.py --force-rebuild             # Suppress the full-rebuild confirmation prompt
+python3 pipeline.py --exec-mode direct          # Skip the direct/proxy prompt
 ```
 
 Notes:
 - `--skip-build` is useful when you have already built and installed artifacts on the remote and want to re-run tests only (the script will clean remote test directories for the configured sandbox).
 - `--no-run` is useful for producing the build/install artifacts and uploading them without executing test runs; the output JSON (test_results.json) will reflect that no runs were executed.
 - `--partial-build` is intended for when only source code changes have occurred and a full bundle rebuild is not needed. If in doubt, run a full build instead.
+- Without `--force-rebuild`, `--skip-build`, or `--partial-build`, a full rebuild against an existing sandbox prompts for confirmation (it can take ~1 hour); `--force-rebuild` suppresses that prompt.
 
 ### 6.2 Using `compare_norms.py` tool directly at the command line
 
