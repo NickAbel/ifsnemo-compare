@@ -545,12 +545,8 @@ Example `test_results.json`:
 
 ### 7.3. Inspecting Log Files
 
-For any failed steps, the corresponding `.log` files are essential for debugging.
-
--   **`{suite}_run_tests_*.log`**: Check these files for errors related to test execution. Search for error messages or stack traces that could indicate what went wrong.
+-   **`{suite}_run_tests_*.log`**: Check these files for errors related to test execution.
 -   **`{suite}_compare_*.log`**: These files contain the comparison output. For `compare_norms`, this shows differences between your test run and the gold standard. For `bundle_validator`, this shows configuration differences.
-
-By examining these files, you can diagnose the root cause of any test failures and determine the next steps for your development work.
 
 ---
 
