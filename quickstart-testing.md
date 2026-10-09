@@ -104,80 +104,7 @@ source ~/.bashrc
 
 > Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
 
-<<<<<<< HEAD
 ### 2.2. Clone and Configure ifsnemo-build
-=======
-### 2.2. Configure GitLab Access (generic-hpc-scripts)
-
-The token is stored on shared HPC systems, so give it read-only access to code and nothing else. A leaked read-only token cannot push, change settings or act on your behalf.
-
-1. Generate a fine-grained token at [gitlab.earth.bsc.es → Personal access tokens → Generate fine-grained token](https://gitlab.earth.bsc.es/-/user_settings/personal_access_tokens/granular/new):
-   - **Name**: anything, e.g. `ifsnemo-build read-only`.
-   - **Expiration date**: the maximum is 365 days; renew the token when GitLab reminds you.
-   - **Group and project access**: *All groups and projects that I'm a member of*.
-   - **Resource permissions**: under **Group and project**, add **Repository → Code** with only the **Download** permission. Leave every other resource unselected.
-
-2. Create the token and copy it immediately; it is shown only once.
-
-3. Add it to your `~/.netrc` and make the file private:
-
-```ini
-machine gitlab.earth.bsc.es
-  login YOUR_USERNAME
-  password YOUR_NEW_PERSONAL_ACCESS_TOKEN
-```
-
-```bash
-chmod 600 ~/.netrc
-```
-
-   `~/.netrc` is the **only** place the token belongs. The model run scripts copy the shell environment into result files, and `git` reads `~/.netrc` directly, so the token **never** needs to be in your environment.
-
-4. Check that the token can read code:
-
-```bash
-git ls-remote https://gitlab.earth.bsc.es/digital-twins/nvidia/ifsnemo-build.git HEAD
-```
-
-   This should print a commit hash without asking for a password.
-
-### 2.3. Configure ECMWF Bitbucket Access
-
-Important: Before proceeding with Bitbucket access setup, you must first:
-
-1. Have an ECMWF account (https://ecmwf.int)
-2. Request Bitbucket access:
-   - Visit the [IFS Access Request Form](https://wiki.eduuni.fi/pages/viewpage.action?pageId=343558915&spaceKey=cscRDIcollaboration&title=IFS%2Baccess)
-   - Fill out the form with the following details:
-     - For "Group leader support/explanation": write "model development and integration testing"
-     - For "Specific access needed to": write "Bitbucket (IFS-Sources/RAPS)"
-   - Note: This is a monthly process and you will receive a confirmation email that you must acknowledge
-   - Important: By requesting access, you agree to the terms, particularly that IFS source code must not be made publicly available
-
-Once you have Bitbucket access:
-
-1. Create an HTTP access token:
-   - Log in to ECMWF: https://git.ecmwf.int/account
-   - Under "HTTP access tokens" click **Create token** (default options are sufficient)
-
-   ![ECMWF Token Creation](https://github.com/user-attachments/assets/ce1a17c2-4e3a-407c-8980-7755a5cecbab)
-
-2. Copy the token when prompted (you won't see it again).
-
-3. Add it to your `~/.netrc`:
-
-```ini
-machine git.ecmwf.int
-  login YOUR_ECMWF_USERNAME
-  password YOUR_NEW_ACCESS_TOKEN
-```
-
-> Note: You can find your ECMWF username at https://git.ecmwf.int/profile (example: ecmeXXXX).
-
-   ![ECMWF Username Example](https://github.com/user-attachments/assets/c34813c4-eb30-472d-bd53-ab06ce507fe9)
-
-### 2.4. Clone and Configure ifsnemo-build
->>>>>>> origin/main
 In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
 
 ```bash
@@ -264,7 +191,6 @@ paths:
 # Override settings
 overrides:
   DNB_SANDBOX_SUBDIR: string     # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP") 
-<<<<<<< HEAD
   DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   IFS_RAPS_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable); IFS_BUNDLE_IFS_SOURCE_GIT is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   IFS_RAPS_IFS_SOURCE_VERSION: string # Branch or version to use; IFS_BUNDLE_IFS_SOURCE_VERSION is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
@@ -273,15 +199,6 @@ overrides:
   DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
-=======
-  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_IFS_SOURCE_VERSION: string # Branch or version to use (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
->>>>>>> origin/main
   DNB_IFSNEMO_WITH_GPU: string         # Enable GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_GPU_EXTRA: string   # Enable extra GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_STATIC_LINKING: string # Enable static linking (e.g., "TRUE" or "FALSE")
@@ -291,15 +208,9 @@ overrides:
 
 # SLURM submission settings
 psubmit:
-<<<<<<< HEAD
   queue_name: string             # Queue name (can be empty string) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
   account: string               # Account name (e.g., ehpcXX) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
   node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
-=======
-  queue_name: string             # Queue name (can be empty string) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  account: string               # Account name (e.g., ehpcXX) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
->>>>>>> origin/main
 
 # IFS-NEMO comparison settings
 ifsnemo_compare:
@@ -320,21 +231,12 @@ ifsnemo_compare:
 
 # Reference configuration (optional block; if included, url and path_in_repo are required)
 references:
-<<<<<<< HEAD
   url: string                 # Required if this block is present. Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
   branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
   path_in_repo: string       # Required if this block is present. Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
 ```
 
 For guidance on specific values, refer to [a personal pipeline.yaml to test CY49R3](./pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml).[^48r1]
-=======
-  url: string                 # Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  path_in_repo: string       # Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
-```
-
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
->>>>>>> origin/main
 
 [^48r1]: Earlier CY48R1 examples are archived under [pipeline-yaml-examples/48r1/](./pipeline-yaml-examples/48r1/).
 
@@ -481,21 +383,6 @@ python3 compare_norms.py run-tests \
   -n 1 \
   -s d1
 ```
-<<<<<<< HEAD
-=======
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
-```bash
-#TCO79 1day
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day  
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day 
-python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599-eORCA12 -nt 14 -p 8 -n 260 -s d1      
-```
-- Behavior: similar to create-refs, but labels logs as test runs and stores `results.<jobid>` under the test output directory.
->>>>>>> origin/main
 
 **Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash
@@ -541,21 +428,6 @@ python3 compare_norms.py compare \
   -n 1 \
   -s d1
 ```
-<<<<<<< HEAD
-=======
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
-```bash
-#TCO79 1day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day  
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day 
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1   
-```
-- Behavior: for each parameter combination, the tool looks for the reference results directory and the test results directory and then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
->>>>>>> origin/main
 
 **Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash
@@ -606,21 +478,6 @@ python3 compare_norms.py stat-test \
   -n 1 \
   -s d1
 ```
-<<<<<<< HEAD
-=======
-- Pipeline-Following Example (If Using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
-```bash
-#TCO79 1day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
-#TCO399 1day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
-#TCO1279 1day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
-#TCO2559 1day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
-```
-- Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or a zero pooled standard deviation are reported as `[SKIP]` or `[degenerate]` with an explanation.
->>>>>>> origin/main
 
 **Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash

@@ -98,11 +98,7 @@ def load_yaml(yaml_path: Path) -> Dict:
         with open(yaml_path, 'r') as f:
             return yaml.safe_load(f)
     except Exception as e:
-<<<<<<< HEAD
         print(f"ERROR: Failed to load YAML file {yaml_path}: {e}")
-=======
-        print(f"bundle_validator: ERROR: Failed to load YAML file {yaml_path}: {e}")
->>>>>>> origin/main
         sys.exit(1)
 
 
