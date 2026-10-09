@@ -148,21 +148,13 @@ def resolve_exec_mode(exec_mode_arg: Optional[str]) -> str:
     print("""
 Cannot determine execution mode automatically.
 
-This tool needs to know whether it should run commands directly on this machine
-or connect to a remote system via SSH. We cannot infer this from the environment
-because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts —
-a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could
-cause unintended writes to an unknown system.
+This tool needs to know whether it should run commands directly on this machine or connect to a remote system via SSH. We cannot infer this from the environment because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts — a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could cause unintended writes to an unknown system.
 
 Two modes are available:
 
-  [1] direct  — This machine has direct filesystem access to the target HPC
-                system's storage AND can submit jobs there from its command
-                line (e.g. you are on a login node of the target cluster).
+  [1] direct  — This machine has direct filesystem access to the target HPC system's storage AND can submit jobs there from its command line (e.g. you are on a login node of the target cluster).
 
-  [2] proxy   — This machine cannot do the above from its command line, but
-                can SSH to a machine that can (e.g. you are on a laptop
-                connecting to the cluster over SSH).
+  [2] proxy   — This machine cannot do the above from its command line, but can SSH to a machine that can (e.g. you are on a laptop connecting to the cluster over SSH).
 
 To skip this prompt in future runs, pass --exec-mode direct or --exec-mode proxy.
 """)
@@ -397,11 +389,12 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     script_dir = Path(__file__).resolve().parent
     if exec_mode == 'direct':
         # In direct mode the build workspace mirrors what proxy mode creates at remote_path/ifsnemo-build/.
-        # We populate it from the ifsnemo-build clone that sits next to this script on the HPC.
-        build_source_dir = script_dir.parent / "ifsnemo-build"
+        # We populate it from your own ifsnemo-build clone, same as proxy mode: paths.local_build_dir.
+        build_source_dir = local_path
         if not build_source_dir.is_dir():
-            print(f"ERROR: expected ifsnemo-build clone at {build_source_dir} (sibling of ifsnemo-compare). "
-                  f"Clone it there or adjust the path.")
+            print(f"ERROR: expected an ifsnemo-build clone at {build_source_dir} "
+                  f"(paths.local_build_dir). Clone it there or adjust paths.local_build_dir "
+                  f"in your pipeline.yaml.")
             sys.exit(1)
         local_path = Path(remote_path) / "ifsnemo-build"
         local_path.mkdir(parents=True, exist_ok=True)

@@ -181,21 +181,13 @@ def ask_exec_mode():
     print("""
 Cannot determine execution mode automatically.
 
-This tool needs to know whether it should run commands directly on this machine
-or connect to a remote system via SSH. We cannot infer this from the environment
-because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts —
-a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could
-cause unintended writes to an unknown system.
+This tool needs to know whether it should run commands directly on this machine or connect to a remote system via SSH. We cannot infer this from the environment because filesystem paths (e.g. /gpfs) can exist in many unrelated contexts — a different HPC cluster, a local SSHFS mount, etc. Using the wrong mode could cause unintended writes to an unknown system.
 
 Two modes are available:
 
-  [1] direct  — This machine has direct filesystem access to the target HPC
-                system's storage AND can submit jobs there from its command
-                line (e.g. you are on a login node of the target cluster).
+  [1] direct  — This machine has direct filesystem access to the target HPC system's storage AND can submit jobs there from its command line (e.g. you are on a login node of the target cluster).
 
-  [2] proxy   — This machine cannot do the above from its command line, but
-                can SSH to a machine that can (e.g. you are on a laptop
-                connecting to the cluster over SSH).
+  [2] proxy   — This machine cannot do the above from its command line, but can SSH to a machine that can (e.g. you are on a laptop connecting to the cluster over SSH).
 """)
     while True:
         answer = input("Enter 1 (direct) or 2 (proxy): ").strip()
@@ -263,6 +255,12 @@ def step_yq():
                         "need to add it)", default=str(Path.home() / "bin"))).expanduser()
     bin_dir.mkdir(parents=True, exist_ok=True)
     dest = bin_dir / "yq"
+    if dest.exists():
+        warn(f"{dest} already exists but isn't the yq found via PATH above (or {bin_dir} "
+             f"isn't on PATH at all) -- this script won't overwrite it without asking.")
+        if not ask_yn(f"Overwrite {dest} with a fresh yq download?", default=False):
+            warn(f"Skipped. Resolve {dest} manually, or make sure it (or another yq) is in PATH.")
+            return False
     url = "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
     try:
         urllib.request.urlretrieve(url, dest)
@@ -282,6 +280,59 @@ def step_yq():
     return True
 
 
+# ---------------------------------------------------------------------------
+# Step 2.2: Clone and configure ifsnemo-build
+# ---------------------------------------------------------------------------
+IFSNEMO_BUILD_URL = "https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git"
+IFSNEMO_BUILD_BRANCH = "cy49r3"
+
+
+def run(cmd, **kwargs):
+    return subprocess.run(cmd, text=True, capture_output=True, **kwargs)
+
+
+def current_branch(repo_path):
+    result = run(["git", "-C", str(repo_path), "symbolic-ref", "--short", "HEAD"])
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def step_ifsnemo_build():
+    print(f"\n{BOLD}2.2. Clone and configure ifsnemo-build{RESET}")
+    default_path = Path(__file__).resolve().parent.parent / "ifsnemo-build"
+    path = Path(ask("  ifsnemo-build install directory (will be cloned if not already present)",
+                     default=str(default_path))).expanduser()
+    target_branch = ask("  Branch to use", default=IFSNEMO_BUILD_BRANCH)
+
+    if path.exists():
+        if not (path / ".git").exists():
+            fail(f"{path} exists and is not a git repository. Resolve this manually.")
+            return None
+        actual_branch = current_branch(path)
+        if actual_branch == target_branch:
+            ok(f"Already cloned at {path}, on {target_branch}")
+        else:
+            warn(f"Already cloned at {path}, but on branch '{actual_branch}', not "
+                 f"'{target_branch}'.")
+            if ask_yn(f"Check out {target_branch}?", default=True):
+                result = run(["git", "-C", str(path), "checkout", target_branch])
+                if result.returncode != 0:
+                    fail("Checkout failed:")
+                    print(result.stderr)
+                else:
+                    ok(f"Checked out {target_branch}")
+        return path
+
+    print(f"  Cloning ifsnemo-build ({target_branch}) to {path}")
+    result = run(["git", "clone", "--recursive", "--branch", target_branch,
+                  IFSNEMO_BUILD_URL, str(path)])
+    if result.returncode != 0:
+        fail("Clone failed:")
+        print(result.stderr)
+        return None
+    ok(f"Cloned to {path}")
+    return path
+
+
 def main():
     print(f"{BOLD}ifsnemo-compare guided setup{RESET}")
     print("Safe to re-run: already-completed steps are detected and skipped.\n")
@@ -290,6 +341,7 @@ def main():
     exec_mode = ask_exec_mode()
     step_python_packages(exec_mode)
     step_yq()
+    step_ifsnemo_build()
 
     print(f"\n{BOLD}(more steps to come){RESET}")
 
