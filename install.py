@@ -296,6 +296,11 @@ def current_branch(repo_path):
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def has_uncommitted_changes(repo_path):
+    result = run(["git", "-C", str(repo_path), "status", "--porcelain"])
+    return result.returncode == 0 and result.stdout.strip() != ""
+
+
 def step_ifsnemo_build():
     print(f"\n{BOLD}2.2. Clone and configure ifsnemo-build{RESET}")
     default_path = Path(__file__).resolve().parent.parent / "ifsnemo-build"
@@ -313,7 +318,14 @@ def step_ifsnemo_build():
         else:
             warn(f"Already cloned at {path}, but on branch '{actual_branch}', not "
                  f"'{target_branch}'.")
-            if ask_yn(f"Check out {target_branch}?", default=True):
+            proceed = True
+            if has_uncommitted_changes(path):
+                warn(f"{path} has uncommitted changes. git won't discard anything that "
+                     f"conflicts with '{target_branch}' -- it'll refuse the checkout instead "
+                     f"-- but changes that don't conflict will silently carry over onto "
+                     f"'{target_branch}' rather than staying on '{actual_branch}'.")
+                proceed = ask_yn(f"Proceed with checking out {target_branch} anyway?", default=False)
+            if proceed and ask_yn(f"Check out {target_branch}?", default=True):
                 result = run(["git", "-C", str(path), "checkout", target_branch])
                 if result.returncode != 0:
                     fail("Checkout failed:")
