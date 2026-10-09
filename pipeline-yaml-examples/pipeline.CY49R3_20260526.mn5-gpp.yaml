@@ -27,6 +27,9 @@ psubmit:
 ifsnemo_compare:
   gold_standard_tag: ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP  # Reference tag for comparison
 
+  build_suites: [bundle_validator]  # Build-time test suites to run
+  test_suites:  [compare_norms]     # Runtime test suites to run
+
   ## Only TCO79
   resolution: [tco79-eORCA1]  # Single resolution configuration
   steps:   [d1]               # Steps for this resolution

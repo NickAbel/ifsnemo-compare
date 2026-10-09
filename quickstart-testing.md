@@ -189,14 +189,14 @@ paths:
 # Override settings
 overrides:
   DNB_SANDBOX_SUBDIR: string     # Sandbox subdirectory name (e.g., "ifsFOOBAR.SP.CPU.GPP") 
-  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_RAPS_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable); IFS_BUNDLE_IFS_SOURCE_GIT is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_RAPS_IFS_SOURCE_VERSION: string # Branch or version to use; IFS_BUNDLE_IFS_SOURCE_VERSION is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_URL: string        # IFSNEMO URL (e.g., "https://git.ecmwf.int/scm/~ecmeXXXX") (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
+  IFS_RAPS_IFS_SOURCE_GIT: string # IFS source Git URL (can use $DNB_IFSNEMO_URL variable); IFS_BUNDLE_IFS_SOURCE_GIT is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
+  IFS_RAPS_IFS_SOURCE_VERSION: string # Branch or version to use; IFS_BUNDLE_IFS_SOURCE_VERSION is also accepted as an older alias, but this (IFS_RAPS_*) wins if both are set, with a note printed (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
+  DNB_IFSNEMO_BUNDLE_BRANCH: string    # Optional bundle branch specification (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   DNB_IFSNEMO_INPROOT: string          # Optional override for the bundle's input-root path
-  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
-  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml and quickstart.md for guidance)
+  DNB_IFSNEMO_BUNDLE_GIT: string       # Optional bundle git repository URL (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
+  IFS_BUNDLE_RAPS_GIT: string          # Optional RAPS git repository URL (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
+  IFS_BUNDLE_RAPS_VERSION: string      # Optional RAPS version (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml)
   DNB_IFSNEMO_WITH_GPU: string         # Enable GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_GPU_EXTRA: string   # Enable extra GPU support (e.g., "TRUE" or "FALSE")
   DNB_IFSNEMO_WITH_STATIC_LINKING: string # Enable static linking (e.g., "TRUE" or "FALSE")
@@ -206,9 +206,9 @@ overrides:
 
 # SLURM submission settings
 psubmit:
-  queue_name: string             # Queue name (can be empty string) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  account: string               # Account name (e.g., ehpcXX) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  queue_name: string             # Queue name (can be empty string) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
+  account: string               # Account name (e.g., ehpcXX) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
+  node_type: string            # Node type (e.g., gp_ehpc) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
 
 # IFS-NEMO comparison settings
 ifsnemo_compare:
@@ -229,12 +229,14 @@ ifsnemo_compare:
 
 # Reference configuration (optional block; if included, url and path_in_repo are required)
 references:
-  url: string                 # Required if this block is present. Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
-  branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml for guidance)
+  url: string                 # Required if this block is present. Git URL for references repository (e.g https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
+  branch: string             # Branch to use (defaults to "main" if not specified) (see pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml for guidance)
   path_in_repo: string       # Required if this block is present. Path within the repository where references are located (probably "references") (see https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references/-/tree/main/references)
 ```
 
-For guidance on specific values, refer to [a personal pipeline.yaml to test the develop branch](./pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml). For instructions on creating your own fork in ECMWF Bitbucket for testing, see [quickstart.md](./quickstart.md).
+For guidance on specific values, refer to [a personal pipeline.yaml to test CY49R3](./pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml).[^48r1]
+
+[^48r1]: Earlier CY48R1 examples are archived under [pipeline-yaml-examples/48r1/](./pipeline-yaml-examples/48r1/).
 
 > Note: The available test suites are defined in `test_definitions.yaml`. If `build_suites` or `test_suites` are not specified in your `pipeline.yaml`, the defaults set in `test_definitions.yaml` will be used. This ensures backwards compatibility with existing pipeline.yaml files.
 
@@ -380,7 +382,7 @@ python3 compare_norms.py run-tests \
   -s d1
 ```
 
-**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash
 # TCO79, 1 day
 python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
@@ -425,19 +427,19 @@ python3 compare_norms.py compare \
   -s d1
 ```
 
-**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash
 # TCO79, 1 day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
 
 # TCO399, 1 day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
 
 # TCO1279, 1 day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
 
 # TCO2559, 1 day
-python3 compare_norms.py compare -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
+python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
 ```
 
 **Behavior:** for each parameter combination, the tool looks for the reference results directory and the test results directory, then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
@@ -475,19 +477,19 @@ python3 compare_norms.py stat-test \
   -s d1
 ```
 
-**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.develop.mn5-gpp.yaml`):
+**Pipeline-following example** (using `pipeline-yaml-examples/pipeline.CY49R3_20260921.mn5-gpp.yaml`):
 ```bash
 # TCO79, 1 day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
+python3 compare_norms.py stat-test -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco79-eORCA1 -nt 4 -p 28 -n 1 -s d1
 
 # TCO399, 1 day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
+python3 compare_norms.py stat-test -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco399-eORCA025 -nt 4 -p 28 -n 16 -s d1
 
 # TCO1279, 1 day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
+python3 compare_norms.py stat-test -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco1279-eORCA12 -nt 8 -p 14 -n 125 -s d1
 
 # TCO2559, 1 day
-python3 compare_norms.py stat-test -t ifs.DE_CY48R1.0_climateDT_20250826.SP.CPU.GPP/ -ot tests -g ifs.DE_CY48R1.0_climateDT_20250521.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
+python3 compare_norms.py stat-test -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
 ```
 
 Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or a zero pooled standard deviation are reported as `[SKIP]` or `[degenerate]` with an explanation.
@@ -497,6 +499,8 @@ Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or
 **Notes and tips:**
 - `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
+- Ensure `compare.sh` (or equivalent comparison scripts) are present and executable where `compare_norms.py` runs.
+- Use the tools interactively on the remote/login node if you want step-by-step control, or use `pipeline.py` to automate the full build/upload/run/compare flow from your local machine.
 
 ## 7. Interpreting the Results
 

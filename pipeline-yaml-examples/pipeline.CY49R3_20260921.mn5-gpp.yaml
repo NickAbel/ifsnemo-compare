@@ -1,0 +1,51 @@
+user:
+  remote_username: bscXXXXXX           # Your username on the remote machine
+  remote_machine_url: glogin4.bsc.es   # Remote machine address (must be internet connectable)
+  remote_transfer_machine: transfer1.bsc.es  # Data transfer node
+  machine_file: dnb-mn5-gpp-CY49R3.yaml     # Machine configuration file to use
+
+paths:
+  # "local" and "remote" are from the perspective of proxy mode (running from a laptop over SSH).
+  # In direct mode (running on the HPC login node), local_build_dir is ignored.
+  local_build_dir: /home/LOCAL_USER/ifsnemo-build
+  remote_project_dir: /gpfs/scratch/bscXX/bscXXXXXX/ifsnemo-compare-CY49R3_20260921
+
+overrides:
+  DNB_SANDBOX_SUBDIR: "ifsMASTER.SP.CPU.GPP"
+  DNB_IFSNEMO_URL: "https://github.com/ecmwf-ifs/"
+  IFS_RAPS_IFS_SOURCE_GIT: "$DNB_IFSNEMO_URL/ifs-source.git"
+  IFS_RAPS_IFS_SOURCE_VERSION: "CY49R3_20260921"
+  IFS_BUNDLE_RAPS_GIT: "$DNB_IFSNEMO_URL/ifs-raps.git"
+  IFS_BUNDLE_RAPS_VERSION: "CY49R3_20260921"
+  DNB_IFSNEMO_USE_ARCH_AND_RAPS: TRUE
+  #  env:
+  #    ENABLE_INSTALL_ORCA_DATA: "ON"
+
+psubmit:
+  queue_name: ""      # empty string for default
+  account: bscXX
+  node_type: gp_bsces
+
+ifsnemo_compare:
+  build_suites: [bundle_validator]  # Build-time test suites to run
+  test_suites:  [compare_norms]     # Runtime test suites to run
+  gold_standard_tag: ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP  # Reference tag for comparison
+
+  ## Only TCO79
+  # resolution: [tco79-eORCA1]  # Single resolution configuration
+  # steps:   [d1]               # Steps for this resolution
+  # threads: [4]                # Thread count
+  # ppn:     [28]              # Processes per node
+  # nodes:   [1]                # Number of nodes
+
+  ## All resolutions
+  resolution: [tco79-eORCA1, tco399-eORCA025, tco1279-eORCA12, tco2559-eORCA12]  # Multi-resolution config
+  steps:   [d1,  d1,  d1,  d1 ]   # Steps for each resolution
+  threads: [4,   4,   8,   14 ]   # Thread counts per resolution
+  ppn:     [28,  28,  14,  8  ]   # Processes per node
+  nodes:   [1,   16,  125, 260]   # Node counts per resolution
+
+references:
+  url: https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git  # Git URL for references repository
+  branch: main                                   # Branch to use
+  path_in_repo: references                       # Path within the repository
