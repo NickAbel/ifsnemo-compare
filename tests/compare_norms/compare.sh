@@ -12,7 +12,7 @@ declare -a YAML_PATHS
 # Display fatal styled message with given argument.
 function fatal {
     echo -e "$RED \u274c FATAL: $1$NC" 1>&2
-    return 1
+    exit 1
 }
 
 # Display success styled message with given argument.
@@ -47,11 +47,11 @@ function parse_args {
         cur_yaml_length=$(wc -l < "$yaml_path")
         [ "$yaml_length" == -1 ] && yaml_length=$cur_yaml_length
 
-        # Check if .yaml file has same length.
-        [ "$cur_yaml_length" != "$yaml_length" ] && fatal "$path's .yaml file is of different length ($yaml_length != $cur_yaml_length)"
+        # Warn if .yaml files differ in length (e.g. timing section present in one but not the other).
+        [ "$cur_yaml_length" != "$yaml_length" ] && echo -e "${RED}[WARN] $path's .yaml file is of different length ($yaml_length != $cur_yaml_length)${NC}" 1>&2
     done
 
-    success "Both result files exist and have .yaml files of equal length."
+
 }
 
 # Compare two strings and print difference in color.
