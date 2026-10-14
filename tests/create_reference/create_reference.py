@@ -255,7 +255,7 @@ def push_to_git(
     A shallow clone is used to avoid pulling the full history of a repo
     that accumulates large reference blobs over time.
     """
-    _banner("Stage 5: Pushing to references git repository")
+    _banner("Stage 6: Pushing to references git repository")
 
     with tempfile.TemporaryDirectory(prefix="ifsnemo-ref-") as tmp:
         clone_dir = Path(tmp) / "repo"
