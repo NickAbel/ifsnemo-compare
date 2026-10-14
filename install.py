@@ -282,7 +282,36 @@ def step_yq():
 
 
 # ---------------------------------------------------------------------------
-# Step 2.2: Clone and configure ifsnemo-build
+# Step 2.2: gitleaks (bundled secrets scanner)
+# ---------------------------------------------------------------------------
+
+def step_gitleaks():
+    print(f"\n{BOLD}2.2. gitleaks{RESET}")
+    tools_dir = Path(__file__).parent / "tools"
+    bundled = tools_dir / "gitleaks"
+
+    if bundled.exists():
+        ok(f"gitleaks already installed ({bundled})")
+        return True
+
+    if shutil.which("gitleaks"):
+        ok(f"gitleaks found in PATH — bundled copy not needed")
+        return True
+
+    print("  gitleaks not found; installing bundled copy via tools/install_gitleaks.sh ...")
+    install_script = tools_dir / "install_gitleaks.sh"
+    try:
+        subprocess.run(["bash", str(install_script)], check=True)
+        ok(f"gitleaks installed to {bundled}")
+        return True
+    except subprocess.CalledProcessError as e:
+        warn(f"install_gitleaks.sh failed: {e}")
+        warn("Install manually: https://github.com/gitleaks/gitleaks/releases")
+        return False
+
+
+# ---------------------------------------------------------------------------
+# Step 2.3: Clone and configure ifsnemo-build
 # ---------------------------------------------------------------------------
 IFSNEMO_BUILD_URL = "https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build.git"
 IFSNEMO_BUILD_BRANCH = "cy49r3"
@@ -432,6 +461,7 @@ def main():
     exec_mode = ask_exec_mode()
     step_python_packages(exec_mode)
     step_yq()
+    step_gitleaks()
     step_ifsnemo_build()
     step_target_machine(exec_mode)
 
