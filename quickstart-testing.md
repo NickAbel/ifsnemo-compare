@@ -104,7 +104,21 @@ source ~/.bashrc
 
 > Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
 
-### 2.2. Clone and Configure ifsnemo-build
+### 2.2. Install `gitleaks`
+
+> **Note:** Only needed for reference generation (`create_reference.py`). If you are not generating a new gold-standard reference, you may skip this step.
+
+[gitleaks](https://github.com/gitleaks/gitleaks) scans reference artifacts for secrets before they are pushed to the references repository.
+
+Run the bundled install script to download the correct binary for your platform:
+
+```bash
+bash tools/install_gitleaks.sh
+```
+
+This places the binary at `tools/gitleaks`, where `create_reference.py` will find it automatically. If `gitleaks` is already in your PATH it will be used instead.
+
+### 2.3. Clone and Configure ifsnemo-build
 In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
 
 ```bash
@@ -502,7 +516,31 @@ Variables with insufficient data (`n1 + n2 ≤ 2`), mismatched array lengths, or
 - `compare_norms.py` expects `psubmit.sh` (or psubmit wrapper) in PATH to submit jobs; `psubmit` prints a "Job ID <id>" line which `compare_norms.py` parses.
 - The tool expects job results to be available under directories named results.<jobid> after the job completes; those directories are moved/copied into your organized ref/test output tree.
 
-## 7. Interpreting the Results
+## 7. Creating a New Gold-Standard Reference
+
+Once you have a successful test run and are satisfied the results represent the correct behaviour, you can promote them to a new gold-standard reference tag using `tests/create_reference/create_reference.py`. This archives the full run artefacts (norms, logs, bundle validation) under a new tag in the references directory, scans for secrets, and optionally pushes to the references git repository.
+
+```bash
+python3 tests/create_reference/create_reference.py \
+  --tag          ifs.DE_CY49R3_climateDT_<YYYYMMDD>.SP.CPU.GPP \
+  --test-subdir  ifsMASTER.SP.CPU.GPP \
+  --tests-root   /gpfs/scratch/<proj>/<user>/<sandbox>/ifsnemo-build/ifsnemo/tests \
+  --refs-root    /gpfs/scratch/<proj>/<user>/<sandbox>/ifsnemo-build/ifsnemo/references \
+  --raps-bundle-yaml /gpfs/scratch/<proj>/<user>/<sandbox>/ifsnemo-build/src/ifsnemo-XXX.src/49r3.yml \
+  --build-dir    /gpfs/scratch/<proj>/<user>/<sandbox>/ifsnemo-build/src/ifsnemo-XXX.src/build \
+  --resolution   tco79-eORCA1 tco399-eORCA025 tco1279-eORCA12 tco2559-eORCA12 \
+  --threads      4  4  8  14 \
+  --ppn          28 28 14 8 \
+  --nodes        1  16 125 260 \
+  --steps        d1 d1 d1  d1 \
+  --repo-url     https://gitlab.earth.bsc.es/ces/hpc-for-es-team/ifsnemo-compare-references.git
+```
+
+Add `--dry-run` to preview all actions without writing anything. Omit `--repo-url` to write the reference locally without pushing.
+
+The resolution/threads/ppn/nodes/steps lists must all be the same length and correspond positionally — one entry per configuration tested. Only configurations that have completed run-tests output will be accepted; the script fails fast at Stage 1 if any are missing.
+
+## 8. Interpreting the Results
 
 After the pipeline completes, results are placed in a timestamped subdirectory within `results/` in your `ifsnemo-compare` directory:
 
@@ -552,11 +590,11 @@ Example `test_results.json`:
 
 ---
 
-## 8. How to Add a Test to the Test Suite
+## 9. How to Add a Test to the Test Suite
 
 This section explains how to add a new test to the ifsnemo-compare framework.
 
-### 8.1. Directory Structure
+### 9.1. Directory Structure
 
 For a new test called `my_test`, create a directory under `tests/`:
 
@@ -569,7 +607,7 @@ tests/my_test/
 
 > **Important:** Comparison standards (reference data) do NOT belong in these folders unless they are universal across all configurations. References should be stored in the repository pointed to by the `references` section in your `pipeline.yaml`. This can be any git repository.
 
-### 8.2. Adding to test_definitions.yaml
+### 9.2. Adding to test_definitions.yaml
 
 Add your test under the appropriate section in `test_definitions.yaml`:
 
@@ -595,7 +633,7 @@ test_suites:
       - compare
 ```
 
-### 8.3. Configuration Options Explained
+### 9.3. Configuration Options Explained
 
 | Option | Description |
 |--------|-------------|
@@ -606,7 +644,7 @@ test_suites:
 | `commands.{name}.output_prefix` | Prefix for the log filename (e.g., `run_tests` → `my_test_run_tests_*.log`). |
 | `sequence` | Order in which commands are executed. |
 
-### 8.4. Example: Multiple Commands
+### 9.4. Example: Multiple Commands
 
 If your test script supports multiple operations like `my_test.py abc -a -b -c` and `my_test.py xyz -x -y -z`:
 
@@ -623,7 +661,7 @@ sequence:
   - xyz
 ```
 
-### 8.5. Default Suites
+### 9.5. Default Suites
 
 If your test should run by default (when `build_suites` or `test_suites` is not specified in the pipeline.yaml), add it to the respective default list:
 
@@ -639,7 +677,7 @@ default_test_suites:
 
 > **Caution:** Legacy pipeline.yaml files (before February 2026) do not specify test suites, so they will run all default suites. Be careful when adding new defaults.
 
-### 8.6. Required Parameters
+### 9.6. Required Parameters
 
 The `build_required_params` and `test_required_params` lists specify which context variables must be available:
 
