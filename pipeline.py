@@ -578,7 +578,7 @@ psubmit:
         if partial_build:
             print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
             src_path = local_path / "src"
-            git_restore_mtime_script = local_path / "ifsnemo-compare" / "git-restore-mtime"
+            git_restore_mtime_script = local_path / "ifsnemo-compare" / "tools" / "git-restore-mtime"
 
             def restore_mtimes_recursive(root_dir, base_path):
                 for item in root_dir.iterdir():
