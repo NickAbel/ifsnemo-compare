@@ -30,6 +30,7 @@ Add --dry-run to preview all actions without writing anything.
 """
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -255,7 +256,8 @@ def push_to_git(
     """
     _banner("Stage 6: Pushing to references git repository")
 
-    with tempfile.TemporaryDirectory(prefix="ifsnemo-ref-") as tmp:
+    # Explicit dir: tempfile would silently fall back to /tmp if TMPDIR were unset or unusable.
+    with tempfile.TemporaryDirectory(prefix="ifsnemo-ref-", dir=os.environ["TMPDIR"]) as tmp:
         clone_dir = Path(tmp) / "repo"
         _run(["git", "clone", "--depth=1", "-b", branch, repo_url, str(clone_dir)], dry_run)
 
