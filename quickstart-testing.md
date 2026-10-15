@@ -90,19 +90,13 @@ cd ifsnemo-compare-project
 
 [yq](https://github.com/mikefarah/yq) is a portable command-line YAML processor and a dependency of [ifsnemo-build](https://earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build), a necessary component of `ifsnemo-compare`.
 
-`yq` must be in your PATH. For example, here is a simple way to add `yq` to `~/bin` and `~/bin` to your PATH:
+Run the bundled install script, or let `install.py` do it:
 
 ```bash
-mkdir -p ~/bin
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ~/bin/yq
-chmod +x ~/bin/yq
-
-# Ensure ~/bin is in your PATH
-echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+bash tools/install_yq.sh
 ```
 
-> Note: While this example installs `yq` in `~/bin`, you can install it anywhere in your PATH. `ifsnemo-build`'s `dnb.sh` script shown elsewhere expects `yq` to be available in PATH.
+This places the binary at `tools/yq`. `pipeline.py` appends `tools/` to PATH at startup, so `ifsnemo-build`'s `dnb.sh` and every other command it runs finds `yq` with no PATH changes. A `yq` already in your PATH is found first.
 
 ### 2.2. Install `gitleaks`
 
@@ -116,7 +110,7 @@ Run the bundled install script to download the correct binary for your platform:
 bash tools/install_gitleaks.sh
 ```
 
-This places the binary at `tools/gitleaks`, where `create_reference.py` will find it automatically. If `gitleaks` is already in your PATH it will be used instead.
+This places the binary at `tools/gitleaks`. `create_reference.py` appends `tools/` to PATH at startup, so it finds the binary automatically, and it aborts rather than push an unscanned reference if gitleaks is missing. A `gitleaks` already in your PATH is found first.
 
 ### 2.3. Clone and Configure ifsnemo-build
 In this step, we'll clone the ifsnemo-build repository and set up the necessary configuration:
@@ -146,7 +140,9 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 [psubmit](https://github.com/a-v-medvedev/psubmit) is a software package for automated, generalized submission of batch jobs on a number of HPC systems. It is a dependency of both [ifsnemo-build](earth.bsc.es/gitlab/digital-twins/nvidia/ifsnemo-build) and ifsnemo-compare.
 
-For example, to add `yq` to `~/bin` and `~/bin` to `PATH` on `glogin4`:
+**Direct mode** (you run `pipeline.py` on the target machine itself): `install.py` installs `psubmit` into `tools/psubmit` (or run `bash tools/install_psubmit.sh`) next to the `tools/yq` from Section 2.1. `pipeline.py` appends both directories to PATH at startup, so nothing else is needed.
+
+**Proxy mode** (you run `pipeline.py` from another machine over SSH): both must be in `PATH` on the target machine. For example, to add `yq` to `~/bin` and `~/bin` to `PATH` on `glogin4`:
 
 ```bash
 ssh bscXXXXXX@glogin4.bsc.es

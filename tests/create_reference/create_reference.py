@@ -208,15 +208,14 @@ def scan_for_secrets(tag_dir: Path, dry_run: bool = False) -> None:
         _info("  [dry] gitleaks detect --no-git --source <tag_dir>")
         return
 
-    # prefer PATH, fall back to bundled binary in tools/ next to this repo
-    _bundled = Path(__file__).parent.parent.parent / "tools" / "gitleaks"
-    gitleaks_bin = "gitleaks" if shutil.which("gitleaks") else (str(_bundled) if _bundled.exists() else None)
-    if gitleaks_bin is None:
+    # Appended, so a gitleaks already in the user's PATH is found first.
+    os.environ["PATH"] += os.pathsep + str(Path(__file__).resolve().parents[2] / "tools")
+    if not shutil.which("gitleaks"):
         _fail("gitleaks not found in PATH or tools/ — refusing to continue without a secrets scan.\n"
               "  Install it with:  bash tools/install_gitleaks.sh")
 
     result = subprocess.run(
-        [gitleaks_bin, "detect", "--no-git", "--source", str(tag_dir)],
+        ["gitleaks", "detect", "--no-git", "--source", str(tag_dir)],
         capture_output=True,
         text=True,
     )

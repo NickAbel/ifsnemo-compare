@@ -13,11 +13,8 @@ pyyaml/fabric, so it can't depend on either of them itself.
 import getpass
 import os
 import shutil
-import stat
 import subprocess
 import sys
-import tempfile
-import urllib.request
 from pathlib import Path
 
 BOLD = '\033[1m'
@@ -242,72 +239,44 @@ def step_python_packages(exec_mode):
 
 
 # ---------------------------------------------------------------------------
-# Step 2.1: yq
+# Steps 2.1-2.2: yq, gitleaks (installed into tools/)
 # ---------------------------------------------------------------------------
-def step_yq():
-    print(f"\n{BOLD}2.1. yq{RESET}")
-    existing = shutil.which("yq")
-    if existing:
-        ok(f"yq is already in PATH ({existing})")
+
+def _install_tool(name, command, releases_url):
+    """Run tools/install_<name>.sh unless `command` is already in PATH or tools/<name> exists.
+
+    Skipping when it is in PATH means machines without internet access never try to download.
+    """
+    tools_dir = Path(__file__).parent / "tools"
+    dest = tools_dir / name
+    found = shutil.which(command)
+    if found:
+        ok(f"{command} found in PATH ({found})")
+        return True
+    if dest.exists():
+        ok(f"{name} already installed ({dest})")
         return True
 
-    print("  yq not found.")
-    bin_dir = Path(ask("  Directory to install it in (must be in PATH, or you'll "
-                        "need to add it)", default=str(Path.home() / "bin"))).expanduser()
-    bin_dir.mkdir(parents=True, exist_ok=True)
-    dest = bin_dir / "yq"
-    if dest.exists():
-        warn(f"{dest} already exists but isn't the yq found via PATH above (or {bin_dir} "
-             f"isn't on PATH at all) -- this script won't overwrite it without asking.")
-        if not ask_yn(f"Overwrite {dest} with a fresh yq download?", default=False):
-            warn(f"Skipped. Resolve {dest} manually, or make sure it (or another yq) is in PATH.")
-            return False
-    url = "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
+    install_script = tools_dir / f"install_{name}.sh"
+    print(f"  Installing {name} via {install_script.name} ...")
     try:
-        urllib.request.urlretrieve(url, dest)
-    except Exception as e:
-        fail(f"Could not download yq: {e}")
-        warn(f"Install it manually and ensure it's in PATH: {url}")
+        subprocess.run(["bash", str(install_script)], check=True)
+    except subprocess.CalledProcessError as e:
+        warn(f"{install_script.name} failed: {e}")
+        warn(f"Install manually: {releases_url}")
         return False
-
-    dest.chmod(dest.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
-    ok(f"Installed yq to {dest}")
-
-    if shutil.which("yq") is None:
-        warn(f"{bin_dir} is not in your PATH yet. Add this to your shell rc file:\n"
-             f"    export PATH=\"{bin_dir}:$PATH\"\n"
-             "  then restart your shell (or `source` the rc file) before running pipeline.py.")
-        return False
+    ok(f"{name} installed to {dest}")
     return True
 
 
-# ---------------------------------------------------------------------------
-# Step 2.2: gitleaks (bundled secrets scanner)
-# ---------------------------------------------------------------------------
+def step_yq():
+    print(f"\n{BOLD}2.1. yq{RESET}")
+    return _install_tool("yq", "yq", "https://github.com/mikefarah/yq/releases")
+
 
 def step_gitleaks():
     print(f"\n{BOLD}2.2. gitleaks{RESET}")
-    tools_dir = Path(__file__).parent / "tools"
-    bundled = tools_dir / "gitleaks"
-
-    if bundled.exists():
-        ok(f"gitleaks already installed ({bundled})")
-        return True
-
-    if shutil.which("gitleaks"):
-        ok(f"gitleaks found in PATH — bundled copy not needed")
-        return True
-
-    print("  gitleaks not found; installing bundled copy via tools/install_gitleaks.sh ...")
-    install_script = tools_dir / "install_gitleaks.sh"
-    try:
-        subprocess.run(["bash", str(install_script)], check=True)
-        ok(f"gitleaks installed to {bundled}")
-        return True
-    except subprocess.CalledProcessError as e:
-        warn(f"install_gitleaks.sh failed: {e}")
-        warn("Install manually: https://github.com/gitleaks/gitleaks/releases")
-        return False
+    return _install_tool("gitleaks", "gitleaks", "https://github.com/gitleaks/gitleaks/releases")
 
 
 # ---------------------------------------------------------------------------
@@ -332,7 +301,7 @@ def has_uncommitted_changes(repo_path):
 
 
 def step_ifsnemo_build():
-    print(f"\n{BOLD}2.2. Clone and configure ifsnemo-build{RESET}")
+    print(f"\n{BOLD}2.3. Clone and configure ifsnemo-build{RESET}")
     default_path = Path(__file__).resolve().parent.parent / "ifsnemo-build"
     path = Path(ask("  ifsnemo-build install directory (will be cloned if not already present)",
                      default=str(default_path))).expanduser()
@@ -378,9 +347,6 @@ def step_ifsnemo_build():
 # ---------------------------------------------------------------------------
 # Step 3: Target machine setup (yq, psubmit)
 # ---------------------------------------------------------------------------
-PSUBMIT_URL = "https://github.com/a-v-medvedev/psubmit.git"
-
-
 def step_target_machine(exec_mode):
     print(f"\n{BOLD}3. Target machine setup (yq, psubmit){RESET}")
 
@@ -404,53 +370,8 @@ def step_target_machine(exec_mode):
         input("  Press Enter to continue... ")
         return
 
-    # direct mode: target machine == this machine. yq was already handled in
-    # step 2.1; only psubmit.sh (and its sibling scripts) remain.
-    existing = shutil.which("psubmit.sh")
-    if existing:
-        ok(f"psubmit.sh is already in PATH ({existing})")
-        return
-
-    print("  psubmit.sh not found.")
-    bin_dir = Path(ask("  Directory to install it in (must be in PATH, or you'll "
-                        "need to add it)", default=str(Path.home() / "bin"))).expanduser()
-    bin_dir.mkdir(parents=True, exist_ok=True)
-
-    tmp_dir = Path(tempfile.mkdtemp(prefix="psubmit-"))
-    try:
-        clone_dir = tmp_dir / "psubmit"
-        result = run(["git", "clone", PSUBMIT_URL, str(clone_dir)])
-        if result.returncode != 0:
-            fail("Clone failed:")
-            print(result.stderr)
-            return
-
-        scripts = list(clone_dir.glob("*.sh"))
-        if not scripts:
-            fail("No .sh scripts found in the cloned psubmit repo.")
-            return
-
-        conflicts = [s for s in scripts if (bin_dir / s.name).exists()]
-        if conflicts:
-            names = ", ".join(s.name for s in conflicts)
-            warn(f"{bin_dir} already has: {names}. This script won't overwrite "
-                 f"{'them' if len(conflicts) > 1 else 'it'} without asking.")
-            if not ask_yn(f"Overwrite {'them' if len(conflicts) > 1 else 'it'}?", default=False):
-                warn("Skipped. Resolve manually, or make sure psubmit.sh is in PATH.")
-                return
-
-        for script in scripts:
-            dest = bin_dir / script.name
-            shutil.copy2(script, dest)
-            dest.chmod(dest.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
-        ok(f"Installed {len(scripts)} psubmit script(s) to {bin_dir}")
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
-
-    if shutil.which("psubmit.sh") is None:
-        warn(f"{bin_dir} is not in your PATH yet. Add this to your shell rc file:\n"
-             f"    export PATH=\"{bin_dir}:$PATH\"\n"
-             "  then restart your shell (or `source` the rc file) before running pipeline.py.")
+    # direct mode: target machine == this machine; yq was handled in step 2.1.
+    return _install_tool("psubmit", "psubmit.sh", "https://github.com/a-v-medvedev/psubmit")
 
 
 def main():

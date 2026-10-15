@@ -312,13 +312,16 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     print_banner()
 
     ############################################
-    # 1.1 Ensure yq installed on local machine
+    # 1.1 Add tools/ to PATH; ensure yq is available
     ############################################
+    # Appended, so a tool already in the user's PATH is found first.
+    tools_dir = Path(__file__).resolve().parent / "tools"
+    os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], str(tools_dir), str(tools_dir / "psubmit")])
     if shutil.which("yq") is None:
         print("""
 ###########################################################################
-#      WARNING: 'yq' not found in PATH! Some steps may not work.          #
-# https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 #
+#      WARNING: 'yq' not found in PATH or tools/! Some steps may fail.    #
+# Run:  bash tools/install_yq.sh                                          #
 ###########################################################################
 """)
 
@@ -578,7 +581,6 @@ psubmit:
         if partial_build:
             print(f"{BOLD}Restoring modification times for git-controlled sources... [{timestamp()}]{RESET}")
             src_path = local_path / "src"
-            git_restore_mtime_script = local_path / "ifsnemo-compare" / "tools" / "git-restore-mtime"
 
             def restore_mtimes_recursive(root_dir, base_path):
                 for item in root_dir.iterdir():
@@ -591,7 +593,7 @@ psubmit:
                         print(f"  Restoring mtimes in {rel_path}...")
                         try:
                             run_command(
-                                [str(git_restore_mtime_script), "--quiet"],
+                                ["git-restore-mtime", "--quiet"],
                                 cwd=item,
                                 verbose=verbose
                             )
@@ -602,21 +604,18 @@ psubmit:
                     except (PermissionError, OSError):
                         pass
 
-            if src_path.exists() and git_restore_mtime_script.exists():
+            if src_path.exists():
                 restore_mtimes_recursive(src_path, src_path)
             else:
-                if not src_path.exists():
-                    print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
-                if not git_restore_mtime_script.exists():
-                    print(f"  [WARN] git-restore-mtime script not found at {git_restore_mtime_script}")
+                print(f"  [INFO] No src directory found at {src_path}, skipping mtime restoration")
 
             # Also restore mtimes for references if it's git-controlled
             references_path = local_path / "references"
-            if references_path.exists() and (references_path / ".git").exists() and git_restore_mtime_script.exists():
+            if (references_path / ".git").exists():
                 print(f"  Restoring mtimes in references...")
                 try:
                     run_command(
-                        [str(git_restore_mtime_script), "--quiet"],
+                        ["git-restore-mtime", "--quiet"],
                         cwd=references_path,
                         verbose=verbose
                     )
