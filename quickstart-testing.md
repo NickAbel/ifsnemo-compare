@@ -142,25 +142,7 @@ git clone https://github.com/NickAbel/ifsnemo-compare.git
 
 **Direct mode** (you run `pipeline.py` on the target machine itself): `install.py` installs `psubmit` into `tools/psubmit` (or run `bash tools/install_psubmit.sh`) next to the `tools/yq` from Section 2.1. `pipeline.py` appends both directories to PATH at startup, so nothing else is needed.
 
-**Proxy mode** (you run `pipeline.py` from another machine over SSH): both must be in `PATH` on the target machine. For example, to add `yq` to `~/bin` and `~/bin` to `PATH` on `glogin4`:
-
-```bash
-ssh bscXXXXXX@glogin4.bsc.es
-mkdir -p ~/bin && cd ~/bin
-
-# yq (if not already present)
-wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ./yq && chmod +x ./yq
-
-# psubmit helper
-git clone https://github.com/a-v-medvedev/psubmit.git tmp-ps
-chmod +x tmp-ps/
-mv tmp-ps/*.sh . && rm -fr tmp-ps
-
-# Ensure bin is in PATH
-echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
-```
-
-> Tip: `yq` and `psubmit` do not have to live in `~/bin`; this is shown as an example. The `dnb.sh` script and other tools expect these utilities to be available in PATH.
+**Proxy mode** (you run `pipeline.py` from another machine over SSH): nothing to do. If `yq` or `psubmit.sh` is not in the target machine's PATH, `pipeline.py` installs them on the target (it runs the same `tools/install_*.sh` scripts there) into `<remote_project_dir>/tools` and `<remote_project_dir>/tools/psubmit`, and appends those directories to PATH for the commands it runs there. The target machine needs internet access for this; without it, put `yq` and `psubmit.sh` in PATH there yourself.
 
 ---
 

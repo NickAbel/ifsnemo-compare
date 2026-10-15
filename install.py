@@ -348,27 +348,11 @@ def step_ifsnemo_build():
 # Step 3: Target machine setup (yq, psubmit)
 # ---------------------------------------------------------------------------
 def step_target_machine(exec_mode):
-    print(f"\n{BOLD}3. Target machine setup (yq, psubmit){RESET}")
+    print(f"\n{BOLD}3. Target machine setup (psubmit){RESET}")
 
     if exec_mode != 'direct':
-        print("  In proxy mode, this needs to happen ON the target machine (the one")
-        print("  pipeline.py will SSH into), not here. Run this there:\n")
-        print("""    ssh <remote_username>@<remote_machine_url>
-    mkdir -p ~/bin && cd ~/bin
-
-    # yq (if not already present)
-    wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O ./yq && chmod +x ./yq
-
-    # psubmit helper
-    git clone https://github.com/a-v-medvedev/psubmit.git tmp-ps
-    chmod +x tmp-ps/*.sh
-    mv tmp-ps/*.sh . && rm -fr tmp-ps
-
-    # Ensure bin is in PATH
-    echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
-""")
-        input("  Press Enter to continue... ")
-        return
+        ok("Nothing to do: pipeline.py installs yq and psubmit on the target machine if missing.")
+        return True
 
     # direct mode: target machine == this machine; yq was handled in step 2.1.
     return _install_tool("psubmit", "psubmit.sh", "https://github.com/a-v-medvedev/psubmit")

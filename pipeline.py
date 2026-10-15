@@ -211,6 +211,21 @@ def wait_for_job(conn, job_id, poll_interval=30):
 
     print(f"\nSLURM job {job_id} completed.")
 
+def ensure_remote_tools(conn, remote_tools):
+    """Install yq and psubmit into remote_tools on the remote unless already in its PATH.
+
+    Runs the local tools/install_<name>.sh on the remote, which fetches from GitHub itself,
+    and appends remote_tools to PATH for every later command on this connection.
+    """
+    conn.command_prefixes.append(f'export PATH="$PATH":{quote(remote_tools)}:{quote(remote_tools)}/psubmit')
+    for name, command, dest in [("yq", "yq", remote_tools), ("psubmit", "psubmit.sh", f"{remote_tools}/psubmit")]:
+        if conn.run(f"command -v {command}", hide=True, warn=True).ok:
+            continue
+        print(f"{command} not found on remote; installing to {dest}")
+        script = Path(__file__).resolve().parent / "tools" / f"install_{name}.sh"
+        with open(script) as f:
+            conn.run(f"bash -s -- {quote(dest)}", in_stream=f)
+
 def check_remote_requirements(conn, verbose=False):
     # Check for yq and psubmit.sh in remote PATH
     missing = []
@@ -223,7 +238,8 @@ def check_remote_requirements(conn, verbose=False):
 #######################################################
 #WARNING: The following required commands are missing:#
 #    {', '.join(missing)}                                          
-#Please ensure they are in your PATH on the remote!   #
+#Install them with tools/install_<name>.sh on the     #
+#remote, or put them in your PATH there.              #
 #######################################################
 """
         print(warning)
@@ -419,6 +435,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
             sys.exit(1)
         conn = Connection(f"{remote_username}@{remote_machine}")
+        ensure_remote_tools(conn, f"{remote_path}/tools")
 
     run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=build_source_dir, verbose=verbose)
 
