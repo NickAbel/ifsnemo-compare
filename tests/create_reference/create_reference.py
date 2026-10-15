@@ -198,8 +198,8 @@ def scan_for_secrets(tag_dir: Path, dry_run: bool = False) -> None:
     Run gitleaks over the written reference tree before anything is pushed.
 
     Uses --no-git so gitleaks treats the directory as plain files rather than
-    a repository.  Exits with a loud error if any secrets are detected —
-    the push stage must not run until the reference tree is clean.
+    a repository.  Exits with a loud error if any secrets are detected, or if
+    gitleaks is missing — the push stage must never run on an unscanned tree.
     """
     _banner("Stage 5: Scanning for secrets")
 
@@ -211,10 +211,8 @@ def scan_for_secrets(tag_dir: Path, dry_run: bool = False) -> None:
     _bundled = Path(__file__).parent.parent.parent / "tools" / "gitleaks"
     gitleaks_bin = "gitleaks" if shutil.which("gitleaks") else (str(_bundled) if _bundled.exists() else None)
     if gitleaks_bin is None:
-        _warn("gitleaks not found in PATH or tools/ — skipping secrets scan.  "
-              "tools/gitleaks is bundled for linux/amd64; other platforms must "
-              "install it (https://github.com/gitleaks/gitleaks/releases).")
-        return
+        _fail("gitleaks not found in PATH or tools/ — refusing to continue without a secrets scan.\n"
+              "  Install it with:  bash tools/install_gitleaks.sh")
 
     result = subprocess.run(
         [gitleaks_bin, "detect", "--no-git", "--source", str(tag_dir)],
@@ -310,7 +308,6 @@ def create_reference(args: argparse.Namespace) -> None:
     scan_for_secrets(tag_dir, args.dry_run)
 
     if args.repo_url:
-        _banner("Stage 6: Pushing to references git repository")
         push_to_git(tag_dir, args.tag, args.repo_url, args.branch,
                     args.path_in_repo, args.dry_run)
     else:
