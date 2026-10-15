@@ -351,7 +351,7 @@ def step_target_machine(exec_mode):
     print(f"\n{BOLD}3. Target machine setup (psubmit){RESET}")
 
     if exec_mode != 'direct':
-        ok("Nothing to do: pipeline.py installs yq and psubmit on the target machine if missing.")
+        ok("Nothing to do: pipeline.py installs yq, gitleaks and psubmit on the target machine if missing.")
         return True
 
     # direct mode: target machine == this machine; yq was handled in step 2.1.

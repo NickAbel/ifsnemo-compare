@@ -212,13 +212,13 @@ def wait_for_job(conn, job_id, poll_interval=30):
     print(f"\nSLURM job {job_id} completed.")
 
 def ensure_remote_tools(conn, remote_tools):
-    """Install yq and psubmit into remote_tools on the remote unless already in its PATH.
+    """Install yq, gitleaks and psubmit into remote_tools on the remote unless already in its PATH.
 
     Runs the local tools/install_<name>.sh on the remote, which fetches from GitHub itself,
     and appends remote_tools to PATH for every later command on this connection.
     """
     conn.command_prefixes.append(f'export PATH="$PATH":{quote(remote_tools)}:{quote(remote_tools)}/psubmit')
-    for name, command, dest in [("yq", "yq", remote_tools), ("psubmit", "psubmit.sh", f"{remote_tools}/psubmit")]:
+    for name, command, dest in [("yq", "yq", remote_tools), ("gitleaks", "gitleaks", remote_tools), ("psubmit", "psubmit.sh", f"{remote_tools}/psubmit")]:
         if conn.run(f"command -v {command}", hide=True, warn=True).ok:
             continue
         print(f"{command} not found on remote; installing to {dest}")
