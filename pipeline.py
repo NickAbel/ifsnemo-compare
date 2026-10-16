@@ -265,15 +265,14 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner
         cwd=cwd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
+        bufsize=-1,
     )
     output_lines = []
     if show_spinner:
         # Read stdout in background thread to prevent blocking
         def drain_output():
-            for line in process.stdout:
-                output_lines.append(line)
+            for line in iter(lambda: process.stdout.read1(4096), b''):
+                output_lines.append(line.decode(errors='replace'))
         reader = threading.Thread(target=drain_output)
         reader.start()
         # Show spinner while process runs
@@ -286,10 +285,12 @@ def run_command(cmd, cwd=None, verbose=False, capture_output=False, show_spinner
         reader.join()
         print("\r  done.          ")
     else:
-        for line in process.stdout:
-            print(line, end='')
+        # Read raw chunks (not lines) so git's \r progress updates overwrite one terminal line.
+        for chunk in iter(lambda: process.stdout.read1(4096), b''):
+            text = chunk.decode(errors='replace')
+            print(text, end='', flush=True)
             if capture_output:
-                output_lines.append(line)
+                output_lines.append(text)
     process.wait()
     if process.returncode not in ok_codes:
         raise subprocess.CalledProcessError(process.returncode, cmd)

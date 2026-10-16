@@ -20,7 +20,7 @@ function success {
     echo -e "$GREEN \u2714 ~ $1$NC" 1>&2
 }
 
-# See if arguments point to result folders with .yaml files of equal length.
+# Select the newest .yaml file in each result folder; warn if their lengths differ.
 function parse_args {
     local yaml_path=""
     local yaml_length=-1
