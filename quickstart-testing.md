@@ -282,7 +282,7 @@ Notes:
 
 The `compare_norms.py` helper provides three subcommands to manage reference creation, test runs, and comparisons. This tool is useful on the remote/login node where `psubmit.sh` (or `psubmit`) and `yq` are available.
 
-After running the install portion of the pipeline, `compare_norms.py` and its companion scripts (`cmp.sh`, `compare.sh`) are located at:
+After running the install portion of the pipeline, `compare_norms.py` and its companion scripts (`cmp.sh`, `compare_result_yamls.sh`) are located at:
 ```
 <paths:remote_project_dir>/ifsnemo-build/ifsnemo-compare/tests/compare_norms/
 ```
@@ -293,7 +293,6 @@ For standalone use, you can either:
   ```bash
   cd <paths:remote_project_dir>/ifsnemo-build/src/sandbox
   ln -s ../../ifsnemo-compare/tests/compare_norms/compare_norms.py .
-  ln -s ../../ifsnemo-compare/tests/compare_norms/compare.sh .
   ln -s ../../ifsnemo-compare/tests/compare_norms/cmp.sh .
   ```
 
@@ -397,7 +396,7 @@ python3 compare_norms.py run-tests -t ifsMASTER.SP.CPU.GPP/ -ot tests -r tco2599
 
 #### 6.2.3 `compare`
 
-**Purpose:** compare stored reference results against test results using the repository's `compare.sh`.
+**Purpose:** compare stored reference results against test results using the repository's `compare_result_yamls.sh`.
 
 **Key options:**
 
@@ -436,7 +435,7 @@ python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/
 python3 compare_norms.py compare -t ifs.DE_CY49R3_climateDT_20260921.SP.CPU.GPP/ -ot tests -g ifs.DE_CY49R3_climateDT_20260526.SP.CPU.GPP/ -og references -r tco2559-eORCA12 -nt 14 -p 8 -n 260 -s d1
 ```
 
-**Behavior:** for each parameter combination, the tool looks for the reference results directory and the test results directory, then executes `./compare.sh <ref> <test>`. Output and exit codes are printed so you can capture and inspect them.
+**Behavior:** for each parameter combination, the tool looks for the reference results directory and the test results directory, then executes `compare_result_yamls.sh <ref> <test>` (the copy next to `compare_norms.py`, not the `compare.sh` in `ifsnemo-build`'s generic scripts). Output and exit codes are printed so you can capture and inspect them.
 
 ---
 

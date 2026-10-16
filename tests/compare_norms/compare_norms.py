@@ -38,6 +38,12 @@ def copy_results(jobid, ref_dir):
             print(f"Copying file: {src_path} -> {dst_path}")
             shutil.copy2(src_path, dst_path)
 
+def latest_result_yaml(results_dir):
+    """Return results_dir's result.<jobid>.yaml with the highest job ID, or None if there is none."""
+    hits = glob.glob(os.path.join(results_dir, "result.*.yaml"))
+    return max(hits, key=lambda f: int(os.path.basename(f).split(".")[1])) if hits else None
+
+
 def parse_yaml_arrays(yaml_path: str) -> dict:
     """
     Extract array-valued variables from the model: section of a result YAML.
@@ -252,7 +258,7 @@ def compare(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthreads
                 print(f"[WARN] missing test dir {base_test}: skipping")
                 continue
 
-            compare_cmd = ["./compare.sh", base_ref, base_test]
+            compare_cmd = [os.path.join(os.path.dirname(os.path.abspath(__file__)), "compare_result_yamls.sh"), base_ref, base_test]
             result = subprocess.run(
                 compare_cmd,
                 capture_output=True,
@@ -288,19 +294,19 @@ def stat_test(ref_subdir, test_subdirs, ref_root, test_root, resolutions, nthrea
                     print(f"[WARN] missing {label} dir {base}: skipping")
                     break
             else:
-                ref_yamls  = glob.glob(os.path.join(base_ref,  "result.*.yaml"))
-                test_yamls = glob.glob(os.path.join(base_test, "result.*.yaml"))
+                ref_yaml  = latest_result_yaml(base_ref)
+                test_yaml = latest_result_yaml(base_test)
 
-                if len(ref_yamls) != 1:
-                    print(f"[WARN] expected 1 ref YAML in {base_ref}, found {len(ref_yamls)}: skipping")
+                if ref_yaml is None:
+                    print(f"[WARN] no ref YAML in {base_ref}: skipping")
                     continue
-                if len(test_yamls) != 1:
-                    print(f"[WARN] expected 1 test YAML in {base_test}, found {len(test_yamls)}: skipping")
+                if test_yaml is None:
+                    print(f"[WARN] no test YAML in {base_test}: skipping")
                     continue
 
                 print(f"\n=== stat-test: {ref_subdir} vs {test} | {res} nt={nt} ppn={p} nn={nn} g={g} nst={nst} ===")
-                ref_arrays  = parse_yaml_arrays(ref_yamls[0])
-                test_arrays = parse_yaml_arrays(test_yamls[0])
+                ref_arrays  = parse_yaml_arrays(ref_yaml)
+                test_arrays = parse_yaml_arrays(test_yaml)
                 results     = stat_tests.run(ref_arrays, test_arrays)
                 stat_tests.report(results)
 

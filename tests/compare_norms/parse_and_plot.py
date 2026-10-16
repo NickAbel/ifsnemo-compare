@@ -16,7 +16,7 @@ import numpy as np
 from collections import OrderedDict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from compare_norms import parse_yaml_arrays
+from compare_norms import parse_yaml_arrays, latest_result_yaml
 
 _p = argparse.ArgumentParser(description="Plot norm comparison between two IFS-NEMO result YAMLs")
 _p.add_argument('ref_dir',     help="Reference results directory (containing result.*.yaml)")
@@ -33,10 +33,10 @@ _ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 _annotation = _args.annotation
 
 def _find_yaml(d):
-    hits = _glob.glob(os.path.join(d, 'result.*.yaml'))
-    if len(hits) != 1:
-        sys.exit(f"Expected exactly 1 result YAML in {d}, found {len(hits)}")
-    return hits[0]
+    path = latest_result_yaml(d)
+    if path is None:
+        sys.exit(f"No result YAML in {d}")
+    return path
 
 ref_arrays  = parse_yaml_arrays(_find_yaml(_args.ref_dir))
 test_arrays = parse_yaml_arrays(_find_yaml(_args.test_dir))
