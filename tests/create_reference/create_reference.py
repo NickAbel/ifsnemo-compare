@@ -37,6 +37,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+from tool_path import append_tools_to_path  # noqa: E402
+
 
 # ---------------------------------------------------------------------------
 # Stage 1 — validate
@@ -208,8 +212,7 @@ def scan_for_secrets(tag_dir: Path, dry_run: bool = False) -> None:
         _info("  [dry] gitleaks detect --no-git --source <tag_dir>")
         return
 
-    # Appended, so a gitleaks already in the user's PATH is found first.
-    os.environ["PATH"] += os.pathsep + str(Path(__file__).resolve().parents[2] / "tools")
+    append_tools_to_path(REPO_ROOT)
     if not shutil.which("gitleaks"):
         _fail("gitleaks not found in PATH or tools/ — refusing to continue without a secrets scan.\n"
               "  Install it with:  bash tools/install_gitleaks.sh")

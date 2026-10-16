@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 try:
     from fabric import Connection
+    from invoke.exceptions import UnexpectedExit
 except ImportError:
     Connection = None
 from datetime import datetime
@@ -17,6 +18,7 @@ import json
 import os
 import socket
 from typing import Optional
+from tool_path import append_tools_to_path, tool_dirs
 from test_runner import (
     load_test_definitions,
     validate_test_definitions,
@@ -211,20 +213,25 @@ def wait_for_job(conn, job_id, poll_interval=30):
 
     print(f"\nSLURM job {job_id} completed.")
 
-def ensure_remote_tools(conn, remote_tools):
-    """Install yq, gitleaks and psubmit into remote_tools on the remote unless already in its PATH.
+def ensure_remote_tools(conn, remote_root):
+    """Install yq, gitleaks and psubmit under remote_root/tools on the remote unless already in its PATH.
 
     Runs the local tools/install_<name>.sh on the remote, which fetches from GitHub itself,
-    and appends remote_tools to PATH for every later command on this connection.
+    and appends the tool dirs to PATH for every later command on this connection.
     """
-    conn.command_prefixes.append(f'export PATH="$PATH":{quote(remote_tools)}:{quote(remote_tools)}/psubmit')
-    for name, command, dest in [("yq", "yq", remote_tools), ("gitleaks", "gitleaks", remote_tools), ("psubmit", "psubmit.sh", f"{remote_tools}/psubmit")]:
+    remote_tools, remote_psubmit = tool_dirs(remote_root)
+    conn.command_prefixes.append(f'export PATH="$PATH":{quote(remote_tools)}:{quote(remote_psubmit)}')
+    for name, command, dest in [("yq", "yq", remote_tools), ("gitleaks", "gitleaks", remote_tools), ("psubmit", "psubmit.sh", remote_psubmit)]:
         if conn.run(f"command -v {command}", hide=True, warn=True).ok:
             continue
         print(f"{command} not found on remote; installing to {dest}")
         script = Path(__file__).resolve().parent / "tools" / f"install_{name}.sh"
-        with open(script) as f:
-            conn.run(f"bash -s -- {quote(dest)}", in_stream=f)
+        try:
+            conn.run(f"bash -c {quote(script.read_text())} install {quote(dest)}")
+        except UnexpectedExit:
+            print(f"ERROR: could not install {name} on the remote (no internet access there?). "
+                  f"Put {command} in the remote PATH, or run tools/install_{name}.sh there by hand.")
+            sys.exit(1)
 
 def check_remote_requirements(conn, verbose=False):
     # Check for yq and psubmit.sh in remote PATH
@@ -330,9 +337,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     ############################################
     # 1.1 Add tools/ to PATH; ensure yq is available
     ############################################
-    # Appended, so a tool already in the user's PATH is found first.
-    tools_dir = Path(__file__).resolve().parent / "tools"
-    os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], str(tools_dir), str(tools_dir / "psubmit")])
+    append_tools_to_path(Path(__file__).resolve().parent)
     if shutil.which("yq") is None:
         print("""
 ###########################################################################
@@ -435,7 +440,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
             print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
             sys.exit(1)
         conn = Connection(f"{remote_username}@{remote_machine}")
-        ensure_remote_tools(conn, f"{remote_path}/tools")
+        ensure_remote_tools(conn, remote_path)
 
     run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=build_source_dir, verbose=verbose)
 
