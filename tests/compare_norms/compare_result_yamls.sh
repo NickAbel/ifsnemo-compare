@@ -1,24 +1,10 @@
 #!/usr/bin/env bash
 
-# Global color definitions.
-NC='\033[0m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
+source "$(dirname "${BASH_SOURCE[0]}")/../../colors.sh"
 
 # Global array to store selected YAML paths.
 declare -a YAML_PATHS
 
-
-# Display fatal styled message with given argument.
-function fatal {
-    echo -e "$RED \u274c FATAL: $1$NC" 1>&2
-    exit 1
-}
-
-# Display success styled message with given argument.
-function success {
-    echo -e "$GREEN \u2714 ~ $1$NC" 1>&2
-}
 
 # Select the newest .yaml file in each result folder; warn if their lengths differ.
 function parse_args {
@@ -48,7 +34,7 @@ function parse_args {
         [ "$yaml_length" == -1 ] && yaml_length=$cur_yaml_length
 
         # Warn if .yaml files differ in length (e.g. timing section present in one but not the other).
-        [ "$cur_yaml_length" != "$yaml_length" ] && echo -e "${RED}[WARN] $path's .yaml file is of different length ($yaml_length != $cur_yaml_length)${NC}" 1>&2
+        [ "$cur_yaml_length" != "$yaml_length" ] && warn "$path's .yaml file is of different length ($yaml_length != $cur_yaml_length)"
     done
 
 

@@ -17,25 +17,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-BOLD = '\033[1m'
-GREEN = '\033[92m'
-YELLOW = '\033[93m'
-RED = '\033[91m'
-RESET = '\033[0m'
+from colors import BOLD, RESET, ok, warn, error as fail
 
 NETRC_PATH = Path.home() / ".netrc"
-
-
-def ok(msg):
-    print(f"{GREEN}✓{RESET} {msg}")
-
-
-def warn(msg):
-    print(f"{YELLOW}![WARN]{RESET} {msg}")
-
-
-def fail(msg):
-    print(f"{RED}✗{RESET} {msg}")
 
 
 def ask(prompt, default=None, secret=False):

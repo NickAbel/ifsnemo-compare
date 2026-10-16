@@ -26,9 +26,7 @@ from test_runner import (
     init_run_directory,
 )
 
-# ANSI formatting
-BOLD = '\033[1m'
-RESET = '\033[0m'
+from colors import BOLD, RESET, warn, error
 
 
 from dataclasses import dataclass
@@ -188,7 +186,7 @@ def collect_artifacts(conn, log_path: Path, local_dir: Path) -> list:
                 print(f"  Artifact fetched: {local_dest}")
                 collected.append(str(local_dest))
             except Exception as exc:
-                print(f"  [WARN] Could not fetch artifact {remote}: {exc}")
+                warn(f"Could not fetch artifact {remote}: {exc}")
     return collected
 
 def timestamp():
@@ -229,7 +227,7 @@ def ensure_remote_tools(conn, remote_root):
         try:
             conn.run(f"bash -c {quote(script.read_text())} install {quote(dest)}")
         except UnexpectedExit:
-            print(f"ERROR: could not install {name} on the remote (no internet access there?). "
+            error(f"could not install {name} on the remote (no internet access there?). "
                   f"Put {command} in the remote PATH, or run tools/install_{name}.sh there by hand.")
             sys.exit(1)
 
@@ -428,7 +426,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         # We populate it from your own ifsnemo-build clone, same as proxy mode: paths.local_build_dir.
         build_source_dir = local_path
         if not build_source_dir.is_dir():
-            print(f"ERROR: expected an ifsnemo-build clone at {build_source_dir} "
+            error(f"expected an ifsnemo-build clone at {build_source_dir} "
                   f"(paths.local_build_dir). Clone it there or adjust paths.local_build_dir "
                   f"in your pipeline.yaml.")
             sys.exit(1)
@@ -438,7 +436,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
     else:
         build_source_dir = local_path
         if Connection is None:
-            print("ERROR: proxy mode requires the 'fabric' package. Install it with: pip install fabric")
+            error("proxy mode requires the 'fabric' package. Install it with: pip install fabric")
             sys.exit(1)
         conn = Connection(f"{remote_username}@{remote_machine}")
         ensure_remote_tools(conn, remote_path)
@@ -466,7 +464,7 @@ def main(pipeline_yaml_path: str, skip_build: bool, no_run: bool, partial_build:
         sandbox_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}"
         sandbox_exists = conn.run(f"test -d {sandbox_path}", warn=True).ok
         if sandbox_exists:
-            print(f"\nWARNING: A full rebuild is about to run against an existing sandbox ({dnb_sandbox_subdir}). This can take ~1 hour.")
+            warn(f"A full rebuild is about to run against an existing sandbox ({dnb_sandbox_subdir}). This can take ~1 hour.")
             print("  Pass --force-rebuild to suppress this prompt, or --skip-build to skip the build.")
             answer = input("Proceed with full rebuild? [y/N] ").strip().lower()
             if answer != "y":
@@ -621,7 +619,7 @@ psubmit:
                                 verbose=verbose
                             )
                         except Exception as e:
-                            print(f"  [WARN] git-restore-mtime failed for {rel_path}: {e}")
+                            warn(f"git-restore-mtime failed for {rel_path}: {e}")
                     try:
                         restore_mtimes_recursive(item, base_path)
                     except (PermissionError, OSError):
@@ -643,7 +641,7 @@ psubmit:
                         verbose=verbose
                     )
                 except Exception as e:
-                    print(f"  [WARN] git-restore-mtime failed for references: {e}")
+                    warn(f"git-restore-mtime failed for references: {e}")
 
         ############################################
         # 2.1-2.3 Build and Install on remote
@@ -775,7 +773,7 @@ ln -sf {machine_file} machine.yaml
             # The CMake build directory is always "build".
             build_subdir = 'build'
             if 'DNB_IFSNEMO_BUILD_SUBDIR' in ov:
-                print(f"[WARN] overrides.DNB_IFSNEMO_BUILD_SUBDIR (set to "
+                warn(f"overrides.DNB_IFSNEMO_BUILD_SUBDIR (set to "
                       f"{ov['DNB_IFSNEMO_BUILD_SUBDIR']!r}) is deprecated: "
                       f"the build directory is hardcoded to 'build'.")
             dnb_env_path = f"{remote_path}/ifsnemo-build/src/sandbox/{dnb_sandbox_subdir}/dnb_environment"
@@ -946,7 +944,7 @@ if __name__ == '__main__':
     try:
         main(args.pipeline_yaml, args.skip_build, args.no_run, args.partial_build, args.no_install, args.force_rebuild, args.exec_mode)
     except Exception as e:
-        print("ERROR:", e)
+        error(str(e))
         # Print traceback for easier debugging
         import traceback
         traceback.print_exc()
